@@ -1,2 +1,6 @@
 [2016-03-11 22:53:40] START
 [2016-03-11 22:55:35] EDIT oph2py01/private/test.txt: 1
+[2016-03-11 23:44:37] CREATE test.txt: 0
+[2016-03-11 23:44:47] EDIT oph2py01/private/test.txt: 1
+[2016-03-11 23:45:59] CREATE test.txt: 0
+[2016-03-11 23:46:08] EDIT oph2py01/static/test.txt: 1
