@@ -7,3 +7,7 @@
 [2016-03-12 00:04:51] EDIT oph2py01/static/test.txt: 1
 [2016-03-12 00:13:46] EDIT oph2py01/static/test.txt: 1
 [2016-03-12 00:16:27] EDIT oph2py01/static/test.txt: 1
+[2016-03-12 00:28:14] EDIT oph2py01/controllers/default.py: 3
+[2016-03-12 00:28:45] CREATE default/hello_world.html: 0
+[2016-03-12 00:28:50] EDIT oph2py01/views/default/hello_world.html: 0
+[2016-03-12 00:29:18] EDIT oph2py01/controllers/default.py: 0
