@@ -7,3 +7,11 @@
 [2016-03-12 00:04:51] EDIT oph2py01/static/test.txt: 1
 [2016-03-12 00:13:46] EDIT oph2py01/static/test.txt: 1
 [2016-03-12 00:16:27] EDIT oph2py01/static/test.txt: 1
+[2016-04-03 19:51:37] CREATE test.txt: 0
+[2016-04-03 19:51:48] EDIT oph2py01/private/test.txt: 1
+[2016-04-03 19:55:50] DELETE oph2py01/static/test.txt.bak: -3
+[2016-04-03 19:55:56] DELETE oph2py01/private/test.txt: -1
+[2016-04-03 19:56:02] DELETE oph2py01/private/test.txt.bak: 0
+[2016-04-03 19:56:15] CREATE test.txt: 0
+[2016-04-03 19:56:27] EDIT oph2py01/private/test.txt: 1
+[2016-04-03 19:58:22] EDIT oph2py01/private/test.txt: 1
