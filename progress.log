@@ -18,3 +18,9 @@
 [2016-04-10 16:28:29] UPLOAD /home/www-data/web2py/applications/oph2py01/static/css/bootstrap_table.css: 248
 [2016-04-10 16:30:33] UPLOAD /home/www-data/web2py/applications/oph2py01/static/js/bootstrap_table.js: 2403
 [2016-04-10 16:31:54] UPLOAD /home/www-data/web2py/applications/oph2py01/static/js/bootstrap_table_locale_all.js: 1502
+[2016-04-10 19:11:01] EDIT oph2py01/controllers/default.py: 3
+[2016-04-10 19:11:48] EDIT oph2py01/controllers/default.py: -3
+[2016-04-10 19:15:27] CREATE default/manage.html: 0
+[2016-04-10 19:16:08] EDIT oph2py01/views/default/manage.html: 0
+[2016-04-10 19:20:24] EDIT oph2py01/views/default/manage.html: 0
+[2016-04-10 19:20:26] EDIT oph2py01/views/default/manage.html: 0
