@@ -60,3 +60,8 @@ def call():
 def home():
     message = "Hello World"
     return dict(message=message)
+
+@auth.requires_membership('IT')
+def manage():
+    grid = SQLFORM.smartgrid(db.auth_user,linked_tables=['auth_membership'])
+    return locals()

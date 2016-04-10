@@ -35,7 +35,7 @@ response.menu = [
             (T('AutoRx'), False, URL('default', 'autorx'), []),
             (T('DICOM'), False, URL('default', 'dicom'), [])
         ]),
-
+    (T('Manage'), False, URL('default', 'manage'), [])
 ]
 
 DEVELOPMENT_MENU = True
