@@ -57,4 +57,6 @@ def call():
     """
     return service()
 
-
+def home():
+    message = "Hello World"
+    return dict(message=message)

@@ -63,15 +63,17 @@ plugins = PluginManager()
 db.define_table('gender',
     Field('sex','string'))
 
-auth.settings.extra_fields['auth_user']= [  Field('maiden_name_pid6','string'),
-                                            Field('dob_pid7','date'),
-                                            Field('birth_town_pid23', 'string'),
-                                            Field('birth_country_pid23', 'string'),
-                                            Field('gender_pid8','reference gender'),
-                                            Field('idc_num', 'integer'),
-                                            Field('ssn_pid19', 'integer')]
+auth.settings.extra_fields['auth_user']= [  Field('maiden_name_pid6','string', label='Maiden name'),
+                                            Field('dob_pid7','date', label='Date of birth'),
+                                            Field('birth_town_pid23', 'string', label='Town of birth'),
+                                            Field('birth_country_pid23', 'string', label='Country of birth'),
+                                            Field('gender_pid8', 'reference gender', label='Gender'),
+                                            Field('idc_num', 'string', label='ID card number'),
+                                            Field('ssn_pid19', 'string', label='SSN')]
 
 auth.define_tables(username=False, signature=False)
+
+db.auth_user.gender_pid8.requires = IS_IN_DB(db,db.gender.id,'%(sex)s')
 
 ## configure email
 mail = auth.settings.mailer
