@@ -1,10 +1,8 @@
-*.pyc 
-cache/ 
-databases/* 
-errors/ 
-sessions/  
+*.pyc
+cache/
+databases/*
+errors/
+sessions/
 private/
 uploads/*
 .hg/
-
-
