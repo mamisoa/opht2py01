@@ -6,13 +6,13 @@
 <script src="{{=URL('static','js/locale/bootstrap-table-fr-BE.min.js')}}"></script>
 <!-- bootstrap-table EDITABLE extention-->
 <link rel="stylesheet" href="{{=URL('static','css/bootstrap-table.css')}}" />
-<script src="{{=URL('static','js/extensions/bootstrap-table-editable.js')}}"></script>
+<script src="{{=URL('static','js/extensions/editable/bootstrap-table-editable.js')}}"></script>
 <!-- bootstrap-table x-editable extention https://vitalets.github.io/x-editable/ -->
 <link rel="stylesheet" href="{{=URL('static','css/bootstrap-editable.css')}}" />
 <script src="{{=URL('static','js/bootstrap-editable.js')}}"></script>
 {{end}}
 
-<div class="container">
+<div class="container-fluid">
   <div class="row">
     <div class="col-md-12">
       <div>
@@ -22,20 +22,28 @@
             <span class="alert"></span>
           </p>
       </div>
-      <table id="table">
+      <table id="table"
+          data-id-field="id"
+          data-show-refresh="true"
+          data-show-columns="true"
+          data-search="true"
+          data-toggle="table"
+          data-detail-view="true"
+          data-detail-formatter="detailFormatter"
+          data-response-handler="responseHandler"
+          data-query-params="queryParams"
+          data-toolbar=".toolbar">
         <thead>
           <tr>
-            <th data-field='id' data-sortable='true'>ID</th>
-            <th data-field='first_name' data-sortable='true'>First name:</th>
-            <th data-field='last_name' data-sortable='true'>Last name:</th>
-            <th data-field='email'>Email:</th>
-            <th data-field='maiden_name_pid6'>Maiden name:</th>
-            <th data-field='dob_pid7' data-sortable='true'>Date of birth:</th>
-            <th data-field='birth_town_pid23' data-sortable='true'>Town of birth:</th>
-            <th data-field='birth_country_pid23' data-sortable='true'>Country of birth:</th>
-            <th data-field='gender_pid8' data-sortable='true'>Gender:</th>
-            <th data-field='idc_num'>ID card number:</th>
-            <th data-field='ssn_pid19'>SSN:</th>
+            <th data-field="id" data-sortable="true">ID</th>
+            <th data-field="first_name" data-sortable="true">First name:</th>
+            <th data-field="last_name" data-sortable="true">Last name:</th>
+            <th data-field="dob_pid7" data-sortable="true">Date of birth:</th>
+            <th data-field="gender_pid8" data-sortable="true">Gender:</th>
+            <th data-field="birth_town_pid23" data-sortable="true">Town of birth:</th>
+            <th data-field="birth_country_pid23" data-sortable="true">Country of birth:</th>
+            <th data-field="idc_num">ID card number:</th>
+            <th data-field="ssn_pid19">SSN:</th>
             <th data-field="action"
                 data-align="center"
                 data-formatter="actionFormatter"
@@ -46,3 +54,19 @@
     </div>
   </div>
 </div>
+
+<!-- show variables
+<div>
+  <ul>
+    <li class="list-group-item">{{=rows}}</li>
+    <li class="list-group-item">{{=data}}</li>
+  </ul>
+  </div>
+-->
+
+<script type="text/javascript">
+  var data = {{=data}},
+      $table = $('#table').bootstrapTable({
+        data: data.patients});
+
+</script>

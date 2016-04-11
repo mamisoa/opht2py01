@@ -66,5 +66,59 @@ def manage():
     grid = SQLFORM.smartgrid(db.auth_user,linked_tables=['auth_membership'])
     return locals()
 
-def patients():
+def rows2json (tablename,rows):
+    import datetime
+    import json
+    date_handler = lambda obj: (
+        obj.isoformat()
+        if isinstance(obj, datetime.datetime)
+        or isinstance(obj, datetime.date)
+        else None
+        )
+    rows = rows.as_list()
+    concat = '{ "'+tablename+'": ['
+    for row in rows:
+        concat = concat + json.dumps(row, default=date_handler)+","
+    concat = concat.strip(',')
+    concat = concat + ']}'
+    return concat
+
+@auth.requires_login()
+@request.restful()
+def api():
+    response.view = 'generic.json'
+    def GET(tablename,*args,**vars): # GET VALUES
+        if tablename =='': raise HTTP(400)
+        if request.args(1) == None: # use request.arg(1) to get None, args[1] raise exeption error
+                if request.vars.search == None:
+                    rows =  db(db[tablename]).select()
+                    data = rows2json(tablename+' none',rows)
+                    return  data
+                else :
+                    rows = db(db.test.testname.contains(vars['search'])).select()
+                    data = rows2json(tablename+' search',rows)
+                    return data
+        table_id = request.args[1]
+        rows =  db(db[tablename]._id==table_id).select()
+        data = rows2json(tablename+" hello",rows)
+        return data
+    def DELETE(tablename,record_id):
+        if not tablename=='test': raise HTTP(400)
+        db(db.test.id == record_id).delete()
+        return '*** Deleted row id : '+record_id+' *** '
+    def PUT(tablename,record_id,**vars):
+        if not tablename=='test': raise HTTP(400)
+        if record_id=='': raise HTTP(400)
+        db(db.test._id==record_id).update(**vars)
+        return '*** Updated row id: '+record_id+' *** '  # db(db.test._id==record_id).update(**vars)
+    def POST(tablename,**vars):
+        if not tablename=='test': raise HTTP(400)
+        ret = db.test.validate_and_insert(**vars)
+        return '*** Added row id: '+ str(ret.id) + ' *** ' + 'Error code : ' + str(ret.errors) + ' *** '
     return locals()
+
+def patients():
+    rows=db(db.auth_membership.group_id==2).select(db.auth_user.id, db.auth_user.first_name, db.auth_user.last_name, db.auth_user.dob_pid7, db.auth_user.gender_pid8,db.auth_user.birth_town_pid23, db.auth_user.birth_country_pid23, db.auth_user.idc_num, db.auth_user.ssn_pid19,
+        left=db.auth_membership.on(db.auth_user.id==db.auth_membership.user_id))
+    data = rows2json('patients',rows)
+    return dict(rows=rows, data = XML(data)) # XML to avoid escape characters
