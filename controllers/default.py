@@ -65,3 +65,6 @@ def home():
 def manage():
     grid = SQLFORM.smartgrid(db.auth_user,linked_tables=['auth_membership'])
     return locals()
+
+def patients():
+    return locals()
