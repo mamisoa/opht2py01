@@ -83,16 +83,17 @@ def rows2json (tablename,rows):
     concat = concat + ']}'
     return concat
 
-@auth.requires_login()
+#@auth.requires_login()
 @request.restful()
 def api():
     response.view = 'generic.json'
     def GET(tablename,*args,**vars): # GET VALUES
         if tablename =='': raise HTTP(400)
-        if request.args(1) == None: # use request.arg(1) to get None, args[1] raise exeption error
+        if request.args(1) == None: # use request.arg(1) to get the arg after tablename;
+                                    # request.arg(1) is None if empty, don't use args[1] coz raise exeption error
                 if request.vars.search == None:
                     rows =  db(db[tablename]).select()
-                    data = rows2json(tablename+' none',rows)
+                    data = rows2json(tablename,rows)
                     return  data
                 else :
                     rows = db(db.test.testname.contains(vars['search'])).select()
@@ -117,8 +118,61 @@ def api():
         return '*** Added row id: '+ str(ret.id) + ' *** ' + 'Error code : ' + str(ret.errors) + ' *** '
     return locals()
 
+@request.restful()
+def api_users():
+    response.view = 'generic.json' # or 'generic.' + request.extension
+    def GET(*args,**vars):
+        patterns = [
+            "/user[auth_user]",
+            "/user/{auth_user.id}",
+            "/user/{auth_user.id}/:field",
+            "/membership[auth_membership]",
+            "/membership/{auth_membership.group_id}/user[auth_user.id]",  # show user with selected membership
+            "/membership/{auth_membership.group_id}/user[auth_user.id]/:field"
+            ]
+        parser = db.parse_as_rest(patterns, args, vars)
+        data = parser.response
+        # loop thru array
+        # index = len(data)-1
+        # for x in data:
+        #     data[index]['hello']='world'
+        #     index = index-1
+        # data[0]['hello']='world'
+        if parser.status == 200:
+            return dict(content=data)
+        else:
+            raise HTTP(parser.status, parser.error)
+    def DELETE(tablename,record_id):
+        if tablename=='auth_user':
+            db(db.auth_user.id == record_id).delete()
+            return 'Table: '+ tablename +' *** Deleted row id : '+record_id+' *** \r\n'
+        elif tablename=='auth_membership':
+            db(db.auth_membership.id == record_id).delete()
+            return 'Table: '+ tablename +' *** Deleted row id : '+record_id+' *** \r\n'
+        else:
+            raise HTTP(400)
+    def PUT(tablename,record_id,**vars):
+        if tablename == 'auth_user':
+            db(db.auth_user._id==record_id).update(**vars)
+            return 'Table: '+ tablename +' *** Updated row id: '+record_id+' ***  \r\n'
+        elif tablename == 'auth_membership':
+            db(db.auth_membership._id==record_id).update(**vars)
+            return 'Table: '+ tablename +' *** Updated row id: '+record_id+' ***  \r\n'
+        else:
+            raise HTTP(400)
+    def POST(tablename,**vars):
+        if tablename == 'auth_user':
+            ret = db.auth_user.validate_and_insert(**vars)
+            return 'Table: '+ tablename +' *** Added row id: '+ str(ret.id) + ' *** ' + 'Error code : ' + str(ret.errors) + ' *** \r\n'
+        elif tablename == 'auth_membership':
+            ret = db.auth_membership.validate_and_insert(**vars)
+            return 'Table: '+ tablename +' *** Added row id: '+ str(ret.id) + ' *** ' + 'Error code : ' + str(ret.errors) + ' *** \r\n'
+        else:
+            raise HTTP(400)
+    return locals()
+
 def patients():
     rows=db(db.auth_membership.group_id==2).select(db.auth_user.id, db.auth_user.first_name, db.auth_user.last_name, db.auth_user.dob_pid7, db.auth_user.gender_pid8,db.auth_user.birth_town_pid23, db.auth_user.birth_country_pid23, db.auth_user.idc_num, db.auth_user.ssn_pid19,
-        left=db.auth_membership.on(db.auth_user.id==db.auth_membership.user_id))
+        left=db.auth_membership.on(db.auth_user.id==db.auth_membership.user_id), distinct=True)
     data = rows2json('patients',rows)
     return dict(rows=rows, data = XML(data)) # XML to avoid escape characters
