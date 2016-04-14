@@ -10,6 +10,14 @@
 <!-- bootstrap-table x-editable extention https://vitalets.github.io/x-editable/ -->
 <link rel="stylesheet" href="{{=URL('static','css/bootstrap-editable.css')}}" />
 <script src="{{=URL('static','js/bootstrap-editable.js')}}"></script>
+<style>
+       .update {
+           color: #333;
+       }
+       .remove {
+           color: red;
+       }
+</style>
 {{end}}
 
 <div class="container-fluid">
@@ -54,12 +62,12 @@
     </div>
   </div>
 </div>
-
+<!--
 <div class="container-fluid">
   <div class="row">
     <div class="col-md-12">
       <div>
-        <<h1>Patients</h1>
+        <h1>Patients</h1>
           <p class="toolbar2">
             <a href="javascript:" class="create btn btn-default">New patient</a>
             <span class="alert"></span>
@@ -97,6 +105,8 @@
     </div>
   </div>
 </div>
+-->
+
 
 
 <!-- show variables
@@ -110,12 +120,28 @@
 
 <script type="text/javascript">
   var data = {{=data}},
-      API_URL = '{{=URL('default','api_users/membership/2/user', scheme=True, host=True)}}',
-      $table = $('#table').bootstrapTable({
-        data: data.patients}),
+      API_URL = '{{=URL('default','api_users/membership/2/user', scheme=True, host=True)}}';
+  var $table = $('#table').bootstrapTable({
+      data: data.patients,
+    }),
       $table2 = $('#table2').bootstrapTable({
         url: API_URL});
+  $(function () {
+    window.actionEvents = {
+      'click .update': function (e,value,row) {
+        alert('You click UPDATE action, row: ' + JSON.stringify(row) + 'id:'+row.id);
+        console.log("click on update");
+      }
+    }
+  });
 
+  // $('.update').click( function() {
+  //  alert('hello');
+  //  console.log('hello');
+  // })
+  function responseHandler(res) {
+     return res.patients;
+  }
   function responseHandler2(res) {
      return res.content;
   }
@@ -139,6 +165,18 @@
 
   function queryParams2(params) {
       return {};
+  }
+  function actionFormatter(value) {
+      return [
+          '<a class="update" href="javascript:" title="Update Item"><i class="glyphicon glyphicon-edit"></i></a>  ',
+          '<a class="remove" href="javascript:" title="Delete Item"><i class="glyphicon glyphicon-remove-circle"></i></a>',
+      ].join('');
+  }
+  function actionFormatter2(value) {
+      return [
+          '<a class="update2" href="javascript:" title="Update Item"><i class="glyphicon glyphicon-edit"></i></a>  ',
+          '<a class="remove2" href="javascript:" title="Delete Item"><i class="glyphicon glyphicon-remove-circle"></i></a>',
+      ].join('');
   }
 
 </script>
