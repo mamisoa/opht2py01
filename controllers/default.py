@@ -132,12 +132,6 @@ def api_users():
             ]
         parser = db.parse_as_rest(patterns, args, vars)
         data = parser.response
-        # loop thru array
-        # index = len(data)-1
-        # for x in data:
-        #     data[index]['hello']='world'
-        #     index = index-1
-        # data[0]['hello']='world'
         if parser.status == 200:
             return dict(content=data)
         else:
@@ -176,3 +170,47 @@ def patients():
         left=db.auth_membership.on(db.auth_user.id==db.auth_membership.user_id), distinct=True)
     data = rows2json('patients',rows)
     return dict(rows=rows, data = XML(data)) # XML to avoid escape characters
+
+# CRUD users
+
+def update_user():
+    record = db.auth_user(request.args(0)) or redirect(URL('patients'))
+    form = SQLFORM(db.auth_user, record)
+    if form.process().accepted:
+       response.flash = 'form accepted'
+       redirect(URL('patients'))
+    elif form.errors:
+       response.flash = 'form has errors'
+    return dict(form=form)
+
+def create_user(): # first arg gives group_id
+    group = request.args(0) or redirect(URL('patients'))
+    form = SQLFORM(db.auth_user)
+    if form.process(onvalidation=check_duplicate).accepted:
+        response.flash = 'form accepted'
+        db.auth_membership.insert(user_id=form.vars.id,group_id=group)
+        redirect(URL('patients'))
+    elif form.errors:
+        response.flash = 'Form has errors'
+    return dict(form=form)
+
+def check_duplicate(form):
+    form.vars.first_name = form.vars.first_name.capitalize()
+    form.vars.last_name = form.vars.last_name.capitalize()
+    fname = form.vars.first_name
+    lname = form.vars.last_name
+    dob = form.vars.dob_pid7
+    check = db((db.auth_user.first_name==fname)&(db.auth_user.last_name==lname)&(db.auth_user.dob_pid7==dob)).isempty()
+    if check is False: # if user with same first_name last_name dob exist, it is a duplicate
+        form.errors.first_name = form.errors.last_name = form.errors.dob_pid7 = "Patient already in database"
+
+def test():
+    fname = 'Mamisoa'
+    lname = 'Andriantafika'
+    dob = '1978-01-02'
+    check = db((db.auth_user.first_name==fname)&(db.auth_user.last_name==lname)&(db.auth_user.dob_pid7==dob)).isempty()
+    if check is True :
+        flag = 'unique'
+    else:
+        flag = 'duplicate'
+    return locals()

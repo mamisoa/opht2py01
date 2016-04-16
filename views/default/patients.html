@@ -24,10 +24,10 @@
   <div class="row">
     <div class="col-md-12">
       <div>
-        <<h1>Patients</h1>
+        <h1>Patients</h1>
           <p class="toolbar">
             <a href="javascript:" class="create btn btn-default">New patient</a>
-            <span class="alert"></span>
+            <span class="alerte"></span>
           </p>
       </div>
       <table id="table"
@@ -62,89 +62,51 @@
     </div>
   </div>
 </div>
-<!--
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-md-12">
-      <div>
-        <h1>Patients</h1>
-          <p class="toolbar2">
-            <a href="javascript:" class="create btn btn-default">New patient</a>
-            <span class="alert"></span>
-          </p>
-      </div>
-      <table id="table2"
-          data-id-field="id"
-          data-show-refresh="true"
-          data-show-columns="true"
-          data-search="true"
-          data-toggle="table"
-          data-detail-view="true"
-          data-detail-formatter="detailFormatter2"
-          data-response-handler="responseHandler2"
-          data-query-params="queryParams2"
-          data-toolbar=".toolbar2">
-        <thead>
-          <tr>
-            <th data-field="id" data-sortable="true">ID</th>
-            <th data-field="first_name" data-sortable="true">First name:</th>
-            <th data-field="last_name" data-sortable="true">Last name:</th>
-            <th data-field="dob_pid7" data-sortable="true">Date of birth:</th>
-            <th data-field="gender_pid8" data-sortable="true">Gender:</th>
-            <th data-field="birth_town_pid23" data-sortable="true">Town of birth:</th>
-            <th data-field="birth_country_pid23" data-sortable="true">Country of birth:</th>
-            <th data-field="idc_num">ID card number:</th>
-            <th data-field="ssn_pid19">SSN:</th>
-            <th data-field="action"
-                data-align="center"
-                data-formatter="actionFormatter2"
-                data-events="actionEvents2">Action</th>
-          </tr>
-        </thead>
-      </table>
-    </div>
-  </div>
-</div>
--->
-
-
-
-<!-- show variables
-<div>
-  <ul>
-    <li class="list-group-item">{{=rows}}</li>
-    <li class="list-group-item">{{=data}}</li>
-  </ul>
-  </div>
--->
 
 <script type="text/javascript">
   var data = {{=data}},
       API_URL = '{{=URL('default','api_users/membership/2/user', scheme=True, host=True)}}';
   var $table = $('#table').bootstrapTable({
-      data: data.patients,
-    }),
-      $table2 = $('#table2').bootstrapTable({
         url: API_URL});
-  $(function () {
-    window.actionEvents = {
-      'click .update': function (e,value,row) {
-        alert('You click UPDATE action, row: ' + JSON.stringify(row) + 'id:'+row.id);
-        console.log("click on update");
-      }
+  var $alert = $('.alerte').hide();
+  window.actionEvents = {
+    'click .update': function (e,value,row) {
+    location.href = '{{=URL('default','update_user', scheme=True, host=True)}}/'+row.id;
+    },
+    'click .remove': function (e, value, row) {
+        if (confirm('Are you sure to delete this item?')) {
+            $.ajax({
+                url: '{{=URL('default','api_users/auth_user', scheme=True, host=True)}}/'+ row.id,
+                type: 'delete',
+                success: function () {
+                    $table.bootstrapTable('refresh');
+                    showAlert('Delete item successful!', 'success');
+                },
+                error: function () {
+                    showAlert('Delete item error!', 'danger');
+                }
+            })
+        }
     }
-  });
-
-  // $('.update').click( function() {
-  //  alert('hello');
-  //  console.log('hello');
-  // })
-  function responseHandler(res) {
-     return res.patients;
   }
-  function responseHandler2(res) {
+
+  function showAlert(title, type) {
+  $alert.attr('class', 'alert alert-' + type || 'success')
+        .html('<i class="glyphicon glyphicon-check"></i> ' + title).show();
+  setTimeout(function () {
+      $alert.hide();
+      }, 5000);
+  }
+
+
+  $('.create').click(function () {
+    location.href = '{{=URL('default','create_user', scheme=True, host=True)}}/2';
+   });
+
+  function responseHandler(res) {
      return res.content;
   }
+
   function detailFormatter(index, row) {
     var html = [];
     $.each(row, function (key, value) {
@@ -152,31 +114,15 @@
       });
     return html.join('');
   }
-  function detailFormatter2(index, row) {
-    var html = [];
-    $.each(row, function (key, value) {
-      html.push('<p><b>' + key + ':</b> ' + value + '</p>');
-      });
-    return html.join('');
-  }
+
   function queryParams(params) {
       return {};
   }
 
-  function queryParams2(params) {
-      return {};
-  }
   function actionFormatter(value) {
       return [
           '<a class="update" href="javascript:" title="Update Item"><i class="glyphicon glyphicon-edit"></i></a>  ',
           '<a class="remove" href="javascript:" title="Delete Item"><i class="glyphicon glyphicon-remove-circle"></i></a>',
       ].join('');
   }
-  function actionFormatter2(value) {
-      return [
-          '<a class="update2" href="javascript:" title="Update Item"><i class="glyphicon glyphicon-edit"></i></a>  ',
-          '<a class="remove2" href="javascript:" title="Delete Item"><i class="glyphicon glyphicon-remove-circle"></i></a>',
-      ].join('');
-  }
-
 </script>

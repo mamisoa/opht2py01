@@ -1,0 +1,23 @@
+{{extend 'layout.html'}}
+{{block head}}
+<!-- bootstrap-table -->
+<link rel="stylesheet" href="{{=URL('static','css/bootstrap-table.css')}}" />
+<script src="{{=URL('static','js/bootstrap-table.js')}}"></script>
+<script src="{{=URL('static','js/locale/bootstrap-table-fr-BE.min.js')}}"></script>
+<!-- bootstrap-table EDITABLE extention-->
+<link rel="stylesheet" href="{{=URL('static','css/bootstrap-table.css')}}" />
+<script src="{{=URL('static','js/extensions/editable/bootstrap-table-editable.js')}}"></script>
+<!-- bootstrap-table x-editable extention https://vitalets.github.io/x-editable/ -->
+<link rel="stylesheet" href="{{=URL('static','css/bootstrap-editable.css')}}" />
+<script src="{{=URL('static','js/bootstrap-editable.js')}}"></script>
+<style>
+       .update {
+           color: #333;
+       }
+       .remove {
+           color: red;
+       }
+</style>
+{{end}}
+{{=flag}}
+{{=check}}
