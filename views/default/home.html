@@ -1,24 +1,127 @@
 {{extend 'layout.html'}}
-
-{{block header}}
-    <header class="container-fluid background">
-      <div class="jumbotron text-center">
-        {{if response.title:}}
-        <h1>{{=response.title}}
-          <small>{{=response.subtitle or ''}}</small></h1>
-        {{pass}}
-      </div>
-    </header>
+{{block head}}
+<!-- bootstrap-table -->
+<link rel="stylesheet" href="{{=URL('static','css/bootstrap-table.css')}}" />
+<script src="{{=URL('static','js/bootstrap-table.js')}}"></script>
+<script src="{{=URL('static','js/locale/bootstrap-table-fr-BE.min.js')}}"></script>
+<!-- bootstrap-table EDITABLE extention-->
+<link rel="stylesheet" href="{{=URL('static','css/bootstrap-table.css')}}" />
+<script src="{{=URL('static','js/extensions/editable/bootstrap-table-editable.js')}}"></script>
+<!-- bootstrap-table x-editable extention https://vitalets.github.io/x-editable/ -->
+<link rel="stylesheet" href="{{=URL('static','css/bootstrap-editable.css')}}" />
+<script src="{{=URL('static','js/bootstrap-editable.js')}}"></script>
+<style>
+       .update {
+           color: #333;
+       }
+       .remove {
+           color: red;
+       }
+</style>
 {{end}}
 
-.<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">{{=message}}</h3>
-  </div>
-  <div class="panel-body">
-    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-  </div>
-  <div class="panel-footer">
-    <p>Panel footer<p>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12">
+      <div>
+        <h1>{{=group}}s</h1>
+          <p class="toolbar">
+            <a href="javascript:" class="create btn btn-default">New {{=group}}</a>
+            <span class="alerte"></span>
+          </p>
+      </div>
+      <table id="table"
+          data-id-field="id"
+          data-show-refresh="true"
+          data-show-columns="true"
+          data-search="true"
+          data-toggle="table"
+          data-detail-view="true"
+          data-detail-formatter="detailFormatter"
+          data-response-handler="responseHandler"
+          data-query-params="queryParams"
+          data-toolbar=".toolbar">
+        <thead>
+          <tr>
+            <th data-field="id" data-sortable="true">ID</th>
+            <th data-field="first_name" data-sortable="true">First name:</th>
+            <th data-field="last_name" data-sortable="true">Last name:</th>
+            <th data-field="dob_pid7" data-sortable="true">Date of birth:</th>
+            <th data-field="gender_pid8" data-sortable="true">Gender:</th>
+            <th data-field="birth_town_pid23" data-sortable="true">Town of birth:</th>
+            <th data-field="birth_country_pid23" data-sortable="true">Country of birth:</th>
+            <th data-field="idc_num">ID card number:</th>
+            <th data-field="ssn_pid19">SSN:</th>
+            <th data-field="action"
+                data-align="center"
+                data-formatter="actionFormatter"
+                data-events="actionEvents">Action</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
   </div>
 </div>
+
+<script type="text/javascript">
+  var API_URL = '{{=URL('default','api_users/membership/'+membership+'/user', scheme=True, host=True)}}';
+  var $table = $('#table').bootstrapTable({
+        url: API_URL});
+  var $alert = $('.alerte').hide();
+  window.actionEvents = {
+    'click .update': function (e,value,row) {
+    location.href = '{{=URL('default','update_user', scheme=True, host=True)}}/'+row.id;
+    },
+    'click .remove': function (e, value, row) {
+        if (confirm('Are you sure to delete this item?')) {
+            $.ajax({
+                url: '{{=URL('default','api_users/auth_user', scheme=True, host=True)}}/'+ row.id,
+                type: 'delete',
+                success: function () {
+                    $table.bootstrapTable('refresh');
+                    showAlert('Delete item successful!', 'success');
+                },
+                error: function () {
+                    showAlert('Delete item error!', 'danger');
+                }
+            })
+        }
+    }
+  }
+
+  function showAlert(title, type) {
+  $alert.attr('class', 'alert alert-' + type || 'success')
+        .html('<i class="glyphicon glyphicon-check"></i> ' + title).show();
+  setTimeout(function () {
+      $alert.hide();
+      }, 5000);
+  }
+
+
+  $('.create').click(function () {
+    location.href = '{{=URL('default','create_user/'+membership, scheme=True, host=True)}}';
+   });
+
+  function responseHandler(res) {
+     return res.content;
+  }
+
+  function detailFormatter(index, row) {
+    var html = [];
+    $.each(row, function (key, value) {
+      html.push('<p><b>' + key + ':</b> ' + value + '</p>');
+      });
+    return html.join('');
+  }
+
+  function queryParams(params) {
+      return {};
+  }
+
+  function actionFormatter(value) {
+      return [
+          '<a class="update" href="javascript:" title="Update Item"><i class="glyphicon glyphicon-edit"></i></a>  ',
+          '<a class="remove" href="javascript:" title="Delete Item"><i class="glyphicon glyphicon-remove-circle"></i></a>',
+      ].join('');
+  }
+</script>

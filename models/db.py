@@ -64,7 +64,7 @@ db.define_table('gender',
     Field('sex','string'))
 
 auth.settings.extra_fields['auth_user']= [  Field('maiden_name_pid6','string', label='Maiden name'),
-                                            Field('dob_pid7','date', required=True, label='Date of birth'),
+                                            Field('dob_pid7','date', label='Date of birth'),
                                             Field('birth_town_pid23', 'string', label='Town of birth'),
                                             Field('birth_country_pid23', 'string', label='Country of birth'),
                                             Field('gender_pid8', 'reference gender', label='Gender'),
@@ -74,7 +74,7 @@ auth.settings.extra_fields['auth_user']= [  Field('maiden_name_pid6','string', l
 auth.define_tables(username=False, signature=False)
 
 db.auth_user.gender_pid8.requires = IS_IN_DB(db,db.gender.id,'%(sex)s')
-
+db.auth_user.dob_pid7.requires = IS_NOT_EMPTY()
 ## configure email
 mail = auth.settings.mailer
 mail.settings.server = 'logging' if request.is_local else myconf.take('smtp.server')

@@ -58,8 +58,20 @@ def call():
     return service()
 
 def home():
-    message = "Hello World"
-    return dict(message=message)
+    if (request.args(0) == None):
+        membership = '2'
+    else:
+        try:
+            check_group= db(db.auth_group.id == request.args(0)).isempty()
+        except ValueError:
+            membership = '2'
+        else:
+            if check_group is True:
+                membership = '2'
+            else:
+                membership = str(request.args(0))
+    group = (db(db.auth_group.id == membership).select().first()).role
+    return locals()
 
 @auth.requires_membership('IT')
 def manage():
@@ -165,14 +177,7 @@ def api_users():
             raise HTTP(400)
     return locals()
 
-def patients():
-    rows=db(db.auth_membership.group_id==2).select(db.auth_user.id, db.auth_user.first_name, db.auth_user.last_name, db.auth_user.dob_pid7, db.auth_user.gender_pid8,db.auth_user.birth_town_pid23, db.auth_user.birth_country_pid23, db.auth_user.idc_num, db.auth_user.ssn_pid19,
-        left=db.auth_membership.on(db.auth_user.id==db.auth_membership.user_id), distinct=True)
-    data = rows2json('patients',rows)
-    return dict(rows=rows, data = XML(data)) # XML to avoid escape characters
-
-# CRUD users
-
+# ****    "CRUD users" ******
 def update_user():
     record = db.auth_user(request.args(0)) or redirect(URL('patients'))
     form = SQLFORM(db.auth_user, record)
@@ -189,7 +194,7 @@ def create_user(): # first arg gives group_id
     if form.process(onvalidation=check_duplicate).accepted:
         response.flash = 'form accepted'
         db.auth_membership.insert(user_id=form.vars.id,group_id=group)
-        redirect(URL('patients'))
+        redirect(URL('home/'+str(group)))
     elif form.errors:
         response.flash = 'Form has errors'
     return dict(form=form)
@@ -202,15 +207,22 @@ def check_duplicate(form):
     dob = form.vars.dob_pid7
     check = db((db.auth_user.first_name==fname)&(db.auth_user.last_name==lname)&(db.auth_user.dob_pid7==dob)).isempty()
     if check is False: # if user with same first_name last_name dob exist, it is a duplicate
-        form.errors.first_name = form.errors.last_name = form.errors.dob_pid7 = "Patient already in database"
+        form.errors.first_name = form.errors.last_name = form.errors.dob_pid7 = "Duplicate exist in database"
+
+# ****  "END CRUD users" ******
 
 def test():
-    fname = 'Mamisoa'
-    lname = 'Andriantafika'
-    dob = '1978-01-02'
-    check = db((db.auth_user.first_name==fname)&(db.auth_user.last_name==lname)&(db.auth_user.dob_pid7==dob)).isempty()
-    if check is True :
-        flag = 'unique'
+    if (request.args(0) == None):
+        membership = 2
     else:
-        flag = 'duplicate'
+        try:
+            check_group= db(db.auth_group.id == request.args(0)).isempty()
+        except ValueError:
+            membership = 2
+        else:
+            if check_group is True:
+                membership = 2
+            else:
+                membership = request.args(0)
+    group = (db(db.auth_group.id == membership).select().first()).role
     return locals()
