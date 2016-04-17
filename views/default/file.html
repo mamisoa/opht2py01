@@ -98,21 +98,11 @@
 <p>{{=juser_addresses}}</p>
 
 <script>
-var user = {{=juser_details}};
+var user_id = {{=user_id}};
 var user_a = {{=juser_addresses}};
 $(function () {
-    fill_user('#first_name',user.details[0].first_name);
-    fill_user('#last_name',user.details[0].last_name);
-    fill_user('#maiden_name_pid6',user.details[0].maiden_name_pid6);
-    fill_user('#gender_pid8',user.details[0].gender_pid8);
-    fill_user('#dob_pid7',user.details[0].dob_pid7);
-    fill_user('#email',user.details[0].email);
-    fill_user('#birth_town_pid23',user.details[0].birth_town_pid23);
-    fill_user('#birth_country_pid23',user.details[0].birth_country_pid23);
-    fill_user('#idc_num',user.details[0].idc_num);
-    fill_user('#ssn_pid19',user.details[0].ssn_pid19);
     li_address(user_a.addresses);
-    // $('[data-toggle="tooltip"]').tooltip();
+    main_details(user_id);
     $("body").tooltip({ selector: '[data-toggle=tooltip]' });
 });
 
@@ -128,6 +118,34 @@ function fill_user(id,value) {
   }
   $(id).html(value);
 }
+
+function main_details(id) {
+  var API_URL = '{{=URL('default','api_users/user', scheme=True, host=True)}}/';
+  $.ajax({
+    url: API_URL + id+'.json',
+    type: 'GET',
+    dataType: 'json',
+    contentType: 'application/json',
+    success: function (data) {
+      user = data.content[0];
+      fill_user('#first_name',user.first_name);
+      fill_user('#last_name',user.last_name);
+      fill_user('#maiden_name_pid6',user.maiden_name_pid6);
+      fill_user('#gender_pid8',user.gender_pid8);
+      fill_user('#dob_pid7',user.dob_pid7);
+      fill_user('#email',user.email);
+      fill_user('#birth_town_pid23',user.birth_town_pid23);
+      fill_user('#birth_country_pid23',user.birth_country_pid23);
+      fill_user('#idc_num',user.idc_num);
+      fill_user('#ssn_pid19',user.ssn_pid19);
+      },
+    error: function () {
+      alert('User non found!');
+      }
+  });
+
+}
+
 
 function li_address (row) {
   var html = [];
@@ -182,12 +200,5 @@ function get_user_name (index, id, attribute) {
 
 }
 
-$('a').attr('href', function(i, href) {
-return '#' + href;
-});
-
-function test (id) {
-  return id+' hello';
-}
 
 </script>

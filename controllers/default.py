@@ -252,6 +252,7 @@ def file():
     response.subtitle = str(user_details[0].first_name)+' '+str(user_details[0].last_name)+' DN '+str(user_details[0].dob_pid7.strftime(str(T('%d/%m/%Y'))))
     juser_details = XML(rows2json ('details', user_details))
     juser_addresses = XML(rows2json('addresses', user_addresses))
+    user_id = request.args(0)
     return locals()
 
 def get_user_name(id):
