@@ -6,6 +6,9 @@
        }
        .edit_address {
        }
+       .tooltip {
+         font-size: 8px;
+       }
 </style>
 {{end}}
 {{block header}}
@@ -21,24 +24,24 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-md-4">
-      <div class="panel panel-default">
+      <div class="panel panel-primary">
         <div class="panel-heading">
           <button type="button" class="btn btn-default btn-xs pull-right" id="edit_main" name="button">Edit</button>
-          <h4 class="panel-title">Main details</h4>
+          <h4 class="panel-title">Main details</h4> <span class="alert_main"></span>
         </div>
         <div class="panel-body">
           <ul class="list-group">
             <ul class="list-group">
-              <li class="list-group-item" id="first_name"><strong>First Name:</strong> <span class="pull-right">{{=user_details[0].first_name}}<span></li>
-              <li class="list-group-item" id="last_name"><strong>Last Name:</strong> <span class="pull-right">{{=user_details[0].last_name}}<span></li>
-              <li class="list-group-item" id="maiden_name_pid6"><strong>Maiden name:</strong> <span class="pull-right">{{=user_details[0].maiden_name_pid6}}<span></li>
-              <li class="list-group-item" id="gender_pid8"><strong>Gender:</strong> <span class="pull-right">{{=gender[0].sex}}<span></li>
-              <li class="list-group-item" id="dob_pid7"><strong>Date of birth:</strong> <span class="pull-right">{{=user_details[0].dob_pid7.strftime(str(T('%d/%m/%Y')))}}<span></li>
-              <li class="list-group-item" id="email"><strong>Email:</strong> <span class="pull-right">{{=user_details[0].email}}</li>
-              <li class="list-group-item" id="birth_town_pid23"><strong>Town of birth:</strong> <span class="pull-right">{{=user_details[0].birth_town_pid23}}<span></li>
-              <li class="list-group-item" id="birth_country_pid23"><strong>Country of birth:</strong> <span class="pull-right">{{=user_details[0].birth_country_pid23}}<span></li>
-              <li class="list-group-item" id="idc_num"><strong>ID card number:</strong> <span class="pull-right">{{=user_details[0].idc_num}}<span></li>
-              <li class="list-group-item" id="ssn_pid19"><strong>Social security number:</strong> <span class="pull-right">{{=user_details[0].ssn_pid19}}<span></li>
+              <li class="list-group-item"><strong>First Name:</strong> <span class="pull-right" id="first_name"><span></li>
+              <li class="list-group-item"><strong>Last Name:</strong> <span class="pull-right" id="last_name"><span></li>
+              <li class="list-group-item"><strong>Maiden name:</strong> <span class="pull-right"  id="maiden_name_pid6"><span></li>
+              <li class="list-group-item"><strong>Gender:</strong> <span class="pull-right" id="gender_pid8"><span></li>
+              <li class="list-group-item"><strong>Date of birth:</strong> <span class="pull-right"  id="dob_pid7"><span></li>
+              <li class="list-group-item"><strong>Email:</strong> <span class="pull-right" id="email"></li>
+              <li class="list-group-item"><strong>Town of birth:</strong> <span class="pull-right"  id="birth_town_pid23"><span></li>
+              <li class="list-group-item"><strong>Country of birth:</strong> <span class="pull-right"  id="birth_country_pid23"><span></li>
+              <li class="list-group-item"><strong>ID card number:</strong> <span class="pull-right" id="idc_num"><span></li>
+              <li class="list-group-item"><strong>Social security number:</strong> <span class="pull-right"  id="ssn_pid19"><span></li>
             </ul>
           </ul>
         </div>
@@ -48,27 +51,14 @@
       </div>
     </div>
     <div class="col-md-4">
-      <div class="panel panel-default">
+      <div class="panel panel-info">
         <div class="panel-heading">
           <button type="button" class="btn btn-default btn-xs pull-right" name="button" id="new_address">New</button>
-          <h4 class="panel-title">adresses</h4>
+          <h4 class="panel-title">adresses</h4> <span class="alert_address"></span>
         </div>
         <div class="panel-body">
           <ol>
-            <ul class="list-group">
-              {{x=1
-                for row in user_addresses:}}
-              <li class="list-group-item clearfix">
-                <span>add by {{=row.created_by or ''}}  </span>
-                <span>{{=row.home_num_pid11_1 or ''}} </span><span>{{=row.box_num_pid11_2 or ''}} </span><span> {{=row.address1_pid11_3 or ''}} {{=row.address2_pid11_4 or ''}}</span></br>
-                <span>{{=row.zipcode_pid11_5 or ''}} </span><span> {{=row.town_pid11_6 or ''}}, </span><span>{{=row.country_pid11_7 or ''}} </span>
-                <button type="button" class="btn btn-default btn-xs edit_address pull-right" name="edit_address">Edit address {{=row.address_rank or ''}}</button>
-                {{if x==1 : hide_up = "visibility: hidden"
-                  else: hide_up=""}}
-                <span ><button type="button" class="btn btn-default btn-xs edit_address {{=hide_up}} pull-right" name="up_address_rank">UP</button></span>
-              </li>
-              {{x+=1}}
-              {{pass}}
+            <ul class="list-group" id="addresses_list">
             </ul>
           </ol>
         </div>
@@ -81,8 +71,123 @@
   </div>
 </div>
 
+<div class="modal fade" id="" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id=""></h4>
+      </div>
+      <div class="modal-body">
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary"></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
 <p>{{=user_details}}</p>
 <p>{{=user_addresses}}</p>
 <p>{{=gender}}</p>
 <p>{{=juser_details}}</p>
 <p>{{=juser_addresses}}</p>
+
+<script>
+var user = {{=juser_details}};
+var user_a = {{=juser_addresses}};
+$(function () {
+    fill_user('#first_name',user.details[0].first_name);
+    fill_user('#last_name',user.details[0].last_name);
+    fill_user('#maiden_name_pid6',user.details[0].maiden_name_pid6);
+    fill_user('#gender_pid8',user.details[0].gender_pid8);
+    fill_user('#dob_pid7',user.details[0].dob_pid7);
+    fill_user('#email',user.details[0].email);
+    fill_user('#birth_town_pid23',user.details[0].birth_town_pid23);
+    fill_user('#birth_country_pid23',user.details[0].birth_country_pid23);
+    fill_user('#idc_num',user.details[0].idc_num);
+    fill_user('#ssn_pid19',user.details[0].ssn_pid19);
+    li_address(user_a.addresses);
+    // $('[data-toggle="tooltip"]').tooltip();
+    $("body").tooltip({ selector: '[data-toggle=tooltip]' });
+});
+
+function fill_user(id,value) {
+  if (value == null) {
+    value = 'n/a';
+  } else if (id == '#gender_pid8') {
+    if (value == 1) {
+      value = 'Male';
+    } else if (value == 2){
+      value = 'Female';
+    } else { value = 'Undetermined'};
+  }
+  $(id).html(value);
+}
+
+function li_address (row) {
+  var html = [];
+  $.each(row, function (key, value) {
+    html.push('<li id="li_'+key+'" class="list-group-item clearfix" data-toggle="tooltip" data-placement="top" data-createdby="'+test_null(row[key]['created_by'],'unknown')+ '" data-modifiedby="'+test_null(row[key]['modified_by'],'unknown')+ '" data-modifiedon="'+ test_null(row[key]['modified_on'],'unknown time')+'" title="">'); // tooltip
+    html.push('<span>'+test_null(row[key]['home_num_pid11_1'],'')+' </span><span>'+ test_null(row[key]['box_num_pid11_2'],'') +' </span><span>'+ test_null(row[key]['address1_pid11_3'],'') + ' '+ test_null(row[key]['address2_pid11_4'],'') +'</span></br>');
+    html.push('<span> '+ test_null(row[key]['zipcode_pid11_5'],'') + '</span><span> ' + test_null(row[key]['town_pid11_6'],'') + ' </span><span>' + test_null(row[key]['country_pid11_7'],'')+ '</span></li>');
+    get_user_name(test_null(row[key]['created_by'],'0'),key,'data-createdby');
+    get_user_name(test_null(row[key]['modified_by'],'0'),key,'data-modifiedby');
+  });
+  $('#addresses_list').html(html.join(''));
+}
+
+function test_null(value, ifnull) {
+  if (value == null) {
+    value = ifnull;
+    return value;
+  } else { return value; }
+}
+
+function get_user_name (index, id, attribute) {
+  var API_URL = '{{=URL('default','api_users/user', scheme=True, host=True)}}/';
+  if (index == 0) { $('li#li_'+id).attr(attribute,'unknown id');}
+  else {
+    $.ajax({
+      url: API_URL+ index,
+      type: 'GET',
+      dataType: 'json',
+      contentType: 'application/json',
+      success: function (data) {
+        if (attribute == 'data-createdby') {
+          text = 'created by ';
+        } else {
+          text = 'modified by ';
+        };
+        $('li#li_'+id).attr(attribute,data.content[0].first_name + ' '+ data.content[0].last_name);
+        $('li#li_'+id).attr('title', function(i,title) {
+          return title + text +data.content[0].first_name + ' '+ data.content[0].last_name+' ';
+        });
+        test_mod = $('li#li_'+id).attr('title');
+        if (test_mod.indexOf('modified') > -1) {
+              $('li#li_'+id).attr('title', function(i,title) {
+              return title+' '+$('li#li_'+id).attr('data-modifiedon');
+            });
+        };
+        },
+      error: function () {
+        $('li#li_'+id).attr(attribute,'unknown get');
+        }
+    });
+  }
+
+}
+
+$('a').attr('href', function(i, href) {
+return '#' + href;
+});
+
+function test (id) {
+  return id+' hello';
+}
+
+</script>

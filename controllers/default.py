@@ -81,12 +81,13 @@ def manage():
 def rows2json (tablename,rows):
     import datetime
     import json
-    date_handler = lambda obj: (
-        obj.isoformat()
-        if isinstance(obj, datetime.datetime)
-        or isinstance(obj, datetime.date)
-        else None
-        )
+    def date_handler(obj):
+        if isinstance(obj, datetime.datetime):
+            return obj.strftime(str(T('%d/%m/%Y %T')))
+        elif isinstance(obj, datetime.date):
+            return obj.strftime(str(T('%d/%m/%Y')))
+        else:
+            return False
     rows = rows.as_list()
     concat = '{ "'+tablename+'": ['
     for row in rows:
@@ -243,29 +244,43 @@ def file():
         user_addresses = db(db.address.id_auth_user== request.args(0)).select(db.address.id,
             db.address.home_num_pid11_1,db.address.box_num_pid11_2, db.address.address1_pid11_3, db.address.address2_pid11_4,
             db.address.zipcode_pid11_5, db.address.town_pid11_6, db.address.country_pid11_7,db.address.address_rank,
-            db.address.created_by,
+            db.address.created_by, db.address.modified_by, db.address.modified_on,
             orderby=db.address.address_rank)
     except ValueError: redirect(URL('home'))
     gender = db(db.gender._id == user_details[0].gender_pid8).select(db.gender.sex)
     response.title = 'ID file n°'+ str(user_details[0].id)
     response.subtitle = str(user_details[0].first_name)+' '+str(user_details[0].last_name)+' DN '+str(user_details[0].dob_pid7.strftime(str(T('%d/%m/%Y'))))
-    juser_details = rows2json ('details', user_details)
-    juser_addresses = rows2json('adresses', user_addresses)
+    juser_details = XML(rows2json ('details', user_details))
+    juser_addresses = XML(rows2json('addresses', user_addresses))
     return locals()
 
+def get_user_name(id):
+    try:
+        username = db(db.auth_user == id).select(db.auth_user.first_name, db.auth_user.last_name)
+    except ValueError: return 'unknown'
+    firstname= username[0].first_name
+    lastname= username[0].last_name
+    return dict(lastname=lastname,firstname=firstname)
 
 def test():
-    if (request.args(0) == None):
-        membership = 2
-    else:
+    import datetime
+    try:
+        user_addresses = db(db.address.id_auth_user== request.args(0)).select(db.address.id,
+            db.address.home_num_pid11_1,db.address.box_num_pid11_2, db.address.address1_pid11_3, db.address.address2_pid11_4,
+            db.address.zipcode_pid11_5, db.address.town_pid11_6, db.address.country_pid11_7,db.address.address_rank,
+            db.address.created_by, db.address.modified_by, db.address.modified_on,
+            orderby=db.address.address_rank)
+    except ValueError: redirect(URL('home'))
+    for row in user_addresses:
         try:
-            check_group= db(db.auth_group.id == request.args(0)).isempty()
+            row.created_by = str(row.created_by)
+            row.created_by = represent_auth(row.created_by,0)
         except ValueError:
-            membership = 2
-        else:
-            if check_group is True:
-                membership = 2
-            else:
-                membership = request.args(0)
-    group = (db(db.auth_group.id == membership).select().first()).role
+            row.created_by = 'hello'
+        try:
+            row.modified_by = str(row.modified_by)
+            row.modified_by = represent_auth(row.modified_by,0)
+        except ValueError:
+            row.modified_by = 'hello'
+    juser_addresses = XML(rows2json('addresses', user_addresses))
     return locals()

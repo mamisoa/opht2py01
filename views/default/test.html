@@ -19,5 +19,41 @@
        }
 </style>
 {{end}}
-<p>Membership number: {{=membership}}</p>
-<p>Group name: {{=group}}</p>
+
+<ul id="addresses_list">
+</ul>
+
+
+{{=juser_addresses}}
+
+<script type="text/javascript">
+
+var user_a = {{=juser_addresses}};
+
+$(function () {
+  li_address(user_a.addresses);
+});
+
+
+function li_address (row) {
+  var html = [];
+  $.each(row, function (key, value) {
+    html.push('<li class="list-group-item clearfix" data-toggle="tooltip" data-placement="top" id="li_"'+ key + '" title="'+ test_null(row[key]['modified_on'])+'">'); // tooltip
+    html.push('<span>'+test_null(row[key]['home_num_pid11_1'])+' </span><span>'+ test_null(row[key]['box_num_pid11_2']) +' </span><span>'+ test_null(row[key]['address1_pid11_3']) + ' '+ test_null(row[key]['address2_pid11_4']) +'</span></br>');
+    html.push('<span> '+ test_null(row[key]['zipcode_pid11_5']) + '</span><span> ' + test_null(row[key]['town_pid11_6']) + ' </span><span>' + test_null(row[key]['country_pid11_7'])+ '</span></li>');
+    });
+  $('#addresses_list').html(html.join(''));
+}
+
+function test_null(value) {
+  if (value == null) {
+    value = 'CHECKED';
+    return value;
+  } else { return value; }
+}
+
+function test (id) {
+  return id+' hello';
+}
+
+</script>

@@ -71,6 +71,13 @@ auth.settings.extra_fields['auth_user']= [  Field('maiden_name_pid6','string', l
                                             Field('idc_num', 'string', label='ID card number'),
                                             Field('ssn_pid19', 'string', label='SSN'), auth.signature]
 
+def represent_auth(auth_ref, row):
+    user = db(db.auth_user.id == auth_ref).select(db.auth_user.first_name, db.auth_user.last_name).first()
+    return ('%(first_name)s %(last_name)s' % user) if user else '<system>'  # else assume it was the scheduler.
+
+auth.signature.created_by.represent = auth.signature.modified_by.represent = represent_auth
+
+
 auth.define_tables(username=False, signature=False)
 
 db.auth_user.gender_pid8.requires = IS_IN_DB(db,db.gender.id,'%(sex)s')
