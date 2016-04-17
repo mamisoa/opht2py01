@@ -75,7 +75,7 @@ def home():
 
 @auth.requires_membership('IT')
 def manage():
-    grid = SQLFORM.smartgrid(db.auth_user,linked_tables=['auth_membership'])
+    grid = SQLFORM.smartgrid(db.auth_user,linked_tables=['auth_membership','address'])
     return locals()
 
 def rows2json (tablename,rows):
@@ -99,22 +99,43 @@ def rows2json (tablename,rows):
 @request.restful()
 def api():
     response.view = 'generic.json'
-    def GET(tablename,*args,**vars): # GET VALUES
+    def GET(tablename,*args): # GET VALUES
+        tables = {'user': 'auth_user', 'membership': 'auth_membership'}
         if tablename =='': raise HTTP(400)
-        if request.args(1) == None: # use request.arg(1) to get the arg after tablename;
+        if tablename in tables:
+            if request.args(1) == None: # use request.arg(1) to get the arg after tablename;
                                     # request.arg(1) is None if empty, don't use args[1] coz raise exeption error
-                if request.vars.search == None:
-                    rows =  db(db[tablename]).select()
-                    data = rows2json(tablename,rows)
+                if tablename == 'user':
+                    rows =  db(db.auth_user).select(db.auth_user.id,
+                        db.auth_user.first_name, db.auth_user.last_name, db.auth_user.dob_pid7, db.auth_user.gender_pid8,
+                        db.auth_user.birth_town_pid23, db.auth_user.birth_country_pid23,
+                        db.auth_user.idc_num, db.auth_user.ssn_pid19)
+                    data = rows2json('all users',rows)
                     return  data
-                else :
-                    rows = db(db.test.testname.contains(vars['search'])).select()
-                    data = rows2json(tablename+' search',rows)
+                else : raise HTTP(400)
+            else:
+                table_id = request.args(1)
+                if tablename == 'user':
+                    try:
+                        rows =  db(db.auth_user._id==table_id).select(db.auth_user.id,
+                            db.auth_user.first_name, db.auth_user.last_name, db.auth_user.dob_pid7, db.auth_user.gender_pid8,
+                            db.auth_user.birth_town_pid23, db.auth_user.birth_country_pid23,
+                            db.auth_user.idc_num, db.auth_user.ssn_pid19)
+                    except ValueError: raise HTTP(400)
+                    data = rows2json('selected user',rows)
                     return data
-        table_id = request.args[1]
-        rows =  db(db[tablename]._id==table_id).select()
-        data = rows2json(tablename+" hello",rows)
-        return data
+                elif tablename == 'membership':
+                    try:
+                        rows=db(db.auth_membership.group_id==str(table_id)).select(db.auth_user.id,
+                            db.auth_user.first_name, db.auth_user.last_name, db.auth_user.dob_pid7, db.auth_user.gender_pid8,
+                            db.auth_user.birth_town_pid23, db.auth_user.birth_country_pid23,
+                            db.auth_user.idc_num, db.auth_user.ssn_pid19,
+                            left=db.auth_membership.on(db.auth_user.id==db.auth_membership.user_id), distinct=True)
+                    except ValueError: raise HTTP(400)
+                    data = rows2json('selected membership',rows)
+                    return data
+                else: raise HTTP(400)
+        else: raise HTTP(400)
     def DELETE(tablename,record_id):
         if not tablename=='test': raise HTTP(400)
         db(db.test.id == record_id).delete()
@@ -179,7 +200,7 @@ def api_users():
 
 # ****    "CRUD users" ******
 def update_user():
-    record = db.auth_user(request.args(0)) or redirect(URL('patients'))
+    record = db.auth_user(request.args(0)) or redirect(URL('home'))
     form = SQLFORM(db.auth_user, record)
     if form.process().accepted:
        response.flash = 'form accepted'
@@ -189,7 +210,7 @@ def update_user():
     return dict(form=form)
 
 def create_user(): # first arg gives group_id
-    group = request.args(0) or redirect(URL('patients'))
+    group = request.args(0) or redirect(URL('home'))
     form = SQLFORM(db.auth_user)
     if form.process(onvalidation=check_duplicate).accepted:
         response.flash = 'form accepted'
@@ -210,6 +231,28 @@ def check_duplicate(form):
         form.errors.first_name = form.errors.last_name = form.errors.dob_pid7 = "Duplicate exist in database"
 
 # ****  "END CRUD users" ******
+
+def file():
+    import datetime
+    try:
+        user_details = db(db.auth_user._id == request.args(0)).select(db.auth_user.id,
+            db.auth_user.first_name, db.auth_user.last_name, db.auth_user.maiden_name_pid6,
+            db.auth_user.dob_pid7, db.auth_user.gender_pid8,
+            db.auth_user.birth_town_pid23, db.auth_user.birth_country_pid23,
+            db.auth_user.email, db.auth_user.idc_num, db.auth_user.ssn_pid19)  or redirect(URL('home'))
+        user_addresses = db(db.address.id_auth_user== request.args(0)).select(db.address.id,
+            db.address.home_num_pid11_1,db.address.box_num_pid11_2, db.address.address1_pid11_3, db.address.address2_pid11_4,
+            db.address.zipcode_pid11_5, db.address.town_pid11_6, db.address.country_pid11_7,db.address.address_rank,
+            db.address.created_by,
+            orderby=db.address.address_rank)
+    except ValueError: redirect(URL('home'))
+    gender = db(db.gender._id == user_details[0].gender_pid8).select(db.gender.sex)
+    response.title = 'ID file n°'+ str(user_details[0].id)
+    response.subtitle = str(user_details[0].first_name)+' '+str(user_details[0].last_name)+' DN '+str(user_details[0].dob_pid7.strftime(str(T('%d/%m/%Y'))))
+    juser_details = rows2json ('details', user_details)
+    juser_addresses = rows2json('adresses', user_addresses)
+    return locals()
+
 
 def test():
     if (request.args(0) == None):

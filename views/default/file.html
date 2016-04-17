@@ -1,0 +1,88 @@
+{{extend 'layout.html'}}
+{{block head}}
+<style>
+       .btn {
+         margin: 2px ;
+       }
+       .edit_address {
+       }
+</style>
+{{end}}
+{{block header}}
+    <header class="container-fluid ">
+      <div class="jumbotron text-center">
+        {{if response.title:}}
+        <h2>{{=response.title}}</h2>
+        <h3><strong>{{=response.subtitle or ''}}</strong></h3>
+        {{pass}}
+      </div>
+    </header>
+{{end}}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-4">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <button type="button" class="btn btn-default btn-xs pull-right" id="edit_main" name="button">Edit</button>
+          <h4 class="panel-title">Main details</h4>
+        </div>
+        <div class="panel-body">
+          <ul class="list-group">
+            <ul class="list-group">
+              <li class="list-group-item" id="first_name"><strong>First Name:</strong> <span class="pull-right">{{=user_details[0].first_name}}<span></li>
+              <li class="list-group-item" id="last_name"><strong>Last Name:</strong> <span class="pull-right">{{=user_details[0].last_name}}<span></li>
+              <li class="list-group-item" id="maiden_name_pid6"><strong>Maiden name:</strong> <span class="pull-right">{{=user_details[0].maiden_name_pid6}}<span></li>
+              <li class="list-group-item" id="gender_pid8"><strong>Gender:</strong> <span class="pull-right">{{=gender[0].sex}}<span></li>
+              <li class="list-group-item" id="dob_pid7"><strong>Date of birth:</strong> <span class="pull-right">{{=user_details[0].dob_pid7.strftime(str(T('%d/%m/%Y')))}}<span></li>
+              <li class="list-group-item" id="email"><strong>Email:</strong> <span class="pull-right">{{=user_details[0].email}}</li>
+              <li class="list-group-item" id="birth_town_pid23"><strong>Town of birth:</strong> <span class="pull-right">{{=user_details[0].birth_town_pid23}}<span></li>
+              <li class="list-group-item" id="birth_country_pid23"><strong>Country of birth:</strong> <span class="pull-right">{{=user_details[0].birth_country_pid23}}<span></li>
+              <li class="list-group-item" id="idc_num"><strong>ID card number:</strong> <span class="pull-right">{{=user_details[0].idc_num}}<span></li>
+              <li class="list-group-item" id="ssn_pid19"><strong>Social security number:</strong> <span class="pull-right">{{=user_details[0].ssn_pid19}}<span></li>
+            </ul>
+          </ul>
+        </div>
+        <div class="panel-footer">
+
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <button type="button" class="btn btn-default btn-xs pull-right" name="button" id="new_address">New</button>
+          <h4 class="panel-title">adresses</h4>
+        </div>
+        <div class="panel-body">
+          <ol>
+            <ul class="list-group">
+              {{x=1
+                for row in user_addresses:}}
+              <li class="list-group-item clearfix">
+                <span>add by {{=row.created_by or ''}}  </span>
+                <span>{{=row.home_num_pid11_1 or ''}} </span><span>{{=row.box_num_pid11_2 or ''}} </span><span> {{=row.address1_pid11_3 or ''}} {{=row.address2_pid11_4 or ''}}</span></br>
+                <span>{{=row.zipcode_pid11_5 or ''}} </span><span> {{=row.town_pid11_6 or ''}}, </span><span>{{=row.country_pid11_7 or ''}} </span>
+                <button type="button" class="btn btn-default btn-xs edit_address pull-right" name="edit_address">Edit address {{=row.address_rank or ''}}</button>
+                {{if x==1 : hide_up = "visibility: hidden"
+                  else: hide_up=""}}
+                <span ><button type="button" class="btn btn-default btn-xs edit_address {{=hide_up}} pull-right" name="up_address_rank">UP</button></span>
+              </li>
+              {{x+=1}}
+              {{pass}}
+            </ul>
+          </ol>
+        </div>
+        <div class="panel-footer">
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<p>{{=user_details}}</p>
+<p>{{=user_addresses}}</p>
+<p>{{=gender}}</p>
+<p>{{=juser_details}}</p>
+<p>{{=juser_addresses}}</p>
