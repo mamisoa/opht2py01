@@ -14,10 +14,8 @@
 {{block header}}
     <header class="container-fluid ">
       <div class="jumbotron text-center">
-        {{if response.title:}}
-        <h2>{{=response.title}}</h2>
-        <h3><strong>{{=response.subtitle or ''}}</strong></h3>
-        {{pass}}
+        <h2><span class="last_name"></span> <span class="first_name"></span></h2>
+        <h3><strong><span class="dob_pid7"></span></strong></h3>
       </div>
     </header>
 {{end}}
@@ -32,11 +30,11 @@
         <div class="panel-body">
           <ul class="list-group">
             <ul class="list-group">
-              <li class="list-group-item"><strong>First Name:</strong> <span class="pull-right" id="first_name"><span></li>
-              <li class="list-group-item"><strong>Last Name:</strong> <span class="pull-right" id="last_name"><span></li>
+              <li class="list-group-item"><strong>First Name:</strong> <span class="pull-right first_name"><span></li>
+              <li class="list-group-item"><strong>Last Name:</strong> <span class="pull-right last_name"><span></li>
               <li class="list-group-item"><strong>Maiden name:</strong> <span class="pull-right"  id="maiden_name_pid6"><span></li>
               <li class="list-group-item"><strong>Gender:</strong> <span class="pull-right" id="gender_pid8"><span></li>
-              <li class="list-group-item"><strong>Date of birth:</strong> <span class="pull-right"  id="dob_pid7"><span></li>
+              <li class="list-group-item"><strong>Date of birth:</strong> <span class="pull-right dob_pid7"><span></li>
               <li class="list-group-item"><strong>Email:</strong> <span class="pull-right" id="email"></li>
               <li class="list-group-item"><strong>Town of birth:</strong> <span class="pull-right"  id="birth_town_pid23"><span></li>
               <li class="list-group-item"><strong>Country of birth:</strong> <span class="pull-right"  id="birth_country_pid23"><span></li>
@@ -71,6 +69,9 @@
   </div>
 </div>
 
+<div id="addresses"></div>
+
+
 <div class="modal fade" id="" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -90,19 +91,12 @@
 </div>
 
 
-
-<p>{{=user_details}}</p>
-<p>{{=user_addresses}}</p>
-<p>{{=gender}}</p>
-<p>{{=juser_details}}</p>
-<p>{{=juser_addresses}}</p>
-
 <script>
 var user_id = {{=user_id}};
-var user_a = {{=juser_addresses}};
 $(function () {
-    li_address(user_a.addresses);
+//    li_address(user_a.addresses);
     main_details(user_id);
+    addresses_details(user_id);
     $("body").tooltip({ selector: '[data-toggle=tooltip]' });
 });
 
@@ -115,8 +109,16 @@ function fill_user(id,value) {
     } else if (value == 2){
       value = 'Female';
     } else { value = 'Undetermined'};
+  } else if ( id == '.dob_pid7') {
+      value = reverseDate(value);
   }
   $(id).html(value);
+}
+
+function reverseDate(dateStr) {
+    var parts = dateStr.split("-");
+    date_fr = parts.reverse();
+    return date_fr.join('/');
 }
 
 function main_details(id) {
@@ -128,11 +130,11 @@ function main_details(id) {
     contentType: 'application/json',
     success: function (data) {
       user = data.content[0];
-      fill_user('#first_name',user.first_name);
-      fill_user('#last_name',user.last_name);
+      fill_user('.first_name',user.first_name);
+      fill_user('.last_name',user.last_name);
       fill_user('#maiden_name_pid6',user.maiden_name_pid6);
       fill_user('#gender_pid8',user.gender_pid8);
-      fill_user('#dob_pid7',user.dob_pid7);
+      fill_user('.dob_pid7',user.dob_pid7);
       fill_user('#email',user.email);
       fill_user('#birth_town_pid23',user.birth_town_pid23);
       fill_user('#birth_country_pid23',user.birth_country_pid23);
@@ -140,10 +142,27 @@ function main_details(id) {
       fill_user('#ssn_pid19',user.ssn_pid19);
       },
     error: function () {
-      alert('User non found!');
+      alert('User not found!');
       }
   });
+}
 
+function addresses_details(id) {
+    var API_URL = '{{=URL('default','api_users/address', scheme=True, host=True)}}/';
+    $.ajax({
+      url: API_URL + id+'.json',
+      type: 'GET',
+      dataType: 'json',
+      contentType: 'application/json',
+      success: function (data) {
+        addresses = data.content;
+        li_address(addresses);
+        $('#addresses').text(addresses);
+        },
+      error: function () {
+        alert('Address not found!');
+        }
+    });
 }
 
 
@@ -188,7 +207,7 @@ function get_user_name (index, id, attribute) {
         test_mod = $('li#li_'+id).attr('title');
         if (test_mod.indexOf('modified') > -1) {
               $('li#li_'+id).attr('title', function(i,title) {
-              return title+' '+$('li#li_'+id).attr('data-modifiedon');
+              return title+' '+reverseDate($('li#li_'+id).attr('data-modifiedon'));
             });
         };
         },

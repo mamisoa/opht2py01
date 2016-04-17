@@ -162,7 +162,9 @@ def api_users():
             "/user/{auth_user.id}/:field",
             "/membership[auth_membership]",
             "/membership/{auth_membership.group_id}/user[auth_user.id]",  # show user with selected membership
-            "/membership/{auth_membership.group_id}/user[auth_user.id]/:field"
+            "/membership/{auth_membership.group_id}/user[auth_user.id]/:field",
+            "/address[address]",
+            "/address/{address.id_auth_user}"
             ]
         parser = db.parse_as_rest(patterns, args, vars)
         data = parser.response
@@ -234,25 +236,7 @@ def check_duplicate(form):
 # ****  "END CRUD users" ******
 
 def file():
-    import datetime
-    try:
-        user_details = db(db.auth_user._id == request.args(0)).select(db.auth_user.id,
-            db.auth_user.first_name, db.auth_user.last_name, db.auth_user.maiden_name_pid6,
-            db.auth_user.dob_pid7, db.auth_user.gender_pid8,
-            db.auth_user.birth_town_pid23, db.auth_user.birth_country_pid23,
-            db.auth_user.email, db.auth_user.idc_num, db.auth_user.ssn_pid19)  or redirect(URL('home'))
-        user_addresses = db(db.address.id_auth_user== request.args(0)).select(db.address.id,
-            db.address.home_num_pid11_1,db.address.box_num_pid11_2, db.address.address1_pid11_3, db.address.address2_pid11_4,
-            db.address.zipcode_pid11_5, db.address.town_pid11_6, db.address.country_pid11_7,db.address.address_rank,
-            db.address.created_by, db.address.modified_by, db.address.modified_on,
-            orderby=db.address.address_rank)
-    except ValueError: redirect(URL('home'))
-    gender = db(db.gender._id == user_details[0].gender_pid8).select(db.gender.sex)
-    response.title = 'ID file n°'+ str(user_details[0].id)
-    response.subtitle = str(user_details[0].first_name)+' '+str(user_details[0].last_name)+' DN '+str(user_details[0].dob_pid7.strftime(str(T('%d/%m/%Y'))))
-    juser_details = XML(rows2json ('details', user_details))
-    juser_addresses = XML(rows2json('addresses', user_addresses))
-    user_id = request.args(0)
+    user_id = request.args(0) or redirect(URL('home'))
     return locals()
 
 def get_user_name(id):
