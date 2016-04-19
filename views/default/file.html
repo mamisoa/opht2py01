@@ -1,5 +1,9 @@
 {{extend 'layout.html'}}
 {{block head}}
+<script src="{{=URL('static','js/validor.js')}}"></script>
+<script src="{{=URL('static','js/bootstrap-datepicker.js')}}"></script>
+<link rel="stylesheet" href="{{=URL('static','css/bootstrap-datepicker3.css')}}" />
+
 <style>
        .btn {
          margin: 2px ;
@@ -69,23 +73,62 @@
   </div>
 </div>
 
-<div id="addresses"></div>
 
 
-<div class="modal fade" id="" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title" id=""></h4>
-      </div>
-      <div class="modal-body">
-
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary"></button>
-      </div>
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title .text-center" id="">File ID n°<span class="user_id"></span></h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>First name:</label>
+            <input type="text" class="form-control" name="first_name" placeholder="First name">
+          </div>
+          <div class="form-group">
+            <label>Last name:</label>
+            <input type="text" class="form-control" name="last_name" placeholder="Last name">
+          </div>
+          <div class="form-group">
+            <label>Maiden name</label>
+            <input type="text" class="form-control" name="maiden_name" placeholder="Maiden name">
+          </div>
+          <div class="form-group">
+            <label class="radio-inline"><input type="radio" name="gender" value="1">Male</label>
+            <label class="radio-inline"><input type="radio" name="gender" value="2">Female</label>
+            <label class="radio-inline"><input type="radio" name="gender" value="2">Undetermined</label>
+          </div>
+          <div class="form-group">
+            <label>Date of birth:</label>
+            <input type="text" class="form-control" name="dob" placeholder="dob">
+          </div>
+          <div class="form-group">
+            <label>Email:</label>
+            <input type="text" class="form-control" name="email" placeholder="email">
+          </div>
+          <div class="form-group">
+            <label>Town of birth:</label>
+            <input type="text" class="form-control" name="birth_town" placeholder="Town of birth">
+          </div>
+          <div class="form-group">
+            <label>Country of birth:</label>
+            <input type="text" class="form-control" name="birth_country" placeholder="Country of birth">
+          </div>
+          <div class="form-group">
+            <label>ID card number:</label>
+            <input type="text" class="form-control" name="idc" placeholder="ID card number">
+          </div>
+          <div class="form-group">
+            <label>Social security number:</label>
+            <input type="text" class="form-control" name="ssn" placeholder="Social security number">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary submit">Submit</button>
+        </div>
     </div>
   </div>
 </div>
@@ -94,11 +137,18 @@
 <script>
 var user_id = {{=user_id}};
 $(function () {
-//    li_address(user_a.addresses);
-    main_details(user_id);
-    addresses_details(user_id);
-    $("body").tooltip({ selector: '[data-toggle=tooltip]' });
+  var  $modal = $('#modal').modal({show: false}),
+       $alert = $('.alert').hide();
+  main_details(user_id);
+  addresses_details(user_id);
+  $("body").tooltip({ selector: '[data-toggle=tooltip]' });
+  $('#edit_main').click(function () {
+    $modal.modal('show');
+   });
+
 });
+
+
 
 function fill_user(id,value) {
   if (value == null) {
@@ -130,6 +180,7 @@ function main_details(id) {
     contentType: 'application/json',
     success: function (data) {
       user = data.content[0];
+      fill_user('.user_id',user.id);
       fill_user('.first_name',user.first_name);
       fill_user('.last_name',user.last_name);
       fill_user('#maiden_name_pid6',user.maiden_name_pid6);

@@ -166,6 +166,8 @@ def api_users():
             "/address[address]",
             "/address/{address.id_auth_user}"
             ]
+        db.address.created_by.readable = db.address.modified_by.readable = db.address.created_on.readable = db.address.modified_on.readable = True
+        db.auth_user.created_by.readable = db.auth_user.modified_by.readable = db.auth_user.created_on.readable = db.auth_user.modified_on.readable = True
         parser = db.parse_as_rest(patterns, args, vars)
         data = parser.response
         if parser.status == 200:
@@ -237,6 +239,12 @@ def check_duplicate(form):
 
 def file():
     user_id = request.args(0) or redirect(URL('home'))
+    try:
+        if db(db.auth_user.id == user_id).count() == 0:
+            redirect(URL('home'))
+    except ValueError:
+        redirect(URL('home'))
+    main_form = SQLFORM(db.auth_user, user_id)
     return locals()
 
 def get_user_name(id):

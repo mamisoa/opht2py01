@@ -10,6 +10,7 @@ db.define_table('address',
     Field('address_rank','integer'),
     auth.signature)
 
+
 db.define_table('test',
     Field('testname','string'),
     Field('testvalue','string'))
