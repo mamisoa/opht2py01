@@ -247,6 +247,16 @@ def get_user_name(id):
     lastname= username[0].last_name
     return dict(lastname=lastname,firstname=firstname)
 
+def create_address ():
+    try:
+        user_id = request.args(0)
+        if db(db.auth_user.id == request.args(0)).count() == 0
+            redirect(URL('home'))
+    except ValueError:
+        redirect(URL('home'))
+        form = SQLFORM(db.address,user_id)
+    return locals()
+
 def test():
     import datetime
     try:
