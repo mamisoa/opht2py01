@@ -1,6 +1,6 @@
 {{extend 'layout.html'}}
 {{block head}}
-<script src="{{=URL('static','js/validor.js')}}"></script>
+<script src="{{=URL('static','js/validator.js')}}"></script>
 <script src="{{=URL('static','js/bootstrap-datepicker.js')}}"></script>
 <link rel="stylesheet" href="{{=URL('static','css/bootstrap-datepicker3.css')}}" />
 
@@ -36,14 +36,14 @@
             <ul class="list-group">
               <li class="list-group-item"><strong>First Name:</strong> <span class="pull-right first_name"><span></li>
               <li class="list-group-item"><strong>Last Name:</strong> <span class="pull-right last_name"><span></li>
-              <li class="list-group-item"><strong>Maiden name:</strong> <span class="pull-right"  id="maiden_name_pid6"><span></li>
-              <li class="list-group-item"><strong>Gender:</strong> <span class="pull-right" id="gender_pid8"><span></li>
+              <li class="list-group-item"><strong>Maiden name:</strong> <span class="pull-right maiden_name_pid6"><span></li>
+              <li class="list-group-item"><strong>Gender:</strong> <span class="pull-right gender_pid8"><span></li>
               <li class="list-group-item"><strong>Date of birth:</strong> <span class="pull-right dob_pid7"><span></li>
-              <li class="list-group-item"><strong>Email:</strong> <span class="pull-right" id="email"></li>
-              <li class="list-group-item"><strong>Town of birth:</strong> <span class="pull-right"  id="birth_town_pid23"><span></li>
-              <li class="list-group-item"><strong>Country of birth:</strong> <span class="pull-right"  id="birth_country_pid23"><span></li>
-              <li class="list-group-item"><strong>ID card number:</strong> <span class="pull-right" id="idc_num"><span></li>
-              <li class="list-group-item"><strong>Social security number:</strong> <span class="pull-right"  id="ssn_pid19"><span></li>
+              <li class="list-group-item"><strong>Email:</strong> <span class="pull-right email_user"></li>
+              <li class="list-group-item"><strong>Town of birth:</strong> <span class="pull-right birth_town_pid23"><span></li>
+              <li class="list-group-item"><strong>Country of birth:</strong> <span class="pull-right birth_country_pid23"><span></li>
+              <li class="list-group-item"><strong>ID card number:</strong> <span class="pull-right idc_num"><span></li>
+              <li class="list-group-item"><strong>Social security number:</strong> <span class="pull-right ssn_pid19"><span></li>
             </ul>
           </ul>
         </div>
@@ -78,6 +78,7 @@
 <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
+      <form id="edit_main_form" role="form" data-toggle="validator">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           <h4 class="modal-title .text-center" id="">File ID n°<span class="user_id"></span></h4>
@@ -85,11 +86,11 @@
         <div class="modal-body">
           <div class="form-group">
             <label>First name:</label>
-            <input type="text" class="form-control" name="first_name" placeholder="First name">
+            <input type="text" class="form-control first_name" name="first_name" placeholder="First name" value="">
           </div>
           <div class="form-group">
             <label>Last name:</label>
-            <input type="text" class="form-control" name="last_name" placeholder="Last name">
+            <input type="text" class="form-control last_name" name="last_name" placeholder="Last name">
           </div>
           <div class="form-group">
             <label>Maiden name</label>
@@ -105,8 +106,8 @@
             <input type="text" class="form-control" name="dob" placeholder="dob">
           </div>
           <div class="form-group">
-            <label>Email:</label>
-            <input type="text" class="form-control" name="email" placeholder="email">
+            <label for="inputEmail" class="control-label">Email:</label>
+            <input type="email" class="form-control" name="email" placeholder="email" id="inputEmail" data-error="Email address is invalid" required>
           </div>
           <div class="form-group">
             <label>Town of birth:</label>
@@ -127,8 +128,9 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary submit">Submit</button>
+          <button type="submit" class="btn btn-primary submit">Submit</button>
         </div>
+      </form>
     </div>
   </div>
 </div>
@@ -148,12 +150,10 @@ $(function () {
 
 });
 
-
-
-function fill_user(id,value) {
+function fill_user(id,value, panel) {
   if (value == null) {
     value = 'n/a';
-  } else if (id == '#gender_pid8') {
+  } else if (id == '.gender_pid8') {
     if (value == 1) {
       value = 'Male';
     } else if (value == 2){
@@ -162,7 +162,12 @@ function fill_user(id,value) {
   } else if ( id == '.dob_pid7') {
       value = reverseDate(value);
   }
-  $(id).html(value);
+  if (panel == 'details') {
+    $(id).html(value);
+  }
+  else if (panel == 'form') {
+    $(id).attr('value',value);
+  } else {};
 }
 
 function reverseDate(dateStr) {
@@ -180,17 +185,23 @@ function main_details(id) {
     contentType: 'application/json',
     success: function (data) {
       user = data.content[0];
-      fill_user('.user_id',user.id);
-      fill_user('.first_name',user.first_name);
-      fill_user('.last_name',user.last_name);
-      fill_user('#maiden_name_pid6',user.maiden_name_pid6);
-      fill_user('#gender_pid8',user.gender_pid8);
-      fill_user('.dob_pid7',user.dob_pid7);
-      fill_user('#email',user.email);
-      fill_user('#birth_town_pid23',user.birth_town_pid23);
-      fill_user('#birth_country_pid23',user.birth_country_pid23);
-      fill_user('#idc_num',user.idc_num);
-      fill_user('#ssn_pid19',user.ssn_pid19);
+      fill_user('.user_id',user.id,'details');
+      fill_user('.first_name',user.first_name,'details');
+      fill_user('#edit_main_form .first_name',user.first_name,'form');
+      fill_user('.last_name',user.last_name,'details');
+      fill_user('#edit_main_form .lastname_name',user.last_name,'form');
+      fill_user('.maiden_name_pid6',user.maiden_name_pid6,'details');
+      fill_user('#edit_main_form .maiden_name_pid6_name',user.maiden_name_pid6,'form');
+      fill_user('.gender_pid8',user.gender_pid8,'details');
+      fill_user('#edit_main_form .gender_pid8',user.gender_pid8,'form');
+      fill_user('.dob_pid7',user.dob_pid7,'details');
+      fill_user('#edit_main_form .maiden_name_pid6_name',user.dob_pid7,'form');
+      fill_user('.email_user',user.email,'details');
+      fill_user('#edit_main_form .email',user.email,'form');
+      fill_user('.birth_town_pid23',user.birth_town_pid23,'details');
+      fill_user('.birth_country_pid23',user.birth_country_pid23,'details');
+      fill_user('.idc_num',user.idc_num,'details');
+      fill_user('.ssn_pid19',user.ssn_pid19,'details');
       },
     error: function () {
       alert('User not found!');
@@ -258,7 +269,7 @@ function get_user_name (index, id, attribute) {
         test_mod = $('li#li_'+id).attr('title');
         if (test_mod.indexOf('modified') > -1) {
               $('li#li_'+id).attr('title', function(i,title) {
-              return title+' '+reverseDate($('li#li_'+id).attr('data-modifiedon'));
+              return title+' '+$('li#li_'+id).attr('data-modifiedon');
             });
         };
         },

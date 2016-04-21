@@ -240,7 +240,7 @@ def check_duplicate(form):
 def file():
     user_id = request.args(0) or redirect(URL('home'))
     try:
-        if db(db.auth_user.id == user_id).count() == 0:
+        if (db(db.auth_user.id == user_id).count() == 0):
             redirect(URL('home'))
     except ValueError:
         redirect(URL('home'))
@@ -258,7 +258,7 @@ def get_user_name(id):
 def create_address ():
     try:
         user_id = request.args(0)
-        if db(db.auth_user.id == request.args(0)).count() == 0
+        if (db(db.auth_user.id == request.args(0)).count() == 0):
             redirect(URL('home'))
     except ValueError:
         redirect(URL('home'))
