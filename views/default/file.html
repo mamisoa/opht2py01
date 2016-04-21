@@ -13,6 +13,9 @@
        .tooltip {
          font-size: 8px;
        }
+       .alert_main {
+        margin-left: 10px;
+       }
 </style>
 {{end}}
 {{block header}}
@@ -29,7 +32,7 @@
       <div class="panel panel-primary">
         <div class="panel-heading">
           <button type="button" class="btn btn-default btn-xs pull-right" id="edit_main" name="button">Edit</button>
-          <h4 class="panel-title">Main details<span class="alert_main"></h4> </span>
+          <h4 class="panel-title">Main details<span class="alert_main"></span></h4>
         </div>
         <div class="panel-body">
           <ul class="list-group">
@@ -159,6 +162,8 @@ $(function () {
         row[$(this).attr('name')] = $(this).val();
       });
       row['gender_pid8'] = $('input:radio[name=gender_pid8]').filter(':checked').val();
+      row['first_name'] = titleCase($('input[name=first_name]').val());
+      row['last_name'] = titleCase($('input[name=last_name]').val());
       var API_URL = '{{=URL('default','api_users/auth_user', scheme=True, host=True)}}/';
       $.ajax({
         url: API_URL+user_id,
@@ -185,7 +190,10 @@ function showAlert(title, type) {
     }, 5000);
 }
 
-});
+}); // doc ready
+
+function titleCase(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1); }
 
 function fill_user(key_val, panel) {
   for (key in key_val) {
