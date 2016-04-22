@@ -195,7 +195,7 @@ def api_users():
     def POST(tablename,**vars):
         if tablename == 'auth_user':
             ret = db.auth_user.validate_and_insert(**vars)
-            return 'Table: '+ tablename +' *** Added row id: '+ str(ret.id) + ' *** ' + 'Error code : ' + str(ret.errors) + ' *** \r\n'
+            return 'Table: '+ tablename +' *** Added row id('+ str(ret.id) + ') *** ' + 'Error code : ' + str(ret.errors) + ' *** \r\n'
         elif tablename == 'auth_membership':
             ret = db.auth_membership.validate_and_insert(**vars)
             return 'Table: '+ tablename +' *** Added row id: '+ str(ret.id) + ' *** ' + 'Error code : ' + str(ret.errors) + ' *** \r\n'

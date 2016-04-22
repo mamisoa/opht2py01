@@ -3,7 +3,7 @@
 <!-- bootstrap-table -->
 <link rel="stylesheet" href="{{=URL('static','css/bootstrap-table.css')}}" />
 <script src="{{=URL('static','js/bootstrap-table.js')}}"></script>
-<script src="{{=URL('static','js/locale/bootstrap-table-fr-BE.min.js')}}"></script>
+<script src="{{=URL('static','/locales/bootstrap-table-fr-BE.min.js')}}"></script>
 <!-- bootstrap-table EDITABLE extention-->
 <link rel="stylesheet" href="{{=URL('static','css/bootstrap-table.css')}}" />
 <script src="{{=URL('static','js/extensions/editable/bootstrap-table-editable.js')}}"></script>
@@ -63,47 +63,164 @@
   </div>
 </div>
 
+<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="new_patient" role="form" data-toggle="validator">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title .text-center" id="">New patient</span></h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group hidden">
+            <label>ID:</label>
+            <input type="text" class="form-control user_id" name="id" placeholder="ID" value="">
+          </div>
+          <div class="form-group">
+            <label>First name:</label>
+            <input type="text" class="form-control first_name" name="first_name" placeholder="First name" value="">
+          </div>
+          <div class="form-group">
+            <label>Last name:</label>
+            <input type="text" class="form-control last_name" name="last_name" placeholder="Last name">
+          </div>
+          <div class="form-group">
+            <label>Password:</label>
+            <input type="password" class="form-control last_name" name="password" placeholder="Password">
+          </div>
+          <div class="form-group">
+            <label>Maiden name</label>
+            <input type="text" class="form-control maiden_name_pid6" name="maiden_name_pid6" placeholder="Maiden name">
+          </div>
+          <div class="form-group">
+            <label class="radio-inline"><input type="radio" name="gender_pid8" value="1">Male</label>
+            <label class="radio-inline"><input type="radio" name="gender_pid8" value="2">Female</label>
+            <label class="radio-inline"><input type="radio" name="gender_pid8" value="3">Undetermined</label>
+          </div>
+          <div class="form-group">
+            <label>Date of birth:</label>
+            <input type="text" class="form-control dob_pid7" name="dob_pid7" placeholder="dob">
+          </div>
+          <div class="form-group">
+            <label for="inputEmail" class="control-label">Email:</label>
+            <input type="text" class="form-control email_user" name="email" placeholder="email" id="inputEmail" data-error="Email address is invalid" required>
+          </div>
+          <div class="form-group">
+            <label>Town of birth:</label>
+            <input type="text" class="form-control birth_town_pid23" name="birth_town_pid23" placeholder="Town of birth">
+          </div>
+          <div class="form-group">
+            <label>Country of birth:</label>
+            <input type="text" class="form-control birth_country_pid23" name="birth_country_pid23" placeholder="Country of birth">
+          </div>
+          <div class="form-group">
+            <label>ID card number:</label>
+            <input type="text" class="form-control idc_num" name="idc_num" placeholder="ID card number">
+          </div>
+          <div class="form-group">
+            <label>Social security number:</label>
+            <input type="text" class="form-control ssn_pid19" name="ssn_pid19" placeholder="Social security number">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary submit">Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
 <script type="text/javascript">
   var API_URL = '{{=URL('default','api_users/membership/'+membership+'/user', scheme=True, host=True)}}';
   var $table = $('#table').bootstrapTable({
         url: API_URL});
-  var $alert = $('.alerte').hide();
-  window.actionEvents = {
-    'click .update': function (e,value,row) {
-    location.href = '{{=URL('default','update_user', scheme=True, host=True)}}/'+row.id;
-    },
-    'click .remove': function (e, value, row) {
-        if (confirm('Are you sure to delete this item?')) {
-            $.ajax({
-                url: '{{=URL('default','api_users/auth_user', scheme=True, host=True)}}/'+ row.id,
-                type: 'delete',
-                success: function () {
-                    $table.bootstrapTable('refresh');
-                    showAlert('Delete item successful!', 'success');
-                },
-                error: function () {
-                    showAlert('Delete item error!', 'danger');
-                }
-            })
-        }
-    },
-    'click .open':function (e,value,row) {
-      location.href ='{{=URL('default','file', scheme=True, host=True)}}/'+row.id;
+
+  $(function() {
+    var $modal = $('#modal').modal({show: false});
+    var $alert = $('.alerte').hide();
+    $('.create').click(function () {
+      $modal.modal('show');
+    });
+    $modal.find('.submit').click(function (e) {
+      var row = {};
+      e.preventDefault(); // on empeche l'envoi du formulaire par le navigateur
+      $modal.find('input[name]').each(function () {
+        row[$(this).attr('name')] = $(this).val();
+      });
+      row['gender_pid8'] = $('input:radio[name=gender_pid8]').filter(':checked').val();
+      row['first_name'] = titleCase($('input[name=first_name]').val());
+      row['last_name'] = titleCase($('input[name=last_name]').val());
+      var API_URL = '{{=URL('default','api_users/auth_user', scheme=True, host=True)}}/';
+      $.ajax({
+        url: API_URL,
+        type: 'post',
+        contentType: 'application/json',
+        data: JSON.stringify(row),
+        success: function (text) {
+          id = text.slice(text.indexOf('id(')+3,text.indexOf(') ***'));
+          add_membership(id,2);
+          $modal.modal('hide');
+          resetForm($('#new_patient'));
+          $table.bootstrapTable('refresh');
+          showAlert('Created','success');
+          },
+          error: function () {
+            $modal.modal('hide');
+            showAlert('Unable to add new patient!','danger');
+          }
+        });
+    });
+
+    window.actionEvents = {
+      'click .update': function (e,value,row) {
+      location.href = '{{=URL('default','update_user', scheme=True, host=True)}}/'+row.id;
+      },
+      'click .remove': function (e, value, row) {
+          if (confirm('Are you sure to delete this item?')) {
+              $.ajax({
+                  url: '{{=URL('default','api_users/auth_user', scheme=True, host=True)}}/'+ row.id,
+                  type: 'delete',
+                  success: function () {
+                      $table.bootstrapTable('refresh');
+                      showAlert('Delete item successful!', 'success');
+                  },
+                  error: function () {
+                      showAlert('Delete item error!', 'danger');
+                  }
+              })
+          }
+      },
+      'click .open':function (e,value,row) {
+        location.href ='{{=URL('default','file', scheme=True, host=True)}}/'+row.id;
+      }
     }
+
+    function showAlert(title, type) {
+    $alert.attr('class', 'alert alert-' + type || 'success')
+          .html('<i class="glyphicon glyphicon-check"></i> ' + title).show();
+    setTimeout(function () {
+        $alert.hide();
+        }, 5000);
+    }
+  });
+
+  function add_membership(user_id,membership) {
+    var row = {'user_id': user_id, 'group_id': membership};
+    $.ajax({
+      url: '{{=URL('default','api_users/auth_membership', scheme=True, host=True)}}/',
+      type: 'post',
+      contentType: 'application/json',
+      data: JSON.stringify(row),
+      success: function (text) {
+        console.log(text);
+      },
+      error: function () {
+        showAlert('Unable to set membership!','danger');
+      }
+    });
   }
-
-  function showAlert(title, type) {
-  $alert.attr('class', 'alert alert-' + type || 'success')
-        .html('<i class="glyphicon glyphicon-check"></i> ' + title).show();
-  setTimeout(function () {
-      $alert.hide();
-      }, 5000);
-  }
-
-
-  $('.create').click(function () {
-    location.href = '{{=URL('default','create_user/'+membership, scheme=True, host=True)}}';
-   });
 
   function responseHandler(res) {
      return res.content;
@@ -116,7 +233,8 @@
               gender_pid8: 'Gender', idc_num: 'ID Card', ssn_pid19: 'SSN', maiden_name_pid6: 'Maiden name',
               email:'Email'};
     $.each(row, function (key, value) {
-      html.push('<p><b>' + label[key] + ':</b> ' + value + '</p>');
+      if (!(key in label)) {} else {
+      html.push('<p><b>' + label[key] + ':</b> ' + value + '</p>'); }
       });
     html.splice(0, 0, html.splice(3,1)[0]); // arr.splice(newIndex, 0, arr.splice(oldIndex, 1)[0]);
     html.splice(4, 0, html.splice(9,1)[0]);
@@ -133,8 +251,17 @@
   function actionFormatter(value) {
       return [
           '<a class="open" href="javascript:" title="Open user file"><i class="glyphicon glyphicon-user"></i></a>  ',
-          '<a class="update" href="javascript:" title="Update info"><i class="glyphicon glyphicon-edit"></i></a>  ',
+          <!-- '<a class="update" href="javascript:" title="Update info"><i class="glyphicon glyphicon-edit"></i></a>  ', -->
           '<a class="remove" href="javascript:" title="Delete"><i class="glyphicon glyphicon-remove-circle"></i></a>',
       ].join('');
+  }
+
+  function titleCase(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1); }
+
+  function resetForm($form) {
+    $form.find('input:text, input:password, input:file, select, textarea').val('');
+    $form.find('input:radio, input:checkbox')
+       .removeAttr('checked').removeAttr('selected');
   }
 </script>
