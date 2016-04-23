@@ -125,6 +125,7 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           <button type="submit" class="btn btn-primary submit">Submit</button>
+          <span class="duplicate"><button type="button" class="btn btn-danger" id="check_duplicate">{{=group}} may exists, OK to create?</button></span>
         </div>
       </form>
     </div>
@@ -136,13 +137,21 @@
   var API_URL = '{{=URL('default','api_users/membership/'+membership+'/user', scheme=True, host=True)}}';
   var $table = $('#table').bootstrapTable({
         url: API_URL});
+  var $alert = $('.alerte').hide();
 
   $(function() {
     var $modal = $('#modal').modal({show: false});
-    var $alert = $('.alerte').hide();
+    var $duplicate = $('.duplicate').hide();
+
+    $modal.on('hidden.bs.modal', function (){
+      $('.submit').show();
+      $duplicate.hide();
+    });
+    
     $('.create').click(function () {
       $modal.modal('show');
     });
+
     $modal.find('.submit').click(function (e) {
       var row = {};
       e.preventDefault(); // on empeche l'envoi du formulaire par le navigateur
@@ -152,6 +161,11 @@
       row['gender_pid8'] = $('input:radio[name=gender_pid8]').filter(':checked').val();
       row['first_name'] = titleCase($('input[name=first_name]').val());
       row['last_name'] = titleCase($('input[name=last_name]').val());
+      console.log(encodeURIComponent(row['first_name'])+ ' '+encodeURIComponent(row['last_name']));
+      check_duplicate(encodeURIComponent(row['first_name']),encodeURIComponent(row['last_name']),row['dob_pid7'],row);
+    });
+
+    function post_new_user_form(row) {
       var API_URL = '{{=URL('default','api_users/auth_user', scheme=True, host=True)}}/';
       $.ajax({
         url: API_URL,
@@ -160,19 +174,56 @@
         data: JSON.stringify(row),
         success: function (text) {
           id = text.slice(text.indexOf('id(')+3,text.indexOf(') ***'));
+          if ( id == 'None') {
+            $modal.modal('hide');
+            showAlert('Unable to add new patient!','danger');
+          } else {
           add_membership(id,2);
           $modal.modal('hide');
           resetForm($('#new_patient'));
           $table.bootstrapTable('refresh');
           showAlert('Created','success');
+          }
           },
           error: function () {
             $modal.modal('hide');
             showAlert('Unable to add new patient!','danger');
           }
         });
-    });
+    }
 
+    function check_duplicate(first,last,dob,row) {
+      var API_URL = '{{=URL('default','api_users/user', scheme=True, host=True)}}/'+first+ '/' +last+ '/' +dob;
+      $.ajax({
+        url: API_URL,
+        type: 'get',
+        contentType: 'application/json',
+        dataType: "json",
+        success: function(data) {
+          duplicate_list = data.content;
+          if ( jQuery.isEmptyObject(duplicate_list) == true) {
+            console.log('Not a duplicate');
+            post_new_user_form(row); }
+          else {
+            console.log('Duplicate check');
+            $duplicate.show();
+            $('.submit').hide();
+            $('#check_duplicate').click( function(){
+            post_new_user_form(row);
+            $('.submit').show();
+            $duplicate.hide();
+            });
+          }
+        },
+        error: function () {
+          showAlert('Unable to check if duplicate!','danger');
+        }
+      });
+    }
+
+  }); // document.ready
+
+    //window.actionEvents not working if in the document.ready
     window.actionEvents = {
       'click .update': function (e,value,row) {
       location.href = '{{=URL('default','update_user', scheme=True, host=True)}}/'+row.id;
@@ -204,10 +255,9 @@
         $alert.hide();
         }, 5000);
     }
-  });
 
   function add_membership(user_id,membership) {
-    var row = {'user_id': user_id, 'group_id': membership};
+    var row = {'user_id': user_id, 'group_id': {{=membership}}};
     $.ajax({
       url: '{{=URL('default','api_users/auth_membership', scheme=True, host=True)}}/',
       type: 'post',
@@ -251,8 +301,7 @@
   function actionFormatter(value) {
       return [
           '<a class="open" href="javascript:" title="Open user file"><i class="glyphicon glyphicon-user"></i></a>  ',
-          <!-- '<a class="update" href="javascript:" title="Update info"><i class="glyphicon glyphicon-edit"></i></a>  ', -->
-          '<a class="remove" href="javascript:" title="Delete"><i class="glyphicon glyphicon-remove-circle"></i></a>',
+          '<a class="remove" href="javascript:" title="Delete"><i class="glyphicon glyphicon-remove-circle"></i></a>'
       ].join('');
   }
 

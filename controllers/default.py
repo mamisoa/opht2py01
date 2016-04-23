@@ -70,7 +70,7 @@ def home():
                 membership = '2'
             else:
                 membership = str(request.args(0))
-    group = (db(db.auth_group.id == membership).select().first()).role
+    group = (db(db.auth_group.id == membership).select().first()).role #name of membership
     return locals()
 
 @auth.requires_membership('IT')
@@ -160,6 +160,7 @@ def api_users():
             "/user[auth_user]",
             "/user/{auth_user.id}",
             "/user/{auth_user.id}/:field",
+            "/user/{auth_user.first_name.contains}/{auth_user.last_name.contains}/{auth_user.dob_pid7.eq}",
             "/membership[auth_membership]",
             "/membership/{auth_membership.group_id}/user[auth_user.id]",  # show user with selected membership
             "/membership/{auth_membership.group_id}/user[auth_user.id]/:field",
