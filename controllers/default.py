@@ -200,6 +200,9 @@ def api_users():
         elif tablename == 'auth_membership':
             ret = db.auth_membership.validate_and_insert(**vars)
             return 'Table: '+ tablename +' *** Added row id: '+ str(ret.id) + ' *** ' + 'Error code : ' + str(ret.errors) + ' *** \r\n'
+        elif tablename == 'address':
+            ret = db.address.validate_and_insert(**vars)
+            return 'Table: '+ tablename +' *** Added row id('+ str(ret.id) + ') *** ' + 'Error code : ' + str(ret.errors) + ' *** \r\n'
         else:
             raise HTTP(400)
     return locals()

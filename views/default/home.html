@@ -10,6 +10,9 @@
 <!-- bootstrap-table x-editable extention https://vitalets.github.io/x-editable/ -->
 <link rel="stylesheet" href="{{=URL('static','css/bootstrap-editable.css')}}" />
 <script src="{{=URL('static','js/bootstrap-editable.js')}}"></script>
+<script src="{{=URL('static','js/validator.js')}}"></script>
+<script src="{{=URL('static','js/bootstrap-datepicker.js')}}"></script>
+<link rel="stylesheet" href="{{=URL('static','css/bootstrap-datepicker3.css')}}" />
 <style>
        .update {
            color: #333;
@@ -66,63 +69,83 @@
 <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <form id="new_patient" role="form" data-toggle="validator">
+      <form id="new_patient" role="form">
         <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title .text-center" id="">New patient</span></h4>
+          <button type="button" class="close btn btn-xs" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title .text-center" id="">New {{=group}}</span></h4>
         </div>
         <div class="modal-body">
           <div class="form-group hidden">
             <label>ID:</label>
             <input type="text" class="form-control user_id" name="id" placeholder="ID" value="">
           </div>
-          <div class="form-group">
+          <div class="row">
+            <div class="form-group col-sm-6">
             <label>First name:</label>
-            <input type="text" class="form-control first_name" name="first_name" placeholder="First name" value="">
-          </div>
-          <div class="form-group">
-            <label>Last name:</label>
-            <input type="text" class="form-control last_name" name="last_name" placeholder="Last name">
-          </div>
-          <div class="form-group">
-            <label>Password:</label>
-            <input type="password" class="form-control last_name" name="password" placeholder="Password">
+            <div class="input-group">
+              <input type="text" class="form-control first_name" name="first_name" placeholder="First name" value="" required>
+            </div>
+              <div class="help-block with-errors"></div>
+            </div>
+            <div class="form-group col-sm-6">
+              <label>Last name:</label>
+              <input type="text" class="form-control last_name" name="last_name" placeholder="Last name" required>
+            </div>
           </div>
           <div class="form-group">
             <label>Maiden name</label>
             <input type="text" class="form-control maiden_name_pid6" name="maiden_name_pid6" placeholder="Maiden name">
           </div>
           <div class="form-group">
-            <label class="radio-inline"><input type="radio" name="gender_pid8" value="1">Male</label>
-            <label class="radio-inline"><input type="radio" name="gender_pid8" value="2">Female</label>
-            <label class="radio-inline"><input type="radio" name="gender_pid8" value="3">Undetermined</label>
-          </div>
-          <div class="form-group">
-            <label>Date of birth:</label>
-            <input type="text" class="form-control dob_pid7" name="dob_pid7" placeholder="dob">
+            <label class="radio-inline"><input type="radio" name="gender_pid8" value="1" required>Male</label>
+            <label class="radio-inline"><input type="radio" name="gender_pid8" value="2" required>Female</label>
+            <label class="radio-inline"><input type="radio" name="gender_pid8" value="3" required>Undetermined</label>
           </div>
           <div class="form-group">
             <label for="inputEmail" class="control-label">Email:</label>
-            <input type="text" class="form-control email_user" name="email" placeholder="email" id="inputEmail" data-error="Email address is invalid" required>
+            <input type="email" class="form-control email_user" name="email" placeholder="email" id="inputEmail" data-error="Email address is required or invalid" required>
           </div>
-          <div class="form-group">
-            <label>Town of birth:</label>
-            <input type="text" class="form-control birth_town_pid23" name="birth_town_pid23" placeholder="Town of birth">
+          <div class="row">
+              <div class="form-group col-sm-6">
+                <label>Password:</label>
+                <input type="password" class="form-control last_name" id="user_pass" name="password" placeholder="Password" data-minlenght="6" required>
+                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                <div class="help-block with-errors">Minimum of 6 characters</div>
+              </div>
+              <div class="form-group col-sm-6">
+                <label>Confirm password:</label>
+                <input type="password" class="form-control last_name" name="passwordcheck" placeholder="Password" data-match-error="Please match passwords" data-match="#user_pass">
+                <div class="help-block with-errors"></div>
+              </div>
           </div>
-          <div class="form-group">
-            <label>Country of birth:</label>
-            <input type="text" class="form-control birth_country_pid23" name="birth_country_pid23" placeholder="Country of birth">
+          <div ="row">
+            <div class="form-group col-sm-4">
+              <label>Date of birth:</label>
+              <div class="input-group"><input type="text" class="form-control dob_pid7 datepicker" pattern="^\d{4}-((0[1-9])|(1[012]))-((0[1-9]|[12]\d)|3[01])$" name="dob_pid7" placeholder="dob" required>
+              <div class="input-group-addon"><span class="glyphicon glyphicon-th" onclick="$('#new_patient .datepicker').datepicker('show');"></span></div></div>
+            </div>
+            <div class="form-group col-sm-4">
+              <label>Town of birth:</label>
+              <input type="text" class="form-control birth_town_pid23" name="birth_town_pid23" placeholder="Town of birth">
+            </div>
+            <div class="form-group col-sm-4">
+              <label>Country of birth:</label>
+              <input type="text" class="form-control birth_country_pid23" name="birth_country_pid23" placeholder="Country of birth">
+            </div>
           </div>
-          <div class="form-group">
-            <label>ID card number:</label>
-            <input type="text" class="form-control idc_num" name="idc_num" placeholder="ID card number">
-          </div>
-          <div class="form-group">
-            <label>Social security number:</label>
-            <input type="text" class="form-control ssn_pid19" name="ssn_pid19" placeholder="Social security number">
-          </div>
+            <div class="row">
+              <div class="form-group col-sm-6">
+                <label>ID card number:</label>
+                <input type="text" class="form-control idc_num" name="idc_num" placeholder="ID card number">
+              </div>
+              <div class="form-group col-sm-6">
+                <label>Social security number:</label>
+                <input type="text" class="form-control ssn_pid19" name="ssn_pid19" placeholder="Social security number">
+              </div>
+            </div>
         </div>
         <div class="modal-footer">
+          <button type="button" class="btn btn-warning pull-left" onclick="resetForm($('#new_patient'));">Reset</button>
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           <button type="submit" class="btn btn-primary submit">Submit</button>
           <span class="duplicate"><button type="button" class="btn btn-danger" id="check_duplicate">{{=group}} may exists, OK to create?</button></span>
@@ -142,27 +165,50 @@
   $(function() {
     var $modal = $('#modal').modal({show: false});
     var $duplicate = $('.duplicate').hide();
+    resetForm($('#new_patient'));
 
     $modal.on('hidden.bs.modal', function (){
       $('.submit').show();
       $duplicate.hide();
     });
-    
+
+    $('#new_patient .datepicker').datepicker({
+                    format: "yyyy-mm-dd"
+                });
+
+    $('#modal')
+      .on('shown.bs.modal', function (e) {
+        $('#new_patient').validator();
+        $('#new_patient .datepicker').datepicker({
+                        format: "yyyy-mm-dd"
+                    });
+        })
+      .on('hidden.bs.modal', function (e) {
+        $('#new_patient').validator('destroy');
+        $('#new_patient .datepicker').datepicker('destroy');
+      });
+
     $('.create').click(function () {
       $modal.modal('show');
     });
 
     $modal.find('.submit').click(function (e) {
-      var row = {};
-      e.preventDefault(); // on empeche l'envoi du formulaire par le navigateur
-      $modal.find('input[name]').each(function () {
-        row[$(this).attr('name')] = $(this).val();
-      });
-      row['gender_pid8'] = $('input:radio[name=gender_pid8]').filter(':checked').val();
-      row['first_name'] = titleCase($('input[name=first_name]').val());
-      row['last_name'] = titleCase($('input[name=last_name]').val());
-      console.log(encodeURIComponent(row['first_name'])+ ' '+encodeURIComponent(row['last_name']));
-      check_duplicate(encodeURIComponent(row['first_name']),encodeURIComponent(row['last_name']),row['dob_pid7'],row);
+      if ( $('#new_patient .submit').hasClass('disabled'))
+        { e.preventDefault();
+          return true; }
+      else {
+        var row = {};
+        e.preventDefault(); // on empeche l'envoi du formulaire par le navigateur
+        $modal.find('input[name]').each(function () {
+          row[$(this).attr('name')] = $(this).val();
+        });
+        row['gender_pid8'] = $('input:radio[name=gender_pid8]').filter(':checked').val();
+        row['first_name'] = titleCase($('input[name=first_name]').val());
+        row['last_name'] = titleCase($('input[name=last_name]').val());
+        delete row['passwordcheck'];
+        console.log(encodeURIComponent(row['first_name'])+ ' '+encodeURIComponent(row['last_name']));
+        check_duplicate(encodeURIComponent(row['first_name']),encodeURIComponent(row['last_name']),row['dob_pid7'],row);
+      }
     });
 
     function post_new_user_form(row) {

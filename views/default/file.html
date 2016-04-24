@@ -5,17 +5,23 @@
 <link rel="stylesheet" href="{{=URL('static','css/bootstrap-datepicker3.css')}}" />
 
 <style>
-       .btn {
-         margin: 2px ;
+      .btn {
+        margin: 2px ;
+      }
+      .edit_address {
        }
-       .edit_address {
+      .tooltip {
+        font-size: 8px;
        }
-       .tooltip {
-         font-size: 8px;
-       }
-       .alert_main {
+      .alert_main {
         margin-left: 20px;
         padding: 10px;
+       }
+      .glyphicon {
+         padding: 10px;
+       }
+      .glyphicon-remove {
+        color: red;
        }
 </style>
 {{end}}
@@ -82,61 +88,80 @@
 <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <form id="edit_main_form" role="form" data-toggle="validator">
+      <form id="edit_main_form" role="form"> <!-- data-toggle="validator" -->
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title .text-center" id="">File ID n°<span class="user_id"></span></h4>
+          <h4 class="modal-title .text-center">File ID n°<span class="user_id"></span></h4>
         </div>
         <div class="modal-body">
           <div class="form-group hidden">
             <label>ID:</label>
             <input type="text" class="form-control user_id" name="id" placeholder="ID" value="">
           </div>
-          <div class="form-group">
+          <div class="row">
+            <div class="form-group col-sm-6">
             <label>First name:</label>
-            <input type="text" class="form-control first_name" name="first_name" placeholder="First name" value="">
-          </div>
-          <div class="form-group">
-            <label>Last name:</label>
-            <input type="text" class="form-control last_name" name="last_name" placeholder="Last name">
-          </div>
-          <div class="form-group">
-            <label>Password:</label>
-            <input type="password" class="form-control last_name" name="password" placeholder="Password">
+            <div class="input-group">
+              <input type="text" class="form-control first_name" name="first_name" placeholder="First name" value="" required>
+            </div>
+              <div class="help-block with-errors"></div>
+            </div>
+            <div class="form-group col-sm-6">
+              <label>Last name:</label>
+              <input type="text" class="form-control last_name" name="last_name" placeholder="Last name" required>
+            </div>
           </div>
           <div class="form-group">
             <label>Maiden name</label>
             <input type="text" class="form-control maiden_name_pid6" name="maiden_name_pid6" placeholder="Maiden name">
           </div>
           <div class="form-group">
-            <label class="radio-inline"><input type="radio" name="gender_pid8" value="1">Male</label>
-            <label class="radio-inline"><input type="radio" name="gender_pid8" value="2">Female</label>
-            <label class="radio-inline"><input type="radio" name="gender_pid8" value="3">Undetermined</label>
-          </div>
-          <div class="form-group">
-            <label>Date of birth:</label>
-            <input type="text" class="form-control dob_pid7" name="dob_pid7" placeholder="dob">
+            <label class="radio-inline"><input type="radio" name="gender_pid8" value="1" required>Male</label>
+            <label class="radio-inline"><input type="radio" name="gender_pid8" value="2" required>Female</label>
+            <label class="radio-inline"><input type="radio" name="gender_pid8" value="3" required>Undetermined</label>
           </div>
           <div class="form-group">
             <label for="inputEmail" class="control-label">Email:</label>
-            <input type="email" class="form-control email_user" name="email" placeholder="email" id="inputEmail" data-error="Email address is invalid" required>
+            <input type="email" class="form-control email_user" name="email" placeholder="email" id="inputEmail" data-error="Email address is required or invalid" required>
           </div>
-          <div class="form-group">
-            <label>Town of birth:</label>
-            <input type="text" class="form-control birth_town_pid23" name="birth_town_pid23" placeholder="Town of birth">
+          <div class="row">
+              <div class="form-group col-sm-6">
+                <label>Password:</label>
+                <input type="password" class="form-control last_name" id="user_pass" name="password" placeholder="Password" data-minlenght="6" required>
+                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                <div class="help-block with-errors">Minimum of 6 characters</div>
+              </div>
+              <div class="form-group col-sm-6">
+                <label>Confirm password:</label>
+                <input type="password" class="form-control last_name" name="passwordcheck" placeholder="Password" data-match-error="Please match passwords" data-match="#user_pass">
+                <div class="help-block with-errors"></div>
+              </div>
           </div>
-          <div class="form-group">
-            <label>Country of birth:</label>
-            <input type="text" class="form-control birth_country_pid23" name="birth_country_pid23" placeholder="Country of birth">
+          <div class="row">
+            <div class="form-group col-sm-4">
+                <label>Date of birth:</label>
+                <div class="input-group"><input type="text" class="form-control dob_pid7 datepicker" name="dob_pid7" placeholder="dob" pattern="^\d{4}-((0[1-9])|(1[012]))-((0[1-9]|[12]\d)|3[01])$"required>
+                <div class="input-group-addon"><span class="glyphicon glyphicon-th" onclick="$('#edit_main_form .datepicker').datepicker('show');" ></span></div></div>
+            </div>
+            <div class="form-group col-sm-4">
+                <label>Town of birth:</label>
+                <input type="text" class="form-control birth_town_pid23" name="birth_town_pid23" placeholder="Town of birth">
+            </div>
+            <div class="form-group col-sm-4">
+                <label>Country of birth:</label>
+                <input type="text" class="form-control birth_country_pid23" name="birth_country_pid23" placeholder="Country of birth">
+            </div>
           </div>
-          <div class="form-group">
-            <label>ID card number:</label>
-            <input type="text" class="form-control idc_num" name="idc_num" placeholder="ID card number">
-          </div>
-          <div class="form-group">
-            <label>Social security number:</label>
-            <input type="text" class="form-control ssn_pid19" name="ssn_pid19" placeholder="Social security number">
-          </div>
+            <div class="row">
+              <div class="form-group col-sm-6">
+                <label>ID card number:</label>
+                <input type="text" class="form-control idc_num" name="idc_num" placeholder="ID card number">
+              </div>
+              <div class="form-group col-sm-6">
+                <label>Social security number:</label>
+                <input type="text" class="form-control ssn_pid19" name="ssn_pid19" placeholder="Social security number">
+              </div>
+            </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -147,20 +172,116 @@
   </div>
 </div>
 
+<div class="modal fade" id="modal_address" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="edit_address_form" role="form">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title .text-center">File ID n°<span class="user_id"></span></h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group hidden">
+            <label>Address ID:</label>
+            <input type="text" class="form-control auth_user_id" name="id_auth_user" placeholder="ID" value="{{=user_id}}">
+          </div>
+          <div class="row">
+            <div class="form-group col-sm-2">
+              <label>Number:</label>
+              <div class="input-group">
+              <input type="text" class="form-control home_num_pid11_1" name="home_num_pid11_1" placeholder="Home number" value="" required>
+              </div>
+              <div class="help-block with-errors"></div>
+            </div>
+            <div class="form-group col-sm-1">
+              <label>Box:</label>
+              <div class="input-group">
+              <input type="text" class="form-control box_num_pid11_2" name="box_num_pid11_2" placeholder="Box number" value="">
+              </div>
+              <div class="help-block with-errors"></div>
+            </div>
+            <div class="form-group col-sm-9">
+              <label>Street:</label>
+              <input type="text" class="form-control address1_pid11_3" name="address1_pid11_3" placeholder="Street name 1" required>
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group col-sm-12">
+              <label>Street (optionnal):</label>
+              <input type="text" class="form-control address2_pid11_4" name="address2_pid11_4" placeholder="Street name 2">
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group col-sm-3">
+              <label>ZIP:</label>
+              <input type="text" class="form-control zipcode_pid11_5" name="zipcode_pid11_5" placeholder="ZIP code" required>
+            </div>
+            <div class="form-group col-sm-4">
+              <label>Town:</label>
+              <input type="text" class="form-control town_pid11_6" name="town_pid11_6" placeholder="Town name" required>
+            </div>
+            <div class="form-group col-sm-5">
+              <label>Country:</label>
+              <input type="text" class="form-control country_pid11_7" name="country_pid11_7" placeholder="Country name" required>
+            </div>
+          </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary submit">Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
 
 <script>
 var user_id = {{=user_id}};
 var API_URL = '{{=URL('default','api_users/user', scheme=True, host=True)}}/';
+
 $(function () {
-  var  $modal = $('#modal').modal({show: false}),
-       $alert = $('.alert_main').hide();
+  var $modal = $('#modal').modal({show: false}),
+      $modal_address = $('#modal_address').modal({show: false}),
+      $alert = $('.alert_main').hide();
   main_details(user_id);
   addresses_details(user_id);
+
   $("body").tooltip({ selector: '[data-toggle=tooltip]' });
+
   $('#edit_main').click(function () {
     $modal.modal('show');
    });
+
+   $('#new_address').click(function () {
+     $modal_address.modal('show');
+     $('#modal_address .modal-title').text('Add a new address');
+    });
+
+
+   $('#edit_main_form .datepicker').datepicker({
+                   format: "yyyy-mm-dd"
+               });
+
+   $('#modal', '#modal_address')
+     .on('shown.bs.modal', function (e) {
+       $('#edit_main_form').validator();
+       $('#edit_address_form').validator();
+       $('#edit_main_form .datepicker').datepicker({
+                       format: "yyyy-mm-dd"
+                   });
+       })
+     .on('hidden.bs.modal', function (e) {
+       $('#new_patient').validator('destroy');
+       $('#edit_address_form').validator('destroy');
+       $('#edit_main_form .datepicker').validator('destroy');
+     });
+
   $modal.find('.submit').click(function (e) {
+    if ( $('#edit_main_form .submit').hasClass('disabled'))
+      { e.preventDefault();
+        return true; }
+      else {
       var row = {};
       e.preventDefault(); // on empeche l'envoi du formulaire par le navigateur
       $modal.find('input[name]').each(function () {
@@ -169,6 +290,7 @@ $(function () {
       row['gender_pid8'] = $('input:radio[name=gender_pid8]').filter(':checked').val();
       row['first_name'] = titleCase($('input[name=first_name]').val());
       row['last_name'] = titleCase($('input[name=last_name]').val());
+      delete row['passwordcheck'];
       var API_URL = '{{=URL('default','api_users/auth_user', scheme=True, host=True)}}/';
       $.ajax({
         url: API_URL+user_id,
@@ -185,7 +307,53 @@ $(function () {
             showAlert('Updated item error!','danger');
           }
         });
+    }
   });
+
+  $modal_address.find('.submit').click(function (e) {
+    if ( $('#edit_address_form .submit').hasClass('disabled'))
+      { e.preventDefault();
+        return true; }
+      else {
+      var row = {};
+      e.preventDefault(); // on empeche l'envoi du formulaire par le navigateur
+      $modal_address.find('input[name]').each(function () {
+        row[$(this).attr('name')] = $(this).val();
+      });
+      row['address1_pid11_3'] = titleCase($('input[name=address1_pid11_3]').val());
+      row['address2_pid11_4'] = titleCase($('input[name=address2_pid11_4]').val());
+      row['town_pid11_6'] = titleCase($('input[name=town_pid11_6]').val());
+      row['country_pid11_7'] = titleCase($('input[name=country_pid11_7]').val());
+      post_new_address_form(row);
+      }
+  });
+
+  function post_new_address_form(row) {
+    var API_URL = '{{=URL('default','api_users/address', scheme=True, host=True)}}/';
+    $.ajax({
+      url: API_URL,
+      type: 'post',
+      contentType: 'application/json',
+      data: JSON.stringify(row),
+      success: function (text) {
+        id = text.slice(text.indexOf('id(')+3,text.indexOf(') ***'));
+        if ( id == 'None') {
+          $modal.modal('hide');
+          showAlert('Unable to add new address','danger');
+        } else {
+        $modal_address.modal('hide');
+        resetForm($('#edit_address_form'));
+        showAlert('Created','success');
+        addresses_details({{=user_id}});
+        }
+        },
+        error: function () {
+          $modal.modal('hide');
+          showAlert('Unable to add new address!','danger');
+        }
+      });
+  }
+
 
 function showAlert(title, type) {
   $alert.attr('class', 'alert_main alert-' + type || 'success')
@@ -282,7 +450,8 @@ function li_address (row) {
   $.each(row, function (key, value) {
     html.push('<li id="li_'+key+'" class="list-group-item clearfix" data-toggle="tooltip" data-placement="top" data-createdby="'+test_null(row[key]['created_by'],'unknown')+ '" data-modifiedby="'+test_null(row[key]['modified_by'],'unknown')+ '" data-modifiedon="'+ test_null(row[key]['modified_on'],'unknown time')+'" title="">'); // tooltip
     html.push('<span>'+test_null(row[key]['home_num_pid11_1'],'')+' </span><span>'+ test_null(row[key]['box_num_pid11_2'],'') +' </span><span>'+ test_null(row[key]['address1_pid11_3'],'') + ' '+ test_null(row[key]['address2_pid11_4'],'') +'</span></br>');
-    html.push('<span> '+ test_null(row[key]['zipcode_pid11_5'],'') + '</span><span> ' + test_null(row[key]['town_pid11_6'],'') + ' </span><span>' + test_null(row[key]['country_pid11_7'],'')+ '</span></li>');
+    html.push('<span> '+ test_null(row[key]['zipcode_pid11_5'],'') + '</span><span> ' + test_null(row[key]['town_pid11_6'],'') + ' </span><span>' + test_null(row[key]['country_pid11_7'],'')+ '</span>');
+    html.push('<span class="pull-right glyphicon glyphicon-remove"></span><span class="pull-right glyphicon glyphicon-edit"></span></li>');
     get_user_name(test_null(row[key]['created_by'],'0'),key,'data-createdby');
     get_user_name(test_null(row[key]['modified_by'],'0'),key,'data-modifiedby');
   });
@@ -330,5 +499,10 @@ function get_user_name (index, id, attribute) {
 
 }
 
+function resetForm($form) {
+  $form.find('input:text, input:password, input:file, select, textarea').val('');
+  $form.find('input:radio, input:checkbox')
+     .removeAttr('checked').removeAttr('selected');
+}
 
 </script>
