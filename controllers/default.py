@@ -194,6 +194,9 @@ def api_users():
         elif tablename == 'auth_membership':
             db(db.auth_membership._id==record_id).update(**vars)
             return 'Table: '+ tablename +' *** Updated row id: '+record_id+' ***  \r\n'
+        elif tablename == 'address':
+            db(db.address._id==record_id).update(**vars)
+            return 'Table: '+ tablename +' *** Updated row id: '+record_id+' ***  \r\n'
         else:
             raise HTTP(400)
     def POST(tablename,**vars):

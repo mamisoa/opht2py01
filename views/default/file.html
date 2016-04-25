@@ -33,6 +33,7 @@
       </div>
     </header>
 {{end}}
+
 <div class="container-fluid">
   <div class="row">
     <div class="col-md-4">
@@ -235,10 +236,10 @@
 </div>
 
 
-
 <script>
 var user_id = {{=user_id}};
 var API_URL = '{{=URL('default','api_users/user', scheme=True, host=True)}}/';
+var addresses = {};
 
 $(function () {
   var $modal = $('#modal').modal({show: false}),
@@ -246,6 +247,12 @@ $(function () {
       $alert = $('.alert_main').hide();
   main_details(user_id);
   addresses_details(user_id);
+
+  $('body').on( 'click', 'li .glyphicon-edit', function() {
+    row = addresses[$(this).attr("data-key")];
+    fill_user(row,'form');
+    $modal_address.modal('show');
+  });
 
   $("body").tooltip({ selector: '[data-toggle=tooltip]' });
 
@@ -324,48 +331,86 @@ $(function () {
       row['address2_pid11_4'] = titleCase($('input[name=address2_pid11_4]').val());
       row['town_pid11_6'] = titleCase($('input[name=town_pid11_6]').val());
       row['country_pid11_7'] = titleCase($('input[name=country_pid11_7]').val());
-      post_new_address_form(row);
+      post_address_form(row,0);
       }
   });
 
-  $('')
 
-  function post_new_address_form(row) {
+
+function addresses_details(id) {
     var API_URL = '{{=URL('default','api_users/address', scheme=True, host=True)}}/';
     $.ajax({
-      url: API_URL,
-      type: 'post',
+      url: API_URL + id+'.json',
+      type: 'GET',
+      dataType: 'json',
       contentType: 'application/json',
-      data: JSON.stringify(row),
-      success: function (text) {
-        id = text.slice(text.indexOf('id(')+3,text.indexOf(') ***'));
-        if ( id == 'None') {
-          $modal.modal('hide');
-          showAlert('Unable to add new address','danger');
-        } else {
-        $modal_address.modal('hide');
-        resetForm($('#edit_address_form'));
-        showAlert('Created','success');
-        addresses_details({{=user_id}});
-        }
+      success: function (data) {
+        addresses = data.content;
+        li_address(addresses);
+        console.log(addresses);
         },
-        error: function () {
-          $modal.modal('hide');
-          showAlert('Unable to add new address!','danger');
+      error: function () {
+        alert('Address not found!');
         }
-      });
-  }
+    });
+}
 
+
+function li_address (row) {
+  var html = [];
+  $.each(row, function (key, value) {
+    html.push('<li id="li_'+key+'" class="list-group-item clearfix" data-toggle="tooltip" data-placement="top" data-createdby="'+test_null(row[key]['created_by'],'unknown')+ '" data-modifiedby="'+test_null(row[key]['modified_by'],'unknown')+ '" data-modifiedon="'+ test_null(row[key]['modified_on'],'unknown time')+'" title="">'); // tooltip
+    html.push('<span>'+test_null(row[key]['home_num_pid11_1'],'')+' </span><span>'+ test_null(row[key]['box_num_pid11_2'],'') +' </span><span>'+ test_null(row[key]['address1_pid11_3'],'') + ' '+ test_null(row[key]['address2_pid11_4'],'') +'</span></br>');
+    html.push('<span> '+ test_null(row[key]['zipcode_pid11_5'],'') + '</span><span> ' + test_null(row[key]['town_pid11_6'],'') + ' </span><span>' + test_null(row[key]['country_pid11_7'],'')+ '</span>');
+    html.push('<span id="remove_' +row[key]['id']+ '" data-id="' +row[key]['id']+ '" class="pull-right glyphicon glyphicon-remove" onclick="delete_obj(this,\'address\')"></span><span id="edit_' +row[key]['id']+ '" data-id="' +row[key]['id']+ '" data-key="' +key+ '" class="pull-right glyphicon glyphicon-edit"></span></li>');
+    get_user_name(test_null(row[key]['created_by'],'0'),key,'data-createdby');
+    get_user_name(test_null(row[key]['modified_by'],'0'),key,'data-modifiedby');
+  });
+  $('#addresses_list').html(html.join(''));
+}
+
+function post_address_form(row,id_address) {
+  var API_URL = id_address ==0 ? '{{=URL('default','api_users/address', scheme=True, host=True)}}/' : '{{=URL('default','api_users/address', scheme=True, host=True)}}/'+ id_address
+  var mode = id_address == 0 ? 'add':'edit';
+  $.ajax({
+    url: API_URL,
+    type: id_address == 0 ? 'post':'put',
+    contentType: 'application/json',
+    data: JSON.stringify(row),
+    success: function (text) {
+      id = text.slice(text.indexOf('id(')+3,text.indexOf(') ***'));
+      if ( id == 'None') {
+        $modal_address.modal('hide');
+        showAlert('Unable to '+mode+' new address','danger');
+      } else {
+      $modal_address.modal('hide');
+      resetForm($('#edit_address_form'));
+      showAlert(titleCase(mode+'ed'),'success');
+      addresses_details({{=user_id}});
+      }
+      },
+      error: function () {
+        $modal_address.modal('hide');
+        showAlert('Unable to '+mode+' new address!','danger');
+      }
+    });
+}
+
+
+function test(obj,type) {
+  alert($(obj).attr("data-id")+type);
+}
 
 function showAlert(title, type) {
-  $alert.attr('class', 'alert_main alert-' + type || 'success')
-      .html('<i class="glyphicon glyphicon-check"></i> ' + title).show();
-  setTimeout(function () {
-    $alert.hide();
-    }, 5000);
+$alert.attr('class', 'alert_main alert-' + type || 'success')
+    .html('<i class="glyphicon glyphicon-check"></i> ' + title).show();
+setTimeout(function () {
+  $alert.hide();
+  }, 5000);
 }
 
 }); // doc ready
+
 
 function titleCase(string) {
   return string.charAt(0).toUpperCase() + string.slice(1); }
@@ -428,42 +473,6 @@ function main_details(id) {
 }
 
 
-function addresses_details(id) {
-    var API_URL = '{{=URL('default','api_users/address', scheme=True, host=True)}}/';
-    $.ajax({
-      url: API_URL + id+'.json',
-      type: 'GET',
-      dataType: 'json',
-      contentType: 'application/json',
-      success: function (data) {
-        addresses = data.content;
-        li_address(addresses);
-        $('#addresses').text(addresses);
-        },
-      error: function () {
-        alert('Address not found!');
-        }
-    });
-}
-
-
-function li_address (row) {
-  var html = [];
-  $.each(row, function (key, value) {
-    html.push('<li id="li_'+key+'" class="list-group-item clearfix" data-toggle="tooltip" data-placement="top" data-createdby="'+test_null(row[key]['created_by'],'unknown')+ '" data-modifiedby="'+test_null(row[key]['modified_by'],'unknown')+ '" data-modifiedon="'+ test_null(row[key]['modified_on'],'unknown time')+'" title="">'); // tooltip
-    html.push('<span>'+test_null(row[key]['home_num_pid11_1'],'')+' </span><span>'+ test_null(row[key]['box_num_pid11_2'],'') +' </span><span>'+ test_null(row[key]['address1_pid11_3'],'') + ' '+ test_null(row[key]['address2_pid11_4'],'') +'</span></br>');
-    html.push('<span> '+ test_null(row[key]['zipcode_pid11_5'],'') + '</span><span> ' + test_null(row[key]['town_pid11_6'],'') + ' </span><span>' + test_null(row[key]['country_pid11_7'],'')+ '</span>');
-    html.push('<span id="remove_' +row[key]['id']+ '" data-id="' +row[key]['id']+ '" class="pull-right glyphicon glyphicon-remove" onclick="delete_obj(this,\'address\')"></span><span id="edit_' +row[key]['id']+ '" data-id="' +row[key]['id']+ '" class="pull-right glyphicon glyphicon-edit"></span></li>');
-    get_user_name(test_null(row[key]['created_by'],'0'),key,'data-createdby');
-    get_user_name(test_null(row[key]['modified_by'],'0'),key,'data-modifiedby');
-  });
-  $('#addresses_list').html(html.join(''));
-}
-
-function test(obj,type) {
-  alert($(obj).attr("data-id")+type);
-}
-
 function delete_obj(obj,type) {
   var API_URL = '{{=URL('default','api_users/', scheme=True, host=True)}}/'+type+'/'+$(obj).attr("data-id");
   if (confirm('Are you sure to delete this item?')) {
@@ -479,7 +488,6 @@ function delete_obj(obj,type) {
           }
       })
   }
-
 }
 
 function test_null(value, ifnull) {
