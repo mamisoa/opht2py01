@@ -328,6 +328,8 @@ $(function () {
       }
   });
 
+  $('')
+
   function post_new_address_form(row) {
     var API_URL = '{{=URL('default','api_users/address', scheme=True, host=True)}}/';
     $.ajax({
@@ -451,11 +453,33 @@ function li_address (row) {
     html.push('<li id="li_'+key+'" class="list-group-item clearfix" data-toggle="tooltip" data-placement="top" data-createdby="'+test_null(row[key]['created_by'],'unknown')+ '" data-modifiedby="'+test_null(row[key]['modified_by'],'unknown')+ '" data-modifiedon="'+ test_null(row[key]['modified_on'],'unknown time')+'" title="">'); // tooltip
     html.push('<span>'+test_null(row[key]['home_num_pid11_1'],'')+' </span><span>'+ test_null(row[key]['box_num_pid11_2'],'') +' </span><span>'+ test_null(row[key]['address1_pid11_3'],'') + ' '+ test_null(row[key]['address2_pid11_4'],'') +'</span></br>');
     html.push('<span> '+ test_null(row[key]['zipcode_pid11_5'],'') + '</span><span> ' + test_null(row[key]['town_pid11_6'],'') + ' </span><span>' + test_null(row[key]['country_pid11_7'],'')+ '</span>');
-    html.push('<span class="pull-right glyphicon glyphicon-remove"></span><span class="pull-right glyphicon glyphicon-edit"></span></li>');
+    html.push('<span id="remove_' +row[key]['id']+ '" data-id="' +row[key]['id']+ '" class="pull-right glyphicon glyphicon-remove" onclick="delete_obj(this,\'address\')"></span><span id="edit_' +row[key]['id']+ '" data-id="' +row[key]['id']+ '" class="pull-right glyphicon glyphicon-edit"></span></li>');
     get_user_name(test_null(row[key]['created_by'],'0'),key,'data-createdby');
     get_user_name(test_null(row[key]['modified_by'],'0'),key,'data-modifiedby');
   });
   $('#addresses_list').html(html.join(''));
+}
+
+function test(obj,type) {
+  alert($(obj).attr("data-id")+type);
+}
+
+function delete_obj(obj,type) {
+  var API_URL = '{{=URL('default','api_users/', scheme=True, host=True)}}/'+type+'/'+$(obj).attr("data-id");
+  if (confirm('Are you sure to delete this item?')) {
+      $.ajax({
+          url: API_URL,
+          type: 'delete',
+          success: function () {
+              // showAlert('Delete item successful!', 'success');
+              addresses_details({{=user_id}});
+          },
+          error: function () {
+              showAlert('Delete item error!', 'danger');
+          }
+      })
+  }
+
 }
 
 function test_null(value, ifnull) {

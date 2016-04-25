@@ -182,6 +182,9 @@ def api_users():
         elif tablename=='auth_membership':
             db(db.auth_membership.id == record_id).delete()
             return 'Table: '+ tablename +' *** Deleted row id : '+record_id+' *** \r\n'
+        elif tablename=='address':
+            db(db.address.id == record_id).delete()
+            return 'Table: '+ tablename +' *** Deleted row id('+record_id+') *** \r\n'
         else:
             raise HTTP(400)
     def PUT(tablename,record_id,**vars):
