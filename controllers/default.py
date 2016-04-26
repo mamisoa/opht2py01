@@ -167,7 +167,7 @@ def api_users():
             "/address[address]",
             "/address/{address.id_auth_user}"
             ]
-        db.address.created_by.readable = db.address.modified_by.readable = db.address.created_on.readable = db.address.modified_on.readable = True
+        db.address.created_by.readable = db.address.modified_by.readable = db.address.created_on.readable = db.address.modified_on.readable = db.address.id_auth_user.readable = True
         db.auth_user.created_by.readable = db.auth_user.modified_by.readable = db.auth_user.created_on.readable = db.auth_user.modified_on.readable = True
         parser = db.parse_as_rest(patterns, args, vars)
         data = parser.response

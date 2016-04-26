@@ -179,12 +179,16 @@
       <form id="edit_address_form" role="form">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title .text-center">File ID n°<span class="user_id"></span></h4>
+          <h4 class="modal-title .text-center">Address ID<span class="id"></span></h4>
         </div>
         <div class="modal-body">
           <div class="form-group hidden">
-            <label>Address ID:</label>
-            <input type="text" class="form-control auth_user_id" name="id_auth_user" placeholder="ID" value="{{=user_id}}">
+            <label>address ID:</label>
+            <input type="text" class="form-control id" name="id" placeholder="Address ID" value="">
+          </div>
+          <div class="form-group hidden">
+            <label>User ID:</label>
+            <input type="text" class="form-control id_auth_user" name="id_auth_user" placeholder="ID" value="{{=user_id}}">
           </div>
           <div class="row">
             <div class="form-group col-sm-2">
@@ -250,7 +254,11 @@ $(function () {
 
   $('body').on( 'click', 'li .glyphicon-edit', function() {
     row = addresses[$(this).attr("data-key")];
-    fill_user(row,'form');
+    addresses_form = { '#edit_address_form .id': row.id, '#edit_address_form .home_num_pid11_1': row.home_num_pid11_1, '#edit_address_form .box_num_pid11_2': row.box_num_pid11_2,
+      '#edit_address_form .address1_pid11_3': row.address1_pid11_3,  '#edit_address_form .address2_pid11_4':row.address2_pid11_4, '#edit_address_form .zipcode_pid11_5':row.zipcode_pid11_5,
+      '#edit_address_form .town_pid11_6': row.town_pid11_6, '#edit_address_form .country_pid11_7': row.country_pid11_7,
+      '#edit_address_form .id_auth_user':row.id_auth_user };
+    fill_user(addresses_form,'form');
     $modal_address.modal('show');
   });
 
@@ -261,6 +269,7 @@ $(function () {
    });
 
    $('#new_address').click(function () {
+     resetForm($('#edit_address_form'));
      $modal_address.modal('show');
      $('#modal_address .modal-title').text('Add a new address');
     });
@@ -322,16 +331,22 @@ $(function () {
       { e.preventDefault();
         return true; }
       else {
-      var row = {};
+      var row = {}, req;
       e.preventDefault(); // on empeche l'envoi du formulaire par le navigateur
       $modal_address.find('input[name]').each(function () {
         row[$(this).attr('name')] = $(this).val();
       });
+      if (row['id'] == '') {
+        req = 'POST';
+        delete row['id'];
+      } else { req = 'PUT';}
+      row['id_auth_user'] = user_id;
       row['address1_pid11_3'] = titleCase($('input[name=address1_pid11_3]').val());
       row['address2_pid11_4'] = titleCase($('input[name=address2_pid11_4]').val());
       row['town_pid11_6'] = titleCase($('input[name=town_pid11_6]').val());
       row['country_pid11_7'] = titleCase($('input[name=country_pid11_7]').val());
-      post_address_form(row,0);
+      console.log(row);
+      post_address_form(row,req);
       }
   });
 
@@ -362,19 +377,19 @@ function li_address (row) {
     html.push('<li id="li_'+key+'" class="list-group-item clearfix" data-toggle="tooltip" data-placement="top" data-createdby="'+test_null(row[key]['created_by'],'unknown')+ '" data-modifiedby="'+test_null(row[key]['modified_by'],'unknown')+ '" data-modifiedon="'+ test_null(row[key]['modified_on'],'unknown time')+'" title="">'); // tooltip
     html.push('<span>'+test_null(row[key]['home_num_pid11_1'],'')+' </span><span>'+ test_null(row[key]['box_num_pid11_2'],'') +' </span><span>'+ test_null(row[key]['address1_pid11_3'],'') + ' '+ test_null(row[key]['address2_pid11_4'],'') +'</span></br>');
     html.push('<span> '+ test_null(row[key]['zipcode_pid11_5'],'') + '</span><span> ' + test_null(row[key]['town_pid11_6'],'') + ' </span><span>' + test_null(row[key]['country_pid11_7'],'')+ '</span>');
-    html.push('<span id="remove_' +row[key]['id']+ '" data-id="' +row[key]['id']+ '" class="pull-right glyphicon glyphicon-remove" onclick="delete_obj(this,\'address\')"></span><span id="edit_' +row[key]['id']+ '" data-id="' +row[key]['id']+ '" data-key="' +key+ '" class="pull-right glyphicon glyphicon-edit"></span></li>');
+    html.push('<span id="remove_' +row[key]['id']+ '" data-id="' +row[key]['id']+ '" class="pull-right glyphicon glyphicon-remove" data-type="address"></span><span id="edit_' +row[key]['id']+ '" data-id="' +row[key]['id']+ '" data-key="' +key+ '" class="pull-right glyphicon glyphicon-edit"></span></li>');
     get_user_name(test_null(row[key]['created_by'],'0'),key,'data-createdby');
     get_user_name(test_null(row[key]['modified_by'],'0'),key,'data-modifiedby');
   });
   $('#addresses_list').html(html.join(''));
 }
 
-function post_address_form(row,id_address) {
-  var API_URL = id_address ==0 ? '{{=URL('default','api_users/address', scheme=True, host=True)}}/' : '{{=URL('default','api_users/address', scheme=True, host=True)}}/'+ id_address
-  var mode = id_address == 0 ? 'add':'edit';
+function post_address_form(row,req) {
+  var API_URL = (req == 'POST' ? '{{=URL('default','api_users/address', scheme=True, host=True)}}/' : '{{=URL('default','api_users/address', scheme=True, host=True)}}/'+ row.id);
+  var mode = (req == 'POST' ? 'add':'edit');
   $.ajax({
     url: API_URL,
-    type: id_address == 0 ? 'post':'put',
+    type: req == 'POST' ? 'post':'put',
     contentType: 'application/json',
     data: JSON.stringify(row),
     success: function (text) {
@@ -409,6 +424,23 @@ setTimeout(function () {
   }, 5000);
 }
 
+$('body').on( 'click', 'li .glyphicon-remove', function() {
+  var API_URL = '{{=URL('default','api_users/', scheme=True, host=True)}}/'+$(this).attr("data-type")+'/'+$(this).attr("data-id");
+  if (confirm('Are you sure to delete this item?')) {
+      $.ajax({
+          url: API_URL,
+          type: 'delete',
+          success: function () {
+              // showAlert('Delete item successful!', 'success');
+              addresses_details({{=user_id}});
+          },
+          error: function () {
+              showAlert('Delete item error!', 'danger');
+          }
+      });
+  }
+});
+
 }); // doc ready
 
 
@@ -418,7 +450,7 @@ function titleCase(string) {
 function fill_user(key_val, panel) {
   for (key in key_val) {
     if (key_val[key] == null) {
-      key_val[key] = 'n/a';
+      key_val[key] = null;
     } else if (key == '.gender_pid8') {
       if (key_val[key] == 1) {
         key_val[key] = 'Male';
@@ -437,6 +469,7 @@ function fill_user(key_val, panel) {
       $(key).html(key_val[key]);
     }
     else if (panel == 'form') {
+      $(key).val(key_val[key]);
       $(key).attr('value',key_val[key]);
     } else {};
   }
@@ -473,22 +506,7 @@ function main_details(id) {
 }
 
 
-function delete_obj(obj,type) {
-  var API_URL = '{{=URL('default','api_users/', scheme=True, host=True)}}/'+type+'/'+$(obj).attr("data-id");
-  if (confirm('Are you sure to delete this item?')) {
-      $.ajax({
-          url: API_URL,
-          type: 'delete',
-          success: function () {
-              // showAlert('Delete item successful!', 'success');
-              addresses_details({{=user_id}});
-          },
-          error: function () {
-              showAlert('Delete item error!', 'danger');
-          }
-      })
-  }
-}
+
 
 function test_null(value, ifnull) {
   if (value == null) {
