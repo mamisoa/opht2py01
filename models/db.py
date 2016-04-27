@@ -69,7 +69,9 @@ auth.settings.extra_fields['auth_user']= [  Field('maiden_name_pid6','string', l
                                             Field('birth_country_pid23', 'string', label='Country of birth'),
                                             Field('gender_pid8', 'reference gender', label='Gender'),
                                             Field('idc_num', 'string', label='ID card number'),
-                                            Field('ssn_pid19', 'string', label='SSN'), auth.signature]
+                                            Field('ssn_pid19', 'string', label='SSN'),
+                                            Field('user_notes', 'string', label ='User notes'),
+                                            auth.signature]
 
 def represent_auth(auth_ref, row):
     user = db(db.auth_user.id == auth_ref).select(db.auth_user.first_name, db.auth_user.last_name).first()
