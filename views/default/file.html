@@ -23,6 +23,10 @@
       .glyphicon-remove {
         color: red;
        }
+      #edit_phone_form {
+        padding-left: 10px;
+      }
+
 </style>
 {{end}}
 {{block header}}
@@ -78,15 +82,28 @@
           </ol>
         </div>
         <div class="panel-footer">
-
         </div>
       </div>
 
     </div>
+    <div class="col-md-4">
+      <div class="panel panel-info" id="panel_phones">
+        <div class="panel-heading">
+          <button type="button" class="btn btn-default btn-xs pull-right" name="button" id="new_phone">New</button>
+          <h4 class="panel-title">phones</h4> <span class="alert_phone"></span>
+        </div>
+        <div class="panel-body">
+          <ol>
+            <ul class="list-group" id="phones_list">
+            </ul>
+          </ol>
+        </div>
+        <div class="panel-footer">
+        </div>
+      </div>
+    </div>
   </div>
 </div>
-
-
 
 <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
   <div class="modal-dialog">
@@ -169,7 +186,7 @@
               .<div class="form-group">
                 <label>Notes:</label>
                 <input type="text" class="form-control user_notes" name="user_notes" placeholder="User notes">
-              </div>  
+              </div>
             </div>
         </div>
         <div class="modal-footer">
@@ -246,21 +263,68 @@
     </div>
   </div>
 </div>
+</div>
 
+
+<div class="modal fade" id="modal_phone" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="edit_phone_form" class="form-inline" role="form">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Phone ID <span class="id"></span></h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-group hidden">
+          <label>phone ID:</label>
+          <input type="text" class="form-control id" name="id" placeholder="Phone ID" value="">
+        </div>
+        <div class="form-group hidden">
+          <label>User ID:</label>
+          <input type="text" class="form-control id_auth_user" name="id_auth_user" placeholder="ID" value="{{=user_id}}">
+        </div>
+        <div class="row">
+          <div class="form-group">
+            <label class="sr-only">Prefix:</label>
+            <input type="text" class="form-control phone_prefix_pid13_1" name="phone_prefix_pid13_1" placeholder="Prefix" required>
+          </div>
+          <div class="form-group">
+            <label class="sr-only">Phone:</label>
+            <input type="text" class="form-control phone_pid13_2" name="phone_pid13_2" placeholder="Phone" required>
+          </div>
+          <div class="form-group">
+            <label class="sr-only">Origin:</label>
+            <select class="c-select form-control phone_origin">
+              <option value="1">one</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Submit</button>
+      </div>
+    </form>
+    </div>
+  </div>
+</div>
 
 <script>
 var user_id = {{=user_id}};
+var origin = {{=origin_json}}
 var API_URL = '{{=URL('default','api_users/user', scheme=True, host=True)}}/';
-var addresses = {};
+var addresses = {},
+  phones = {};
 
 $(function () {
   var $modal = $('#modal').modal({show: false}),
       $modal_address = $('#modal_address').modal({show: false}),
+      $modal_phone = $('#modal_phone').modal({show: false}),
       $alert = $('.alert_main').hide();
   main_details(user_id);
   addresses_details(user_id);
 
-  $('body').on( 'click', 'li .glyphicon-edit', function() {
+  $('body').on( 'click', '#addresses_list .glyphicon-edit', function() {
     row = addresses[$(this).attr("data-key")];
     addresses_form = { '#edit_address_form .id': row.id, '#edit_address_form .home_num_pid11_1': row.home_num_pid11_1, '#edit_address_form .box_num_pid11_2': row.box_num_pid11_2,
       '#edit_address_form .address1_pid11_3': row.address1_pid11_3,  '#edit_address_form .address2_pid11_4':row.address2_pid11_4, '#edit_address_form .zipcode_pid11_5':row.zipcode_pid11_5,
@@ -276,21 +340,27 @@ $(function () {
     $modal.modal('show');
    });
 
-   $('#new_address').click(function () {
+  $('#new_address').click(function () {
      resetForm($('#edit_address_form'));
      $modal_address.modal('show');
      $('#modal_address .modal-title').text('Add a new address');
     });
 
+  $('#new_phone').click(function () {
+      resetForm($('#edit_phone_form'));
+      $modal_phone.modal('show');
+      $('#modal_phone .modal-title').text('Add a new phone');
+     });
 
    $('#edit_main_form .datepicker').datepicker({
                    format: "yyyy-mm-dd"
                });
 
-   $('#modal', '#modal_address')
+   $('#modal', '#modal_address', '#modal_phone')
      .on('shown.bs.modal', function (e) {
        $('#edit_main_form').validator();
        $('#edit_address_form').validator();
+       $('#edit_phone_form').validator();
        $('#edit_main_form .datepicker').datepicker({
                        format: "yyyy-mm-dd"
                    });
@@ -298,6 +368,7 @@ $(function () {
      .on('hidden.bs.modal', function (e) {
        $('#new_patient').validator('destroy');
        $('#edit_address_form').validator('destroy');
+       $('#edit_phone_form').validator('destroy');
        $('#edit_main_form .datepicker').validator('destroy');
      });
 
@@ -341,7 +412,7 @@ $(function () {
       else {
       var row = {}, req;
       e.preventDefault(); // on empeche l'envoi du formulaire par le navigateur
-      $modal_address.find('input[name]').each(function () {
+      $('#edit_address_form').find('input[name]').each(function () {
         row[$(this).attr('name')] = $(this).val();
       });
       if (row['id'] == '') {
@@ -358,8 +429,6 @@ $(function () {
       }
   });
 
-
-
 function addresses_details(id) {
     var API_URL = '{{=URL('default','api_users/address', scheme=True, host=True)}}/';
     $.ajax({
@@ -370,7 +439,6 @@ function addresses_details(id) {
       success: function (data) {
         addresses = data.content;
         li_address(addresses);
-        console.log(addresses);
         },
       error: function () {
         alert('Address not found!');
@@ -382,7 +450,7 @@ function addresses_details(id) {
 function li_address (row) {
   var html = [];
   $.each(row, function (key, value) {
-    html.push('<li id="li_'+key+'" class="list-group-item clearfix" data-toggle="tooltip" data-placement="top" data-createdby="'+test_null(row[key]['created_by'],'unknown')+ '" data-modifiedby="'+test_null(row[key]['modified_by'],'unknown')+ '" data-modifiedon="'+ test_null(row[key]['modified_on'],'unknown time')+'" title="">'); // tooltip
+    html.push('<li id="li_'+key+'" class="list-group-item clearfix" data-toggle="tooltip" data-placement="top" data-createdby="'+test_null(row[key]['created_by'],'unknown')+ '" data-modifiedby="'+test_null(row[key]['modified_by'],'unknown')+ '" data-modifiedon="'+ test_null(row[key]['modified_on'],'unknown time')+'" title="">');
     html.push('<span>'+test_null(row[key]['home_num_pid11_1'],'')+' </span><span>'+ test_null(row[key]['box_num_pid11_2'],'') +' </span><span>'+ test_null(row[key]['address1_pid11_3'],'') + ' '+ test_null(row[key]['address2_pid11_4'],'') +'</span></br>');
     html.push('<span> '+ test_null(row[key]['zipcode_pid11_5'],'') + '</span><span> ' + test_null(row[key]['town_pid11_6'],'') + ' </span><span>' + test_null(row[key]['country_pid11_7'],'')+ '</span>');
     html.push('<span id="remove_' +row[key]['id']+ '" data-id="' +row[key]['id']+ '" class="pull-right glyphicon glyphicon-remove" data-type="address"></span><span id="edit_' +row[key]['id']+ '" data-id="' +row[key]['id']+ '" data-key="' +key+ '" class="pull-right glyphicon glyphicon-edit"></span></li>');
@@ -419,16 +487,15 @@ function post_address_form(row,req) {
     });
 }
 
-
 function test(obj,type) {
   alert($(obj).attr("data-id")+type);
 }
 
 function showAlert(title, type) {
-$alert.attr('class', 'alert_main alert-' + type || 'success')
+  $alert.attr('class', 'alert_main alert-' + type || 'success')
     .html('<i class="glyphicon glyphicon-check"></i> ' + title).show();
-setTimeout(function () {
-  $alert.hide();
+  setTimeout(function () {
+    $alert.hide();
   }, 5000);
 }
 
@@ -512,9 +579,6 @@ function main_details(id) {
       }
   });
 }
-
-
-
 
 function test_null(value, ifnull) {
   if (value == null) {

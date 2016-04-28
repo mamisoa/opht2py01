@@ -75,7 +75,7 @@ def home():
 
 @auth.requires_membership('IT')
 def manage():
-    grid = SQLFORM.smartgrid(db.auth_user,linked_tables=['auth_membership','address'])
+    grid = SQLFORM.smartgrid(db.auth_user,linked_tables=['auth_membership','address','phone'])
     return locals()
 
 def rows2json (tablename,rows):
@@ -165,10 +165,13 @@ def api_users():
             "/membership/{auth_membership.group_id}/user[auth_user.id]",  # show user with selected membership
             "/membership/{auth_membership.group_id}/user[auth_user.id]/:field",
             "/address[address]",
-            "/address/{address.id_auth_user}"
+            "/address/{address.id_auth_user}",
+            "/phone[phone]",
+            "/phone/{phone.id_auth_user}"
             ]
         db.address.created_by.readable = db.address.modified_by.readable = db.address.created_on.readable = db.address.modified_on.readable = db.address.id_auth_user.readable = True
         db.auth_user.created_by.readable = db.auth_user.modified_by.readable = db.auth_user.created_on.readable = db.auth_user.modified_on.readable = True
+        db.phone.created_by.readable = db.phone.modified_by.readable = db.phone.created_on.readable = db.phone.modified_on.readable = db.phone.id_auth_user.readable = True
         parser = db.parse_as_rest(patterns, args, vars)
         data = parser.response
         if parser.status == 200:
@@ -185,6 +188,9 @@ def api_users():
         elif tablename=='address':
             db(db.address.id == record_id).delete()
             return 'Table: '+ tablename +' *** Deleted row id('+record_id+') *** \r\n'
+        elif tablename=='phone':
+            db(db.phone.id == record_id).delete()
+            return 'Table: '+ tablename +' *** Deleted row id('+record_id+') *** \r\n'
         else:
             raise HTTP(400)
     def PUT(tablename,record_id,**vars):
@@ -196,7 +202,10 @@ def api_users():
             return 'Table: '+ tablename +' *** Updated row id: '+record_id+' ***  \r\n'
         elif tablename == 'address':
             db(db.address._id==record_id).update(**vars)
-            return 'Table: '+ tablename +' *** Updated row id: '+record_id+' ***  \r\n'
+            return 'Table: '+ tablename +' *** Updated row id('+record_id+') ***  \r\n'
+        elif tablename == 'phone':
+            db(db.phone._id==record_id).update(**vars)
+            return 'Table: '+ tablename +' *** Updated row id('+record_id+') ***  \r\n'
         else:
             raise HTTP(400)
     def POST(tablename,**vars):
@@ -208,6 +217,9 @@ def api_users():
             return 'Table: '+ tablename +' *** Added row id: '+ str(ret.id) + ' *** ' + 'Error code : ' + str(ret.errors) + ' *** \r\n'
         elif tablename == 'address':
             ret = db.address.validate_and_insert(**vars)
+            return 'Table: '+ tablename +' *** Added row id('+ str(ret.id) + ') *** ' + 'Error code : ' + str(ret.errors) + ' *** \r\n'
+        elif tablename == 'phone':
+            ret = db.phone.validate_and_insert(**vars)
             return 'Table: '+ tablename +' *** Added row id('+ str(ret.id) + ') *** ' + 'Error code : ' + str(ret.errors) + ' *** \r\n'
         else:
             raise HTTP(400)
@@ -254,7 +266,8 @@ def file():
             redirect(URL('home'))
     except ValueError:
         redirect(URL('home'))
-    main_form = SQLFORM(db.auth_user, user_id)
+    origin_rows = db(db.phone.id_auth_user == user_id).select()
+    origin_json = XML(rows2json('phones',origin_rows))
     return locals()
 
 def get_user_name(id):
