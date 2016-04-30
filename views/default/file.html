@@ -27,6 +27,9 @@
         padding-left: 10px;
       }
 
+      #edit_phone_form .phone_prefix_pid13_1 {
+        width:  70px;
+      }
 </style>
 {{end}}
 {{block header}}
@@ -323,6 +326,7 @@ $(function () {
       $alert = $('.alert_main').hide();
   main_details(user_id);
   addresses_details(user_id);
+  phones_details(user_id);
 
   $('body').on( 'click', '#addresses_list .glyphicon-edit', function() {
     row = addresses[$(this).attr("data-key")];
@@ -446,6 +450,24 @@ function addresses_details(id) {
     });
 }
 
+function phones_details(id) {
+    var API_URL = '{{=URL('default','api_users/phone', scheme=True, host=True)}}/';
+    $.ajax({
+      url: API_URL + id+'.json',
+      type: 'GET',
+      dataType: 'json',
+      contentType: 'application/json',
+      success: function (data) {
+        phones = data.content;
+        console.log(phones);
+        li_phone(phones);
+        },
+      error: function () {
+        alert('Phone not found!');
+        }
+    });
+}
+
 
 function li_address (row) {
   var html = [];
@@ -454,10 +476,22 @@ function li_address (row) {
     html.push('<span>'+test_null(row[key]['home_num_pid11_1'],'')+' </span><span>'+ test_null(row[key]['box_num_pid11_2'],'') +' </span><span>'+ test_null(row[key]['address1_pid11_3'],'') + ' '+ test_null(row[key]['address2_pid11_4'],'') +'</span></br>');
     html.push('<span> '+ test_null(row[key]['zipcode_pid11_5'],'') + '</span><span> ' + test_null(row[key]['town_pid11_6'],'') + ' </span><span>' + test_null(row[key]['country_pid11_7'],'')+ '</span>');
     html.push('<span id="remove_' +row[key]['id']+ '" data-id="' +row[key]['id']+ '" class="pull-right glyphicon glyphicon-remove" data-type="address"></span><span id="edit_' +row[key]['id']+ '" data-id="' +row[key]['id']+ '" data-key="' +key+ '" class="pull-right glyphicon glyphicon-edit"></span></li>');
-    get_user_name(test_null(row[key]['created_by'],'0'),key,'data-createdby');
-    get_user_name(test_null(row[key]['modified_by'],'0'),key,'data-modifiedby');
+    get_user_name(test_null(row[key]['created_by'],'0'),key,'data-createdby', '#addresses_list');
+    get_user_name(test_null(row[key]['modified_by'],'0'),key,'data-modifiedby', '#addresses_list');
   });
   $('#addresses_list').html(html.join(''));
+}
+
+function li_phone (row) {
+  var html = [];
+  $.each(row, function (key, value) {
+    html.push('<li id="li_'+key+'" class="list-group-item clearfix" data-toggle="tooltip" data-placement="top" data-createdby="'+test_null(row[key]['created_by'],'unknown')+ '" data-modifiedby="'+test_null(row[key]['modified_by'],'unknown')+ '" data-modifiedon="'+ test_null(row[key]['modified_on'],'unknown time')+'" title="">');
+    html.push('<span>'+test_null(row[key]['phone_prefix_pid13_1'],'')+' </span><span>'+ test_null(row[key]['phone_pid13_2'],'') +' </span><span>'+ test_null(row[key]['origin'],'') + '</span>');
+    html.push('<span id="remove_' +row[key]['id']+ '" data-id="' +row[key]['id']+ '" class="pull-right glyphicon glyphicon-remove" data-type="address"></span><span id="edit_' +row[key]['id']+ '" data-id="' +row[key]['id']+ '" data-key="' +key+ '" class="pull-right glyphicon glyphicon-edit"></span></li>');
+    get_user_name(test_null(row[key]['created_by'],'0'),key,'data-createdby', '#phones_list');
+    get_user_name(test_null(row[key]['modified_by'],'0'),key,'data-modifiedby', '#phones_list');
+  });
+  $('#phone_list').html(html.join(''));
 }
 
 function post_address_form(row,req) {
@@ -587,9 +621,10 @@ function test_null(value, ifnull) {
   } else { return value; }
 }
 
-function get_user_name (index, id, attribute) {
+function get_user_name (index, id, attribute, list) {
   var API_URL = '{{=URL('default','api_users/user', scheme=True, host=True)}}/';
-  if (index == 0) { $('li#li_'+id).attr(attribute,'unknown id');}
+  var test_mod = " ";
+  if (index == 0) { $(list+' li#li_'+id).attr(attribute,'unknown id');}
   else {
     $.ajax({
       url: API_URL+ index,
@@ -602,23 +637,22 @@ function get_user_name (index, id, attribute) {
         } else {
           text = 'modified by ';
         };
-        $('li#li_'+id).attr(attribute,data.content[0].first_name + ' '+ data.content[0].last_name);
-        $('li#li_'+id).attr('title', function(i,title) {
+        $(list+' li#li_'+id).attr(attribute,data.content[0].first_name + ' '+ data.content[0].last_name);
+        $(list+' li#li_'+id).attr('title', function(i,title) {
           return title + text +data.content[0].first_name + ' '+ data.content[0].last_name+' ';
         });
-        test_mod = $('li#li_'+id).attr('title');
+        test_mod = $(list+' li#li_'+id).attr('title');
         if (test_mod.indexOf('modified') > -1) {
-              $('li#li_'+id).attr('title', function(i,title) {
-              return title+' '+$('li#li_'+id).attr('data-modifiedon');
+              $(list+' li#li_'+id).attr('title', function(i,title) {
+              return title+' '+$(list+ ' li#li_'+id).attr('data-modifiedon');
             });
         };
         },
       error: function () {
-        $('li#li_'+id).attr(attribute,'unknown get');
+        $(list+' li#li_'+id).attr(attribute,'unknown get');
         }
     });
   }
-
 }
 
 function resetForm($form) {
