@@ -63,12 +63,10 @@
               <li class="list-group-item"><strong>ID card number:</strong> <span class="pull-right idc_num"><span></li>
               <li class="list-group-item"><strong>Social security number:</strong> <span class="pull-right ssn_pid19"><span></li>
               <li class="list-group-item"><strong>Notes:</strong> <span class="pull-right user_notes"><span></li>
-
             </ul>
           </ul>
         </div>
         <div class="panel-footer">
-
         </div>
       </div>
     </div>
@@ -87,7 +85,6 @@
         <div class="panel-footer">
         </div>
       </div>
-
     </div>
     <div class="col-md-4">
       <div class="panel panel-info" id="panel_phones">
@@ -186,7 +183,7 @@
               </div>
             </div>
             <div class="row">
-              .<div class="form-group">
+              .<div class="form-group col-sm-12">
                 <label>Notes:</label>
                 <input type="text" class="form-control user_notes" name="user_notes" placeholder="User notes">
               </div>
@@ -295,17 +292,20 @@
             <label class="sr-only">Phone:</label>
             <input type="text" class="form-control phone_pid13_2" name="phone_pid13_2" placeholder="Phone" required>
           </div>
+          <div class="form-group hidden">
+            <label>phone ID:</label>
+            <input type="text" class="form-control phone_origin" name="phone_origin" placeholder="" value="Mobile">
+          </div>
           <div class="form-group">
             <label class="sr-only">Origin:</label>
             <select class="c-select form-control phone_origin">
-              <option value="1">one</option>
             </select>
           </div>
         </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Submit</button>
+        <button type="button" class="btn btn-primary submit">Submit</button>
       </div>
     </form>
     </div>
@@ -324,9 +324,11 @@ $(function () {
       $modal_address = $('#modal_address').modal({show: false}),
       $modal_phone = $('#modal_phone').modal({show: false}),
       $alert = $('.alert_main').hide();
+
   main_details(user_id);
   addresses_details(user_id);
   phones_details(user_id);
+  data_origin(origin.phones);
 
   $('body').on( 'click', '#addresses_list .glyphicon-edit', function() {
     row = addresses[$(this).attr("data-key")];
@@ -336,6 +338,15 @@ $(function () {
       '#edit_address_form .id_auth_user':row.id_auth_user };
     fill_user(addresses_form,'form');
     $modal_address.modal('show');
+  });
+
+  $('body').on( 'click', '#phones_list .glyphicon-edit', function() {
+    row = phones[$(this).attr("data-key")];
+    phones_form = { '#edit_phone_form .id': row.id, '#edit_phone_form .id_auth_user': row.id_auth_user, '#edit_phone_form .phone_prefix_pid13_1': row.phone_prefix_pid13_1, '#edit_phone_form .phone_pid13_2': row.phone_pid13_2,
+      '#edit_phone_form .phone_origin': row.phone_origin
+    };
+    fill_user(phones_form,'form');
+    $modal_phone.modal('show');
   });
 
   $("body").tooltip({ selector: '[data-toggle=tooltip]' });
@@ -352,28 +363,34 @@ $(function () {
 
   $('#new_phone').click(function () {
       resetForm($('#edit_phone_form'));
+      $('#edit_phone_form select.phone_origin').val('Mobile');
+      $('#edit_phone_form input.phone_origin').val('Mobile');
       $modal_phone.modal('show');
       $('#modal_phone .modal-title').text('Add a new phone');
      });
 
-   $('#edit_main_form .datepicker').datepicker({
-                   format: "yyyy-mm-dd"
+  $('#edit_phone_form select.phone_origin').change(function () {
+     $('#edit_phone_form input.phone_origin').val($(this).val());
+     });
+
+  $('#edit_main_form .datepicker').datepicker({
+    format: "yyyy-mm-dd"
                });
 
    $('#modal', '#modal_address', '#modal_phone')
      .on('shown.bs.modal', function (e) {
-       $('#edit_main_form').validator();
-       $('#edit_address_form').validator();
-       $('#edit_phone_form').validator();
-       $('#edit_main_form .datepicker').datepicker({
-                       format: "yyyy-mm-dd"
-                   });
-       })
+      $('#edit_main_form').validator();
+      $('#edit_address_form').validator();
+      $('#edit_phone_form').validator();
+      $('#edit_main_form .datepicker').datepicker({
+          format: "yyyy-mm-dd"
+          });
+      })
      .on('hidden.bs.modal', function (e) {
-       $('#new_patient').validator('destroy');
-       $('#edit_address_form').validator('destroy');
-       $('#edit_phone_form').validator('destroy');
-       $('#edit_main_form .datepicker').validator('destroy');
+      $('#new_patient').validator('destroy');
+      $('#edit_address_form').validator('destroy');
+      $('#edit_phone_form').validator('destroy');
+      $('#edit_main_form .datepicker').validator('destroy');
      });
 
   $modal.find('.submit').click(function (e) {
@@ -433,6 +450,27 @@ $(function () {
       }
   });
 
+  $modal_phone.find('.submit').click(function (e) {
+    if ( $('#edit_phone_form .submit').hasClass('disabled'))
+      { e.preventDefault();
+        return true; }
+      else {
+      var row = {}, req;
+      e.preventDefault(); // on empeche l'envoi du formulaire par le navigateur
+      $('#edit_phone_form').find('input[name]').each(function () {
+        row[$(this).attr('name')] = $(this).val();
+      });
+      if (row['id'] == '') {
+        req = 'POST';
+        delete row['id'];
+      } else { req = 'PUT';}
+      row['id_auth_user'] = user_id;
+      console.log(row);
+      post_phone_form(row,req);
+      }
+  });
+
+
 function addresses_details(id) {
     var API_URL = '{{=URL('default','api_users/address', scheme=True, host=True)}}/';
     $.ajax({
@@ -459,7 +497,6 @@ function phones_details(id) {
       contentType: 'application/json',
       success: function (data) {
         phones = data.content;
-        console.log(phones);
         li_phone(phones);
         },
       error: function () {
@@ -472,26 +509,34 @@ function phones_details(id) {
 function li_address (row) {
   var html = [];
   $.each(row, function (key, value) {
-    html.push('<li id="li_'+key+'" class="list-group-item clearfix" data-toggle="tooltip" data-placement="top" data-createdby="'+test_null(row[key]['created_by'],'unknown')+ '" data-modifiedby="'+test_null(row[key]['modified_by'],'unknown')+ '" data-modifiedon="'+ test_null(row[key]['modified_on'],'unknown time')+'" title="">');
+    html.push('<li id="li_address'+key+'" class="list-group-item clearfix" data-toggle="tooltip" data-placement="top" data-createdby="'+test_null(row[key]['created_by'],'unknown')+ '" data-modifiedby="'+test_null(row[key]['modified_by'],'unknown')+ '" data-modifiedon="'+ test_null(row[key]['modified_on'],'unknown time')+'" title="">');
     html.push('<span>'+test_null(row[key]['home_num_pid11_1'],'')+' </span><span>'+ test_null(row[key]['box_num_pid11_2'],'') +' </span><span>'+ test_null(row[key]['address1_pid11_3'],'') + ' '+ test_null(row[key]['address2_pid11_4'],'') +'</span></br>');
     html.push('<span> '+ test_null(row[key]['zipcode_pid11_5'],'') + '</span><span> ' + test_null(row[key]['town_pid11_6'],'') + ' </span><span>' + test_null(row[key]['country_pid11_7'],'')+ '</span>');
     html.push('<span id="remove_' +row[key]['id']+ '" data-id="' +row[key]['id']+ '" class="pull-right glyphicon glyphicon-remove" data-type="address"></span><span id="edit_' +row[key]['id']+ '" data-id="' +row[key]['id']+ '" data-key="' +key+ '" class="pull-right glyphicon glyphicon-edit"></span></li>');
-    get_user_name(test_null(row[key]['created_by'],'0'),key,'data-createdby', '#addresses_list');
-    get_user_name(test_null(row[key]['modified_by'],'0'),key,'data-modifiedby', '#addresses_list');
+    get_user_name(test_null(row[key]['created_by'],'0'),key,'data-createdby', 'address');
+    get_user_name(test_null(row[key]['modified_by'],'0'),key,'data-modifiedby', 'address');
   });
   $('#addresses_list').html(html.join(''));
+}
+
+function data_origin(row) {
+  var html = [];
+  $.each(row, function (key, value) {
+    html.push('<option value='+row[key]['origin']+'>'+row[key]['origin']+'</option>');
+  });
+  $('#edit_phone_form select.phone_origin').html(html.join(''));
 }
 
 function li_phone (row) {
   var html = [];
   $.each(row, function (key, value) {
-    html.push('<li id="li_'+key+'" class="list-group-item clearfix" data-toggle="tooltip" data-placement="top" data-createdby="'+test_null(row[key]['created_by'],'unknown')+ '" data-modifiedby="'+test_null(row[key]['modified_by'],'unknown')+ '" data-modifiedon="'+ test_null(row[key]['modified_on'],'unknown time')+'" title="">');
-    html.push('<span>'+test_null(row[key]['phone_prefix_pid13_1'],'')+' </span><span>'+ test_null(row[key]['phone_pid13_2'],'') +' </span><span>'+ test_null(row[key]['origin'],'') + '</span>');
-    html.push('<span id="remove_' +row[key]['id']+ '" data-id="' +row[key]['id']+ '" class="pull-right glyphicon glyphicon-remove" data-type="address"></span><span id="edit_' +row[key]['id']+ '" data-id="' +row[key]['id']+ '" data-key="' +key+ '" class="pull-right glyphicon glyphicon-edit"></span></li>');
-    get_user_name(test_null(row[key]['created_by'],'0'),key,'data-createdby', '#phones_list');
-    get_user_name(test_null(row[key]['modified_by'],'0'),key,'data-modifiedby', '#phones_list');
+    html.push('<li id="li_phone'+key+'" class="list-group-item clearfix" data-toggle="tooltip" data-placement="top" data-createdby="'+test_null(row[key]['created_by'],'unknown')+ '" data-modifiedby="'+test_null(row[key]['modified_by'],'unknown')+ '" data-modifiedon="'+ test_null(row[key]['modified_on'],'unknown time')+'" title="">');
+    html.push('<span>+'+test_null(row[key]['phone_prefix_pid13_1'],'')+' </span><span>'+ test_null(row[key]['phone_pid13_2'],'') +' </span><span>'+ test_null(row[key]['phone_origin'],'') + '</span>');
+    html.push('<span id="remove_' +row[key]['id']+ '" data-id="' +row[key]['id']+ '" class="pull-right glyphicon glyphicon-remove" data-type="phone"></span><span id="edit_' +row[key]['id']+ '" data-id="' +row[key]['id']+ '" data-key="' +key+ '" class="pull-right glyphicon glyphicon-edit"></span></li>');
+    get_user_name(test_null(row[key]['created_by'],'0'),key,'data-createdby', 'phone');
+    get_user_name(test_null(row[key]['modified_by'],'0'),key,'data-modifiedby', 'phone');
   });
-  $('#phone_list').html(html.join(''));
+  $('#phones_list').html(html.join(''));
 }
 
 function post_address_form(row,req) {
@@ -521,6 +566,34 @@ function post_address_form(row,req) {
     });
 }
 
+function post_phone_form(row,req) {
+  var API_URL = (req == 'POST' ? '{{=URL('default','api_users/phone', scheme=True, host=True)}}/' : '{{=URL('default','api_users/phone', scheme=True, host=True)}}/'+ row.id);
+  var mode = (req == 'POST' ? 'add':'edit');
+  $.ajax({
+    url: API_URL,
+    type: req == 'POST' ? 'post':'put',
+    contentType: 'application/json',
+    data: JSON.stringify(row),
+    success: function (text) {
+      id = text.slice(text.indexOf('id(')+3,text.indexOf(') ***'));
+      if ( id == 'None') {
+        $modal_phone.modal('hide');
+        showAlert('Unable to '+mode+' phone','danger');
+      } else {
+      $modal_phone.modal('hide');
+      resetForm($('#edit_phone_form'));
+      showAlert(titleCase(mode+'ed'),'success');
+      phones_details({{=user_id}});
+      }
+      },
+      error: function () {
+        $modal_phone.modal('hide');
+        showAlert('Unable to '+mode+' phone!','danger');
+      }
+    });
+}
+
+
 function test(obj,type) {
   alert($(obj).attr("data-id")+type);
 }
@@ -534,14 +607,19 @@ function showAlert(title, type) {
 }
 
 $('body').on( 'click', 'li .glyphicon-remove', function() {
-  var API_URL = '{{=URL('default','api_users/', scheme=True, host=True)}}/'+$(this).attr("data-type")+'/'+$(this).attr("data-id");
+  var row2remove = $(this).attr("data-type"),
+      API_URL = '{{=URL('default','api_users/', scheme=True, host=True)}}/'+row2remove+'/'+$(this).attr("data-id");
   if (confirm('Are you sure to delete this item?')) {
       $.ajax({
           url: API_URL,
           type: 'delete',
           success: function () {
-              // showAlert('Delete item successful!', 'success');
-              addresses_details({{=user_id}});
+              showAlert('Delete item successful!', 'success');
+              if (row2remove == 'address') {
+                addresses_details({{=user_id}});
+              } else if (row2remove == 'phone') {
+                phones_details(user_id);
+              }
           },
           error: function () {
               showAlert('Delete item error!', 'danger');
@@ -600,13 +678,13 @@ function main_details(id) {
       user = data.content[0];
       main_data = { '.user_id': user.id,'.first_name': user.first_name, '.last_name':user.last_name, '.maiden_name_pid6':user.maiden_name_pid6, '.gender_pid8': user.gender_pid8,
           '.dob_pid7': user.dob_pid7, '.email_user': user.email, '.birth_town_pid23': user.birth_town_pid23, '.birth_country_pid23': user.birth_country_pid23,
-           '.idc_num':user.idc_num, '.ssn_pid19': user.ssn_pid19 }
-      addresses_form = { '#edit_main_form .user_id': user.id, '#edit_main_form .first_name': user.first_name, '#edit_main_form .last_name': user.last_name, '#edit_main_form .maiden_name_pid6': user.maiden_name_pid6, '#edit_main_form .gender_pid8': user.gender_pid8,
+           '.idc_num':user.idc_num, '.ssn_pid19': user.ssn_pid19, '.user_notes': user.user_notes }
+      main_form = { '#edit_main_form .user_id': user.id, '#edit_main_form .first_name': user.first_name, '#edit_main_form .last_name': user.last_name, '#edit_main_form .maiden_name_pid6': user.maiden_name_pid6, '#edit_main_form .gender_pid8': user.gender_pid8,
         '#edit_main_form .dob_pid7': user.dob_pid7,  '#edit_main_form .email_user':user.email, '#edit_main_form .birth_town_pid23': user.birth_town_pid23, '#edit_main_form .birth_country_pid23': user.birth_country_pid23,
-        '#edit_main_form .idc_num':user.idc_num, '#edit_main_form .ssn_pid19': user.ssn_pid19
+        '#edit_main_form .idc_num':user.idc_num, '#edit_main_form .ssn_pid19': user.ssn_pid19, '#edit_main_form .user_notes': user.user_notes
            }
       fill_user(main_data,'details');
-      fill_user(addresses_form,'form')
+      fill_user(main_form,'form')
       },
     error: function () {
       alert('User not found!');
@@ -624,7 +702,7 @@ function test_null(value, ifnull) {
 function get_user_name (index, id, attribute, list) {
   var API_URL = '{{=URL('default','api_users/user', scheme=True, host=True)}}/';
   var test_mod = " ";
-  if (index == 0) { $(list+' li#li_'+id).attr(attribute,'unknown id');}
+  if (index == 0) { $('li#li_'+list+id).attr(attribute,'unknown id');}
   else {
     $.ajax({
       url: API_URL+ index,
@@ -637,19 +715,19 @@ function get_user_name (index, id, attribute, list) {
         } else {
           text = 'modified by ';
         };
-        $(list+' li#li_'+id).attr(attribute,data.content[0].first_name + ' '+ data.content[0].last_name);
-        $(list+' li#li_'+id).attr('title', function(i,title) {
+        $('li#li_'+list+id).attr(attribute,data.content[0].first_name + ' '+ data.content[0].last_name);
+        $('li#li_'+list+id).attr('title', function(i,title) {
           return title + text +data.content[0].first_name + ' '+ data.content[0].last_name+' ';
         });
-        test_mod = $(list+' li#li_'+id).attr('title');
+        test_mod = $('li#li_'+list+id).attr('title');
         if (test_mod.indexOf('modified') > -1) {
-              $(list+' li#li_'+id).attr('title', function(i,title) {
-              return title+' '+$(list+ ' li#li_'+id).attr('data-modifiedon');
+              $(' li#li_'+list+id).attr('title', function(i,title) {
+              return title+$(' li#li_'+list+id).attr('data-modifiedon');
             });
         };
         },
       error: function () {
-        $(list+' li#li_'+id).attr(attribute,'unknown get');
+        $(list+' li#li_'+list+id).attr(attribute,'unknown get');
         }
     });
   }

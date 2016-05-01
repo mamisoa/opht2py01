@@ -266,7 +266,7 @@ def file():
             redirect(URL('home'))
     except ValueError:
         redirect(URL('home'))
-    origin_rows = db(db.phone.id_auth_user == user_id).select()
+    origin_rows = db(db.data_origin).select(db.data_origin.origin)
     origin_json = XML(rows2json('phones',origin_rows))
     return locals()
 
