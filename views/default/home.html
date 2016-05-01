@@ -14,11 +14,23 @@
 <script src="{{=URL('static','js/bootstrap-datepicker.js')}}"></script>
 <link rel="stylesheet" href="{{=URL('static','css/bootstrap-datepicker3.css')}}" />
 <style>
+       .billing {
+           color: orange;
+       }
        .update {
-           color: #333;
+           color: green;
+       }
+       .examination {
+           color: blue;
        }
        .remove {
            color: red;
+       }
+       .worklist {
+           color: black;
+       }
+       .glyphicon {
+         margin: 5px;
        }
 </style>
 {{end}}
@@ -346,7 +358,10 @@
 
   function actionFormatter(value) {
       return [
-          '<a class="open" href="javascript:" title="Open user file"><i class="glyphicon glyphicon-user"></i></a>  ',
+          '<a class="open" href="javascript:" title="Open user details"><i class="glyphicon glyphicon-user"></i></a>  ',
+          '<a class="examination" href="javascript:" title="New examination"><i class="glyphicon glyphicon-star-empty"></i></a>',
+          '<a class="billing" href="javascript:" title="Billing"><i class="glyphicon glyphicon-euro"></i></a>',
+          '<a class="worklist pull-right" href="javascript:" title="Add to worklist"><i class="glyphicon glyphicon-download-alt"></i></a>',
           '<a class="remove" href="javascript:" title="Delete"><i class="glyphicon glyphicon-remove-circle"></i></a>'
       ].join('');
   }

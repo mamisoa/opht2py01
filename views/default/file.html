@@ -13,7 +13,7 @@
       .tooltip {
         font-size: 8px;
        }
-      .alert_main {
+      .alert_main .alert_address .alert_phone {
         margin-left: 20px;
         padding: 10px;
        }
@@ -47,7 +47,7 @@
       <div class="panel panel-primary" id="panel_details">
         <div class="panel-heading">
           <button type="button" class="btn btn-default btn-xs pull-right" id="edit_main" name="button">Edit</button>
-          <h4 class="panel-title">Main details<span class="alert_main"></span></h4>
+          <h4 class="panel-title">Main details <span class="alert_main"></span></h4>
         </div>
         <div class="panel-body">
           <ul class="list-group">
@@ -74,7 +74,7 @@
       <div class="panel panel-info" id="panel_addresses">
         <div class="panel-heading">
           <button type="button" class="btn btn-default btn-xs pull-right" name="button" id="new_address">New</button>
-          <h4 class="panel-title">adresses</h4> <span class="alert_address"></span>
+          <h4 class="panel-title">Addresses <span class="alert_address"></span></h4>
         </div>
         <div class="panel-body">
           <ol>
@@ -90,7 +90,7 @@
       <div class="panel panel-info" id="panel_phones">
         <div class="panel-heading">
           <button type="button" class="btn btn-default btn-xs pull-right" name="button" id="new_phone">New</button>
-          <h4 class="panel-title">phones</h4> <span class="alert_phone"></span>
+          <h4 class="panel-title">Phones <span class="alert_phone"></span></h4>
         </div>
         <div class="panel-body">
           <ol>
@@ -322,8 +322,10 @@ var addresses = {},
 $(function () {
   var $modal = $('#modal').modal({show: false}),
       $modal_address = $('#modal_address').modal({show: false}),
-      $modal_phone = $('#modal_phone').modal({show: false}),
-      $alert = $('.alert_main').hide();
+      $modal_phone = $('#modal_phone').modal({show: false});
+  $('.alert_main').hide();
+  $('.alert_phone').hide();
+  $('.alert_address').hide();
 
   main_details(user_id);
   addresses_details(user_id);
@@ -416,11 +418,11 @@ $(function () {
         success: function () {
           $modal.modal('hide');
           main_details(user_id);
-          showAlert('Updated','success');
+          showAlert('Updated','success', 'alert_main');
           },
           error: function () {
             $modal.modal('hide');
-            showAlert('Updated item error!','danger');
+            showAlert('Updated item error!','danger', 'alert_main');
           }
         });
     }
@@ -445,7 +447,6 @@ $(function () {
       row['address2_pid11_4'] = titleCase($('input[name=address2_pid11_4]').val());
       row['town_pid11_6'] = titleCase($('input[name=town_pid11_6]').val());
       row['country_pid11_7'] = titleCase($('input[name=country_pid11_7]').val());
-      console.log(row);
       post_address_form(row,req);
       }
   });
@@ -465,7 +466,6 @@ $(function () {
         delete row['id'];
       } else { req = 'PUT';}
       row['id_auth_user'] = user_id;
-      console.log(row);
       post_phone_form(row,req);
       }
   });
@@ -551,17 +551,17 @@ function post_address_form(row,req) {
       id = text.slice(text.indexOf('id(')+3,text.indexOf(') ***'));
       if ( id == 'None') {
         $modal_address.modal('hide');
-        showAlert('Unable to '+mode+' new address','danger');
+        showAlert('Unable to '+mode+' address','danger','alert_address');
       } else {
       $modal_address.modal('hide');
       resetForm($('#edit_address_form'));
-      showAlert(titleCase(mode+'ed'),'success');
+      showAlert(titleCase(mode+'ed'),'success','alert_address');
       addresses_details({{=user_id}});
       }
       },
       error: function () {
         $modal_address.modal('hide');
-        showAlert('Unable to '+mode+' new address!','danger');
+        showAlert('Unable to '+mode+'  address!','danger','alert_address');
       }
     });
 }
@@ -578,17 +578,17 @@ function post_phone_form(row,req) {
       id = text.slice(text.indexOf('id(')+3,text.indexOf(') ***'));
       if ( id == 'None') {
         $modal_phone.modal('hide');
-        showAlert('Unable to '+mode+' phone','danger');
+        showAlert('Unable to '+mode+' phone','danger','alert_phone');
       } else {
       $modal_phone.modal('hide');
       resetForm($('#edit_phone_form'));
-      showAlert(titleCase(mode+'ed'),'success');
+      showAlert(titleCase(mode+'ed'),'success','alert_phone');
       phones_details({{=user_id}});
       }
       },
       error: function () {
         $modal_phone.modal('hide');
-        showAlert('Unable to '+mode+' phone!','danger');
+        showAlert('Unable to '+mode+' phone!','danger','alert_phone');
       }
     });
 }
@@ -598,12 +598,12 @@ function test(obj,type) {
   alert($(obj).attr("data-id")+type);
 }
 
-function showAlert(title, type) {
-  $alert.attr('class', 'alert_main alert-' + type || 'success')
+function showAlert(title, type, panel) {
+  $('.'+panel).attr('class', panel+' alert-' + type || 'success')
     .html('<i class="glyphicon glyphicon-check"></i> ' + title).show();
   setTimeout(function () {
-    $alert.hide();
-  }, 5000);
+    $('.'+panel).hide();
+  }, 3000);
 }
 
 $('body').on( 'click', 'li .glyphicon-remove', function() {
@@ -614,7 +614,7 @@ $('body').on( 'click', 'li .glyphicon-remove', function() {
           url: API_URL,
           type: 'delete',
           success: function () {
-              showAlert('Delete item successful!', 'success');
+              showAlert('Delete item successful!', 'success', 'alert_'+row2remove);
               if (row2remove == 'address') {
                 addresses_details({{=user_id}});
               } else if (row2remove == 'phone') {
@@ -622,7 +622,7 @@ $('body').on( 'click', 'li .glyphicon-remove', function() {
               }
           },
           error: function () {
-              showAlert('Delete item error!', 'danger');
+              showAlert('Delete item error!', 'danger', 'alert_'+row2remove);
           }
       });
   }

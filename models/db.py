@@ -62,12 +62,18 @@ plugins = PluginManager()
 
 db.define_table('gender',
     Field('sex','string'))
+db.define_table('ethny',
+    Field('ethny','string'))
+db.define_table('marital',
+    Field('marital_status'))
 
 auth.settings.extra_fields['auth_user']= [  Field('maiden_name_pid6','string', label='Maiden name'),
                                             Field('dob_pid7','date', label='Date of birth'),
                                             Field('birth_town_pid23', 'string', label='Town of birth'),
                                             Field('birth_country_pid23', 'string', label='Country of birth'),
                                             Field('gender_pid8', 'reference gender', label='Gender'),
+                                            Field('marital_pid16', 'reference marital', label='Marital status'),
+                                            Field('ethny_pid22', 'reference ethny', label='Ethny'),
                                             Field('idc_num', 'string', label='ID card number'),
                                             Field('ssn_pid19', 'string', label='SSN'),
                                             Field('user_notes', 'string', label ='User notes'),
