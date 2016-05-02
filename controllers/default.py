@@ -167,11 +167,15 @@ def api_users():
             "/address[address]",
             "/address/{address.id_auth_user}",
             "/phone[phone]",
-            "/phone/{phone.id_auth_user}"
+            "/phone/{phone.id_auth_user}",
+            "/worklist[worklist]",
+            "/worklist/{worklist.id}"
             ]
         db.address.created_by.readable = db.address.modified_by.readable = db.address.created_on.readable = db.address.modified_on.readable = db.address.id_auth_user.readable = True
         db.auth_user.created_by.readable = db.auth_user.modified_by.readable = db.auth_user.created_on.readable = db.auth_user.modified_on.readable = True
         db.phone.created_by.readable = db.phone.modified_by.readable = db.phone.created_on.readable = db.phone.modified_on.readable = db.phone.id_auth_user.readable = True
+        db.worklist.created_by.readable = db.worklist.modified_by.readable = db.worklist.created_on.readable = db.worklist.modified_on.readable = db.worklist.id_auth_user.readable = True
+
         parser = db.parse_as_rest(patterns, args, vars)
         data = parser.response
         if parser.status == 200:
@@ -206,6 +210,9 @@ def api_users():
         elif tablename == 'phone':
             db(db.phone._id==record_id).update(**vars)
             return 'Table: '+ tablename +' *** Updated row id('+record_id+') ***  \r\n'
+        elif tablename == 'worklist':
+            db(db.worklist._id==record_id).update(**vars)
+            return 'Table: '+ tablename +' *** Updated row id('+record_id+') ***  \r\n'
         else:
             raise HTTP(400)
     def POST(tablename,**vars):
@@ -220,6 +227,9 @@ def api_users():
             return 'Table: '+ tablename +' *** Added row id('+ str(ret.id) + ') *** ' + 'Error code : ' + str(ret.errors) + ' *** \r\n'
         elif tablename == 'phone':
             ret = db.phone.validate_and_insert(**vars)
+            return 'Table: '+ tablename +' *** Added row id('+ str(ret.id) + ') *** ' + 'Error code : ' + str(ret.errors) + ' *** \r\n'
+        elif tablename == 'worklist':
+            ret = db.worklist.validate_and_insert(**vars)
             return 'Table: '+ tablename +' *** Added row id('+ str(ret.id) + ') *** ' + 'Error code : ' + str(ret.errors) + ' *** \r\n'
         else:
             raise HTTP(400)

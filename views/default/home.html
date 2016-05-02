@@ -43,14 +43,55 @@
 </style>
 {{end}}
 
-<div class="container-fluid">
+
+<div class="container-fluid" id="div_wl">
+  <div class="row">
+    <div class="col-md-12">
+      <div>
+        <h1>Worklist</h1>
+          <p class="toolbar">
+            <span class="alerte_wl"></span>
+          </p>
+      </div>
+      <table id="wl_table"
+          data-id-field="id"
+          data-show-refresh="true"
+          data-show-columns="true"
+          data-search="true"
+          data-toggle="table"
+          data-detail-view="true"
+          data-detail-formatter="detailFormatter_wl"
+          data-response-handler="responseHandler"
+          data-query-params="queryParams"
+          data-toolbar="#div_wl .toolbar">
+        <thead>
+          <tr>
+            <th data-field="id" data-sortable="true">ID</th>
+            <th data-field="exam2do_OBR4" data-title="Exam to do:" data-sortable="true">Exam to be done:</th>
+            <th data-field="provider_OBR16" data-sortable="true">Provider:</th>
+            <th data-field="requested_time_OBR6" data-sortable="true">Timeslot:</th>
+            <th data-field="modality_dest_OBR24" data-sortable="true">Modality destination:</th>
+            <th data-field="status_flag" data-sortable="true">Status:</th>
+            <th data-field="action_wl"
+                data-align="center"
+                data-formatter="actionFormatter_wl"
+                data-events="actionEvents_wl">Action</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<div class="container-fluid" id="listing">
   <div class="row">
     <div class="col-md-12">
       <div>
         <h1>{{=group}}s</h1>
           <p class="toolbar">
             <a href="javascript:" class="create btn btn-default">New {{=group}}</a>
-            <span class="alerte"></span>
+            <span class="alerte_listing"></span>
           </p>
       </div>
       <table id="table"
@@ -181,8 +222,11 @@
 <script type="text/javascript">
   var API_URL = '{{=URL('default','api_users/membership/'+membership+'/user', scheme=True, host=True)}}';
   var $table = $('#table').bootstrapTable({
-        url: API_URL});
-  var $alert = $('.alerte').hide();
+        url: API_URL}),
+      $table_wl = $('#wl_table').bootstrapTable({
+        url: '{{=URL('default','api_users/worklist', scheme=True, host=True)}}'
+      });
+  var $alert = $('.alerte_listing').hide();
 
   $(function() {
     var $modal = $('#modal').modal({show: false});
@@ -244,24 +288,24 @@
           id = text.slice(text.indexOf('id(')+3,text.indexOf(') ***'));
           if ( id == 'None') {
             $modal.modal('hide');
-            showAlert('Unable to add new patient!','danger');
+            showAlert('Unable to add new patient!','danger', 'alerte_listing');
           } else {
           add_membership(id,2);
           $modal.modal('hide');
           resetForm($('#new_patient'));
           $table.bootstrapTable('refresh');
-          showAlert('Created','success');
+          showAlert('Created','success', 'alerte_listing');
           }
           },
           error: function () {
             $modal.modal('hide');
-            showAlert('Unable to add new patient!','danger');
+            showAlert('Unable to add new patient!','danger', 'alerte_listing');
           }
         });
     }
 
     function check_duplicate(first,last,dob,row) {
-      var API_URL = '{{=URL('default','api_users/user', scheme=True, host=True)}}/'+first+ '/' +last+ '/' +dob;
+      var API_URL = '{{=URL('default','api_users/user', scheme=True, host=True)}}/'+encodeURIComponent(first)+ '/' +encodeURIComponent(last)+ '/' +dob;
       $.ajax({
         url: API_URL,
         type: 'get',
@@ -284,7 +328,7 @@
           }
         },
         error: function () {
-          showAlert('Unable to check if duplicate!','danger');
+          showAlert('Unable to check if duplicate!','danger', 'alerte_listing');
         }
       });
     }
@@ -303,10 +347,10 @@
                   type: 'delete',
                   success: function () {
                       $table.bootstrapTable('refresh');
-                      showAlert('Delete item successful!', 'success');
+                      showAlert('Delete item successful!', 'success', 'alerte_listing');
                   },
                   error: function () {
-                      showAlert('Delete item error!', 'danger');
+                      showAlert('Delete item error!', 'danger', 'alerte_listing');
                   }
               })
           }
@@ -316,8 +360,32 @@
       }
     }
 
-    function showAlert(title, type) {
-    $alert.attr('class', 'alert alert-' + type || 'success')
+    window.actionEvents_wl = {
+      'click .update': function (e,value,row) {
+      location.href = '{{=URL('default','api_users/worklist', scheme=True, host=True)}}/'+row.id;
+      },
+      'click .remove': function (e, value, row) {
+          if (confirm('Are you sure to delete this item?')) {
+              $.ajax({
+                  url: '{{=URL('default','api_users/worklist', scheme=True, host=True)}}/'+ row.id,
+                  type: 'delete',
+                  success: function () {
+                      $table_wl.bootstrapTable('refresh');
+                      showAlert('Delete item successful!', 'success', 'alerte_wl');
+                  },
+                  error: function () {
+                      showAlert('Delete item error!', 'danger', 'alerte_wl');
+                  }
+              })
+          }
+      },
+      'click .open':function (e,value,row) {
+        // location.href ='{{=URL('default','file', scheme=True, host=True)}}/'+row.id;
+      }
+    }
+
+    function showAlert(title, type, div) {
+    $alert.attr('class', div+' alert alert-' + type || 'success')
           .html('<i class="glyphicon glyphicon-check"></i> ' + title).show();
     setTimeout(function () {
         $alert.hide();
@@ -335,7 +403,7 @@
         console.log(text);
       },
       error: function () {
-        showAlert('Unable to set membership!','danger');
+        showAlert('Unable to set membership!','danger', 'alerte_listing');
       }
     });
   }
@@ -362,6 +430,39 @@
     return html.join('');
   }
 
+  function detailFormatter_wl(index, row) {
+    var html = [];
+    label = {id: 'ID', exam2do_OBR4: 'Exam to be done', provider_OBR16: 'Provider',
+              birth_town_pid23: 'Town of birth', birth_country_pid23: 'Country of birth', dob_pid7: 'Date of birth',
+              gender_pid8: 'Gender', idc_num: 'ID Card', ssn_pid19: 'SSN', maiden_name_pid6: 'Maiden name',
+              email:'Email'};
+    $.each(row, function (key, value) {
+      if (!(key in label)) {} else {
+      html.push('<p><b>' + label[key] + ': </b><span data-userid="'+value+'">' + value + '</span></p>'); }
+      });
+    return html.join('');
+  }
+
+  function get_user_name (index) {
+    var API_URL = '{{=URL('default','api_users/user', scheme=True, host=True)}}/';
+    if (index == 0) { $(this).text('unknown');
+      }
+    else {
+      $.ajax({
+        url: API_URL+ index,
+        type: 'GET',
+        dataType: 'json',
+        contentType: 'application/json',
+        success: function (data) {
+          $(this).text(data.content[0].first_name + ' '+ data.content[0].last_name);
+        },
+        error: function () {
+          $(this).text('unknown');
+          }
+      });
+    }
+  }
+
   function queryParams(params) {
       return {};
   }
@@ -375,6 +476,14 @@
           '<a class="remove" href="javascript:" title="Delete"><i class="glyphicon glyphicon-remove-circle"></i></a>'
       ].join('');
   }
+
+  function actionFormatter_wl(value) {
+      return [
+          '<a class="Update" href="javascript:" title="Update WL"><i class="glyphicon glyphicon-pencil"></i></a>  ',
+          '<a class="remove" href="javascript:" title="Delete"><i class="glyphicon glyphicon-remove-circle"></i></a>'
+      ].join('');
+  }
+
 
   function titleCase(string) {
     return string.charAt(0).toUpperCase() + string.slice(1); }
