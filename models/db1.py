@@ -64,6 +64,7 @@ db.define_table('worklist',
     Field('status_flag', 'list:string', required=True),
     auth.signature)
 
+
 query_sessions = (
 (db.auth_user.id == db.auth_membership.user_id)&
 (db.auth_membership.group_id == 3)

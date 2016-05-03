@@ -68,7 +68,7 @@
           <tr>
             <th data-field="id" data-sortable="true">ID</th>
             <th data-field="exam2do_OBR4" data-title="Exam to do:" data-sortable="true">Exam to be done:</th>
-            <th data-field="provider_OBR16" data-sortable="true">Provider:</th>
+            <th data-field="provider_OBR16" data-sortable="true" data-formatter="formatProvider">Provider:</th>
             <th data-field="requested_time_OBR6" data-sortable="true">Timeslot:</th>
             <th data-field="modality_dest_OBR24" data-sortable="true">Modality destination:</th>
             <th data-field="status_flag" data-sortable="true">Status:</th>
@@ -228,6 +228,12 @@
       });
   var $alert = $('.alerte_listing').hide();
 
+  $('#wl_table').on('sort.bs.table', function ( name,order) {
+    $('#div_wl .provider_OBR16').each(function () {
+        get_user_name($(this).data('provider'), $(this));
+      });
+  });
+
   $(function() {
     var $modal = $('#modal').modal({show: false});
     var $duplicate = $('.duplicate').hide();
@@ -257,6 +263,11 @@
     $('.create').click(function () {
       $modal.modal('show');
     });
+
+    $('#div_wl .provider_OBR16').each(function () {
+        get_user_name($(this).data('provider'), $(this));
+      });
+
 
     $modal.find('.submit').click(function (e) {
       if ( $('#new_patient .submit').hasClass('disabled'))
@@ -433,9 +444,8 @@
   function detailFormatter_wl(index, row) {
     var html = [];
     label = {id: 'ID', exam2do_OBR4: 'Exam to be done', provider_OBR16: 'Provider',
-              birth_town_pid23: 'Town of birth', birth_country_pid23: 'Country of birth', dob_pid7: 'Date of birth',
-              gender_pid8: 'Gender', idc_num: 'ID Card', ssn_pid19: 'SSN', maiden_name_pid6: 'Maiden name',
-              email:'Email'};
+              requested_time_OBR6: 'Timeslot', modality_dest_OBR24: 'Modality destination', status_flag: 'Status'
+            };
     $.each(row, function (key, value) {
       if (!(key in label)) {} else {
       html.push('<p><b>' + label[key] + ': </b><span data-userid="'+value+'">' + value + '</span></p>'); }
@@ -443,25 +453,26 @@
     return html.join('');
   }
 
-  function get_user_name (index) {
+  function formatProvider (value,row){
+    return '<span class="provider_OBR16" data-provider="'+value+'">'+value+'</span>';
+  }
+
+  function get_user_name (value, attribute) {
     var API_URL = '{{=URL('default','api_users/user', scheme=True, host=True)}}/';
-    if (index == 0) { $(this).text('unknown');
-      }
-    else {
       $.ajax({
-        url: API_URL+ index,
+        url: API_URL+ value,
         type: 'GET',
         dataType: 'json',
         contentType: 'application/json',
         success: function (data) {
-          $(this).text(data.content[0].first_name + ' '+ data.content[0].last_name);
+          $(attribute).text(data.content[0].first_name + ' '+ data.content[0].last_name);
         },
         error: function () {
-          $(this).text('unknown');
+          $(attribute).text('unknown');
           }
       });
-    }
   }
+
 
   function queryParams(params) {
       return {};
