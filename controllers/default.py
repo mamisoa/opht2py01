@@ -107,10 +107,10 @@ def api():
             if request.args(1) == None: # use request.arg(1) to get the arg after tablename;
                                     # request.arg(1) is None if empty, don't use args[1] coz raise exeption error
                 if tablename == 'user':
-                    rows =  db(db.auth_user).select(db.auth_user.id,
-                        db.auth_user.first_name, db.auth_user.last_name, db.auth_user.dob_pid7, db.auth_user.gender_pid8,
-                        db.auth_user.birth_town_pid23, db.auth_user.birth_country_pid23,
-                        db.auth_user.idc_num, db.auth_user.ssn_pid19)
+                    rows =  db().select(db.auth_user.id, db.auth_user.first_name, db.auth_user.last_name,
+                        db.worklist.id_auth_user,
+                        left = db.auth_user.on(db.auth_user.id==db.worklist.id_auth_user)
+                        )
                     data = rows2json('all users',rows)
                     return  data
                 else : raise HTTP(400)
@@ -118,10 +118,9 @@ def api():
                 table_id = request.args(1)
                 if tablename == 'user':
                     try:
-                        rows =  db(db.auth_user._id==table_id).select(db.auth_user.id,
-                            db.auth_user.first_name, db.auth_user.last_name, db.auth_user.dob_pid7, db.auth_user.gender_pid8,
-                            db.auth_user.birth_town_pid23, db.auth_user.birth_country_pid23,
-                            db.auth_user.idc_num, db.auth_user.ssn_pid19)
+                        rows =  db().select(db.worklist.id, db.worklist.
+                            db.worklist.provider_OBR16,
+                            )
                     except ValueError: raise HTTP(400)
                     data = rows2json('selected user',rows)
                     return data
