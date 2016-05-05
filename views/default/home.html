@@ -67,6 +67,7 @@
         <thead>
           <tr>
             <th data-field="id" data-sortable="true">ID</th>
+            <th data-field="patient" data-sortable="true">Patient</th>
             <th data-field="exam2do_OBR4" data-title="Exam to do:" data-sortable="true">Exam to be done:</th>
             <th data-field="provider_OBR16" data-sortable="true">Provider:</th>
             <th data-field="requested_time_OBR6" data-sortable="true">Timeslot:</th>
@@ -412,7 +413,10 @@
     worklist = res.content;
     display = [];
     $.each(worklist, function(i) {
-      display.push({'id': worklist[i].worklist.id, 'provider_OBR16': worklist[i].auth_user.first_name+' '+worklist[i].auth_user.last_name, 'exam2do_OBR4': worklist[i].exam2do_OBR4.exam_description});
+      display.push({'id': worklist[i].worklist.id,
+       'provider_OBR16': worklist[i].provider.first_name+' '+worklist[i].provider.last_name,
+       'patient': worklist[i].patient.first_name+' '+worklist[i].patient.last_name,
+       'exam2do_OBR4': worklist[i].exam2do_OBR4.exam_description});
     });
     return display;
   }

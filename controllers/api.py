@@ -20,9 +20,16 @@ def rows2json (tablename,rows):
 def wl():
     response.view = 'generic.json'
     def GET():
-        rows =  db().select(db.auth_user.id, db.auth_user.first_name, db.auth_user.last_name,
-                        db.worklist.id, db.worklist.id_auth_user, db.worklist.exam2do_OBR4, db.exam2do_OBR4.id, db.exam2do_OBR4.exam_description,
-                        left = [db.auth_user.on(db.auth_user.id==db.worklist.provider_OBR16), db.exam2do_OBR4.on(db.exam2do_OBR4.id==db.worklist.exam2do_OBR4)]
+        provider = db.auth_user.with_alias('provider')
+        patient = db.auth_user.with_alias('patient')
+        rows =  db(db.worklist).select(provider.id, provider.first_name, provider.last_name,
+                        patient.id, patient.first_name, patient.last_name,
+                        db.worklist.id, db.worklist.id_auth_user, db.worklist.exam2do_OBR4,
+                        db.exam2do_OBR4.id, db.exam2do_OBR4.exam_description,
+                        left = [
+                        patient.on(patient.id==db.worklist.id_auth_user),
+                        provider.on(provider.id==db.worklist.provider_OBR16),
+                        db.exam2do_OBR4.on(db.exam2do_OBR4.id==db.worklist.exam2do_OBR4)]
                         )
         data = rows2json('content',rows)
         return  data
