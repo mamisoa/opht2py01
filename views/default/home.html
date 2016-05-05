@@ -68,7 +68,7 @@
           <tr>
             <th data-field="id" data-sortable="true">ID</th>
             <th data-field="exam2do_OBR4" data-title="Exam to do:" data-sortable="true">Exam to be done:</th>
-            <th data-field="provider_OBR16" data-sortable="true" data-formatter="formatProvider">Provider:</th>
+            <th data-field="provider_OBR16" data-sortable="true">Provider:</th>
             <th data-field="requested_time_OBR6" data-sortable="true">Timeslot:</th>
             <th data-field="modality_dest_OBR24" data-sortable="true">Modality destination:</th>
             <th data-field="status_flag" data-sortable="true">Status:</th>
@@ -220,11 +220,11 @@
 
 
 <script type="text/javascript">
-  var API_URL = '{{=URL('default','api_users/membership/'+membership+'/user', scheme=True, host=True)}}';
+  var API_URL = '{{=URL('api','users/membership/'+membership+'/user', scheme=True, host=True)}}';
   var $table = $('#table').bootstrapTable({
         url: API_URL}),
       $table_wl = $('#wl_table').bootstrapTable({
-        url: '{{=URL('default','api/worklist', scheme=True, host=True)}}'
+        url: '{{=URL('api','wl', scheme=True, host=True)}}'
       });
   var $alert = $('.alerte_listing').hide();
 
@@ -272,13 +272,12 @@
         row['first_name'] = titleCase($('input[name=first_name]').val());
         row['last_name'] = titleCase($('input[name=last_name]').val());
         delete row['passwordcheck'];
-        console.log(encodeURIComponent(row['first_name'])+ ' '+encodeURIComponent(row['last_name']));
         check_duplicate(encodeURIComponent(row['first_name']),encodeURIComponent(row['last_name']),row['dob_pid7'],row);
       }
     });
 
     function post_new_user_form(row) {
-      var API_URL = '{{=URL('default','api_users/auth_user', scheme=True, host=True)}}/';
+      var API_URL = '{{=URL('api','users/auth_user', scheme=True, host=True)}}/';
       $.ajax({
         url: API_URL,
         type: 'post',
@@ -305,7 +304,7 @@
     }
 
     function check_duplicate(first,last,dob,row) {
-      var API_URL = '{{=URL('default','api_users/user', scheme=True, host=True)}}/'+encodeURIComponent(first)+ '/' +encodeURIComponent(last)+ '/' +dob;
+      var API_URL = '{{=URL('api','users/user', scheme=True, host=True)}}/'+encodeURIComponent(first)+ '/' +encodeURIComponent(last)+ '/' +dob;
       $.ajax({
         url: API_URL,
         type: 'get',
@@ -343,7 +342,7 @@
       'click .remove': function (e, value, row) {
           if (confirm('Are you sure to delete this item?')) {
               $.ajax({
-                  url: '{{=URL('default','api_users/auth_user', scheme=True, host=True)}}/'+ row.id,
+                  url: '{{=URL('api','users/auth_user', scheme=True, host=True)}}/'+ row.id,
                   type: 'delete',
                   success: function () {
                       $table.bootstrapTable('refresh');
@@ -362,12 +361,12 @@
 
     window.actionEvents_wl = {
       'click .update': function (e,value,row) {
-      location.href = '{{=URL('default','api_users/worklist', scheme=True, host=True)}}/'+row.id;
+      // location.href = '{{=URL('default','api_users/worklist', scheme=True, host=True)}}/'+row.id;
       },
       'click .remove': function (e, value, row) {
           if (confirm('Are you sure to delete this item?')) {
               $.ajax({
-                  url: '{{=URL('default','api_users/worklist', scheme=True, host=True)}}/'+ row.id,
+                  url: '{{=URL('api','wl/worklist', scheme=True, host=True)}}/'+ row.id,
                   type: 'delete',
                   success: function () {
                       $table_wl.bootstrapTable('refresh');
@@ -378,9 +377,6 @@
                   }
               })
           }
-      },
-      'click .open':function (e,value,row) {
-        // location.href ='{{=URL('default','file', scheme=True, host=True)}}/'+row.id;
       }
     }
 
@@ -395,7 +391,7 @@
   function add_membership(user_id,membership) {
     var row = {'user_id': user_id, 'group_id': {{=membership}}};
     $.ajax({
-      url: '{{=URL('default','api_users/auth_membership', scheme=True, host=True)}}/',
+      url: '{{=URL('api','users/auth_membership', scheme=True, host=True)}}/',
       type: 'post',
       contentType: 'application/json',
       data: JSON.stringify(row),
@@ -420,7 +416,6 @@
     });
     return display;
   }
-
 
   function detailFormatter(index, row) {
     var html = [];
@@ -452,27 +447,6 @@
     return html.join('');
   }
 
-  function formatProvider (value,row){
-    return '<span class="provider_OBR16" data-provider="'+value+'">'+value+'</span>';
-  }
-
-  function get_user_name (value, attribute) {
-    var API_URL = '{{=URL('default','api_users/user', scheme=True, host=True)}}/';
-      $.ajax({
-        url: API_URL+ value,
-        type: 'GET',
-        dataType: 'json',
-        contentType: 'application/json',
-        success: function (data) {
-          $(attribute).text(data.content[0].first_name + ' '+ data.content[0].last_name);
-        },
-        error: function () {
-          $(attribute).text('unknown');
-          }
-      });
-  }
-
-
   function queryParams(params) {
       return {};
   }
@@ -493,7 +467,6 @@
           '<a class="remove" href="javascript:" title="Delete"><i class="glyphicon glyphicon-remove-circle"></i></a>'
       ].join('');
   }
-
 
   function titleCase(string) {
     return string.charAt(0).toUpperCase() + string.slice(1); }
