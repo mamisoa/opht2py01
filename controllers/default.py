@@ -101,17 +101,17 @@ def rows2json (tablename,rows):
 def api():
     response.view = 'generic.json'
     def GET(tablename,*args): # GET VALUES
-        tables = {'user': 'auth_user', 'membership': 'auth_membership'}
+        tables = {'worklist': 'worklist', 'membership': 'auth_membership'}
         if tablename =='': raise HTTP(400)
         if tablename in tables:
             if request.args(1) == None: # use request.arg(1) to get the arg after tablename;
                                     # request.arg(1) is None if empty, don't use args[1] coz raise exeption error
-                if tablename == 'user':
+                if tablename == 'worklist':
                     rows =  db().select(db.auth_user.id, db.auth_user.first_name, db.auth_user.last_name,
-                        db.worklist.id_auth_user,
-                        left = db.auth_user.on(db.auth_user.id==db.worklist.id_auth_user)
+                        db.worklist.id, db.worklist.id_auth_user, db.worklist.exam2do_OBR4, db.exam2do_OBR4.id, db.exam2do_OBR4.exam_description,
+                        left = [db.auth_user.on(db.auth_user.id==db.worklist.provider_OBR16), db.exam2do_OBR4.on(db.exam2do_OBR4.id==db.worklist.exam2do_OBR4)]
                         )
-                    data = rows2json('all users',rows)
+                    data = rows2json('content',rows)
                     return  data
                 else : raise HTTP(400)
             else:

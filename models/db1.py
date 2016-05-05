@@ -57,8 +57,8 @@ db.define_table('worklist',
     Field('receving_app_MSH5','string', default = 'Receving App'),
     Field('receving_facility_MSH6','string', default = 'Eye Center'),
     Field('message_unique_id_MSH10','string', default=str(request.now), required=True),
-    Field('exam2do_OBR4', required=True),
-    Field('provider_OBR16', 'string', required=True),
+    Field('exam2do_OBR4', 'reference exam2do_OBR4', required=True),
+    Field('provider_OBR16', 'reference auth_user', required=True),
     Field('requested_time_OBR6', 'datetime', required=True),
     Field('modality_dest_OBR24', 'string'),
     Field('status_flag', 'list:string', required=True),
@@ -73,7 +73,7 @@ query_sessions = (
 db.worklist.id_auth_user.requires=IS_IN_DB(db,'auth_user.id','%(first_name)s'+' '+'%(last_name)s')
 db.worklist.provider_OBR16.requires=IS_IN_DB(db(query_sessions), 'auth_user.id', '%(first_name)s'+' '+'%(last_name)s' )
 db.worklist.status_flag.requires=IS_IN_SET(('requested', 'in process', 'done', 'cancelled'))
-db.worklist.exam2do_OBR4.requires=IS_IN_DB(db,'exam2do_OBR4.exam_description', '%(exam_description)s')
+db.worklist.exam2do_OBR4.requires=IS_IN_DB(db,'exam2do_OBR4.id', '%(exam_description)s')
 
 db.define_table('test',
     Field('testname','string'),

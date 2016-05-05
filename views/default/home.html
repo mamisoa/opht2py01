@@ -61,7 +61,7 @@
           data-toggle="table"
           data-detail-view="true"
           data-detail-formatter="detailFormatter_wl"
-          data-response-handler="responseHandler"
+          data-response-handler="responseHandler_wl"
           data-query-params="queryParams"
           data-toolbar="#div_wl .toolbar">
         <thead>
@@ -224,15 +224,9 @@
   var $table = $('#table').bootstrapTable({
         url: API_URL}),
       $table_wl = $('#wl_table').bootstrapTable({
-        url: '{{=URL('default','api_users/worklist', scheme=True, host=True)}}'
+        url: '{{=URL('default','api/worklist', scheme=True, host=True)}}'
       });
   var $alert = $('.alerte_listing').hide();
-
-  $('#wl_table').on('sort.bs.table', function ( name,order) {
-    $('#div_wl .provider_OBR16').each(function () {
-        get_user_name($(this).data('provider'), $(this));
-      });
-  });
 
   $(function() {
     var $modal = $('#modal').modal({show: false});
@@ -263,11 +257,6 @@
     $('.create').click(function () {
       $modal.modal('show');
     });
-
-    $('#div_wl .provider_OBR16').each(function () {
-        get_user_name($(this).data('provider'), $(this));
-      });
-
 
     $modal.find('.submit').click(function (e) {
       if ( $('#new_patient .submit').hasClass('disabled'))
@@ -420,8 +409,18 @@
   }
 
   function responseHandler(res) {
-     return res.content;
+    return res.content;
   }
+
+  function responseHandler_wl(res) {
+    worklist = res.content;
+    display = [];
+    $.each(worklist, function(i) {
+      display.push({'id': worklist[i].worklist.id, 'provider_OBR16': worklist[i].auth_user.first_name+' '+worklist[i].auth_user.last_name, 'exam2do_OBR4': worklist[i].exam2do_OBR4.exam_description});
+    });
+    return display;
+  }
+
 
   function detailFormatter(index, row) {
     var html = [];
@@ -431,7 +430,7 @@
               email:'Email'};
     $.each(row, function (key, value) {
       if (!(key in label)) {} else {
-      html.push('<p><b>' + label[key] + ':</b> ' + value + '</p>'); }
+        html.push('<p><b>' + label[key] + ':</b> ' + value + '</p>'); }
       });
     html.splice(0, 0, html.splice(3,1)[0]); // arr.splice(newIndex, 0, arr.splice(oldIndex, 1)[0]);
     html.splice(4, 0, html.splice(9,1)[0]);
@@ -448,7 +447,7 @@
             };
     $.each(row, function (key, value) {
       if (!(key in label)) {} else {
-      html.push('<p><b>' + label[key] + ': </b><span data-userid="'+value+'">' + value + '</span></p>'); }
+        html.push('<p><b>' + label[key] + ':</b> ' + value + '</p>'); }
       });
     return html.join('');
   }
