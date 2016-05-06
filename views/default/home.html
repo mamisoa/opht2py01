@@ -32,8 +32,9 @@
        .glyphicon {
          margin: 5px;
        }
-
-
+       .tooltip {
+         font-size: 8px;
+        }
        .input-group > .form-control, .input-group > .input-group-addon {
          height: 46px;
          padding-top: 10px;
@@ -63,6 +64,8 @@
           data-detail-formatter="detailFormatter_wl"
           data-response-handler="responseHandler_wl"
           data-query-params="queryParams"
+          data-row-style="rowStyle"
+          data-row-attributes="rowAttributes"
           data-toolbar="#div_wl .toolbar">
         <thead>
           <tr>
@@ -70,6 +73,7 @@
             <th data-field="patient" data-sortable="true">Patient</th>
             <th data-field="exam2do_OBR4" data-title="Exam to do:" data-sortable="true">Exam to be done:</th>
             <th data-field="provider_OBR16" data-sortable="true">Provider:</th>
+            <th data-field="receving_facility_MSH6" data-sortable="true">Receiving facility:</th>
             <th data-field="requested_time_OBR6" data-sortable="true">Timeslot:</th>
             <th data-field="modality_dest_OBR24" data-sortable="true">Modality destination:</th>
             <th data-field="status_flag" data-sortable="true">Status:</th>
@@ -233,6 +237,7 @@
     var $modal = $('#modal').modal({show: false});
     var $duplicate = $('.duplicate').hide();
     resetForm($('#new_patient'));
+    $("body").tooltip({ selector: '[data-toggle=tooltip]' });
 
     $modal.on('hidden.bs.modal', function (){
       $('.submit').show();
@@ -416,7 +421,16 @@
       display.push({'id': worklist[i].worklist.id,
        'provider_OBR16': worklist[i].provider.first_name+' '+worklist[i].provider.last_name,
        'patient': worklist[i].patient.first_name+' '+worklist[i].patient.last_name,
-       'exam2do_OBR4': worklist[i].exam2do_OBR4.exam_description});
+       'receving_facility_MSH6': worklist[i].facility.facility_name,
+       'status_flag': worklist[i].worklist.status_flag,
+       'requested_time_OBR6': worklist[i].worklist.requested_time_OBR6,
+       'modality_dest_OBR24': worklist[i].modality.modality_name,
+       'created_by': worklist[i].creator.first_name+' '+worklist[i].creator.last_name,
+       'created_on': worklist[i].worklist.created_on,
+       'modified_by': worklist[i].editor.first_name+' '+worklist[i].editor.last_name,
+       'modified_on': worklist[i].worklist.modified_on,
+       'exam2do_OBR4': worklist[i].exam2do_OBR4.exam_description
+      });
     });
     return display;
   }
@@ -441,7 +455,7 @@
 
   function detailFormatter_wl(index, row) {
     var html = [];
-    label = {id: 'ID', exam2do_OBR4: 'Exam to be done', provider_OBR16: 'Provider',
+    label = {id: 'ID', exam2do_OBR4: 'Exam to be done', provider_OBR16: 'Provider', receving_facility_MSH6: 'Department',
               requested_time_OBR6: 'Timeslot', modality_dest_OBR24: 'Modality destination', status_flag: 'Status'
             };
     $.each(row, function (key, value) {
@@ -470,6 +484,30 @@
           '<a class="Update" href="javascript:" title="Update WL"><i class="glyphicon glyphicon-pencil"></i></a>  ',
           '<a class="remove" href="javascript:" title="Delete"><i class="glyphicon glyphicon-remove-circle"></i></a>'
       ].join('');
+  }
+
+  function rowStyle(row, index) {
+      var classes = ['active', 'success', 'info', 'warning', 'danger'];
+      if (row.status_flag == 'requested') {
+          return { classes: classes[4] };
+      } else if (row.status_flag== 'in process') {
+          return { classes: classes[2] };
+      } else if (row.status_flag== 'done') {
+          return { classes: classes[1] };
+      } else if (row.status_flag== 'cancelled') {
+          return { classes: classes[3] };
+      }
+      return {};
+  }
+
+  function rowAttributes(row,index) {
+    row.created_by == '' ? createdby = 'created by unknown' : createdby = 'created by '+row.created_by;
+    row.created_on == '' ? createdon = ' on unknown date' : createdon = ' on'+row.created_on;
+    row.modified_by == '' ? modifiedby = ' modified by unknown' : modifiedby = ' modified by '+row.modified_by;
+    row.modified_on == '' ? modifiedon = ' on unknown date' : modifiedon = ' on'+row.modified_on;
+    return { "title": createdby + createdon + modifiedby + modifiedon,
+      "data-toggle": "tooltip"
+    };
   }
 
   function titleCase(string) {
