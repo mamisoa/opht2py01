@@ -116,11 +116,12 @@
             <th data-field="first_name" data-title="First name" data-sortable="true">First name:</th>
             <th data-field="last_name" data-sortable="true">Last name:</th>
             <th data-field="dob_pid7" data-sortable="true">Date of birth:</th>
+            <th data-field="age" data-sortable="true">Age:</th>
             <th data-field="gender_pid8" data-sortable="true">Gender:</th>
-            <th data-field="birth_town_pid23" data-sortable="true">Town of birth:</th>
+            <!-- <th data-field="birth_town_pid23" data-sortable="true">Town of birth:</th>
             <th data-field="birth_country_pid23" data-sortable="true">Country of birth:</th>
             <th data-field="idc_num">ID card number:</th>
-            <th data-field="ssn_pid19">SSN:</th>
+            <th data-field="ssn_pid19">SSN:</th> -->
             <th data-field="action"
                 data-align="center"
                 data-formatter="actionFormatter"
@@ -227,7 +228,7 @@
 <script type="text/javascript">
   var API_URL = '{{=URL('api','users/membership/'+membership+'/user', scheme=True, host=True)}}';
   var $table = $('#table').bootstrapTable({
-        url: API_URL}),
+        url:'{{=URL('api','users_list/'+membership, scheme=True, host=True)}}'}),
       $table_wl = $('#wl_table').bootstrapTable({
         url: '{{=URL('api','wl', scheme=True, host=True)}}'
       });
@@ -411,7 +412,18 @@
   }
 
   function responseHandler(res) {
-    return res.content;
+    list = res.content;
+    display = [];
+    $.each(list, function(i) {
+      display.push({'id': list[i].user.id,
+       'first_name': list[i].user.first_name,
+       'last_name': list[i].user.last_name,
+       'dob_pid7': list[i].user.dob_pid7,
+       'gender_pid8': list[i].gender.sex,
+       'age': getAge(list[i].user.dob_pid7)
+      });
+    });
+    return display;
   }
 
   function responseHandler_wl(res) {
@@ -502,9 +514,9 @@
 
   function rowAttributes(row,index) {
     row.created_by == '' ? createdby = 'created by unknown' : createdby = 'created by '+row.created_by;
-    row.created_on == '' ? createdon = ' on unknown date' : createdon = ' on'+row.created_on;
+    row.created_on == '' ? createdon = ' on unknown date' : createdon = ' on '+row.created_on;
     row.modified_by == '' ? modifiedby = ' modified by unknown' : modifiedby = ' modified by '+row.modified_by;
-    row.modified_on == '' ? modifiedon = ' on unknown date' : modifiedon = ' on'+row.modified_on;
+    row.modified_on == '' ? modifiedon = ' on unknown date' : modifiedon = ' on '+row.modified_on;
     return { "title": createdby + createdon + modifiedby + modifiedon,
       "data-toggle": "tooltip"
     };
@@ -512,6 +524,18 @@
 
   function titleCase(string) {
     return string.charAt(0).toUpperCase() + string.slice(1); }
+
+    function getAge(dateString) {
+      var today = new Date();
+      var birthDate = new Date(dateString);
+      var age = today.getFullYear() - birthDate.getFullYear();
+      var m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+          age--;
+      }
+      return age;
+  }
+
 
   function resetForm($form) {
     $form.find('input:text, input:password, input:file, select, textarea').val('');

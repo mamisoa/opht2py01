@@ -3,9 +3,9 @@ def rows2json (tablename,rows):
     import json
     def date_handler(obj):
         if isinstance(obj, datetime.datetime):
-            return obj.strftime(str(T('%d/%m/%Y %T')))
+            return obj.strftime(str(T('%Y-%m-%d %T'))) #(str(T('%d/%m/%Y %T')))
         elif isinstance(obj, datetime.date):
-            return obj.strftime(str(T('%d/%m/%Y')))
+            return obj.strftime(str(T('%Y-%m-%d'))) # (str(T('%d/%m/%Y')))
         else:
             return False
     rows = rows.as_list()
@@ -50,6 +50,36 @@ def wl():
     def DELETE(tablename,record_id):
         if tablename=='worklist':
             db(db.worklist.id == record_id).delete()
+            return 'Table: '+ tablename +' *** Deleted row id('+record_id+') *** \r\n'
+        else:
+            raise HTTP(400)
+    return locals()
+
+
+@request.restful()
+def users_list():
+    response.view = 'generic.json'
+    def GET(mb):
+        try:
+            query_sessions = (
+            (db.auth_user.id == db.auth_membership.user_id)&
+            (db.auth_membership.group_id == mb)
+            )
+            user = db.auth_user.with_alias('user')
+            rows =  db(query_sessions).select(
+                            user.first_name, user.last_name, user.id, user.dob_pid7, user.gender_pid8,
+                            db.gender.sex, db.address.town_pid11_6,
+                            groupby= db.auth_user.id,
+                            left = [ user.on(user.id==db.auth_membership.user_id),
+                                    db.gender.on(db.gender.id == db.auth_user.gender_pid8),
+                                    db.address.on(db.address.id_auth_user == db.auth_user.id)
+                            ])
+            data = rows2json('content',rows)
+            return  data
+        except ValueError: raise HTTP(400)
+    def DELETE(tablename,record_id):
+        if tablename=='auth_user':
+            db(db.auth_user.id == record_id).delete()
             return 'Table: '+ tablename +' *** Deleted row id('+record_id+') *** \r\n'
         else:
             raise HTTP(400)
