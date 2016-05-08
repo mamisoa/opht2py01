@@ -13,6 +13,9 @@
 <script src="{{=URL('static','js/timer/timer.jquery.min.js')}}"></script>
 <!-- https://github.com/datejs/Datejs -->
 <script src="{{=URL('static','js/datejs/date.js')}}"></script>
+<!-- https://github.com/silviomoreto/bootstrap-select.git -->
+<script src="{{=URL('static','js/bootstrap-select/js/bootstrap-select.min.js')}}"></script>
+<link rel="stylesheet" href="{{=URL('static','js/bootstrap-select/css/bootstrap-select.min.css')}}" />
 <style>
        .billing {
            color: orange;
@@ -224,8 +227,50 @@
   </div>
 </div>
 
+<div class="modal fade" id="modal_wl" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="form_wl">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id=""></h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-group hidden">
+          <label>ID:</label>
+          <input type="text" class="form-control wl_id" name="id" placeholder="ID" value="">
+        </div>
+        <div class="row">
+          <div class="form-group col-sm-6">
+          <label>Sender:</label>
+          <div class="input-group">
+            <input type="text" class="form-control sending_facility_MSH4" name="sending_facility_MSH4" placeholder="Sender" value="" required>
+          </div>
+            <div class="help-block with-errors"></div>
+          </div>
+          <div class="form-group col-sm-6">
+            <label>receiver:</label>
+            <input type="text" class="form-control receving_facility_MSH6" name="receving_facility_MSH6" placeholder="Receiver" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Exam to be done</label>
+          <div class="input-group">
+            <select class="form-control exam2do_OBR4" multiple>
+            </select>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Submit</button>
+      </div>
+    </form>
+    </div>
+  </div>
+</div>
 
 <script type="text/javascript">
+  var facilities = {{=facilities}}, exams = {{=exams}};
   var API_URL = '{{=URL('api','users/membership/'+membership+'/user', scheme=True, host=True)}}';
   var $table = $('#table').bootstrapTable({
         url:'{{=URL('api','users_list/'+membership, scheme=True, host=True)}}'}),
@@ -236,7 +281,8 @@
   var timer_id = [];
 
   $(function() {
-    var $modal = $('#modal').modal({show: false});
+    var $modal = $('#modal').modal({show: false}),
+      $modal_wl = $('#modal_wl').modal({show: false});
     var $duplicate = $('.duplicate').hide();
     resetForm($('#new_patient'));
     $("body").tooltip({ selector: '[data-toggle=tooltip]' });
@@ -250,17 +296,25 @@
                     format: "yyyy-mm-dd"
                 });
 
-    $('#modal')
+    $('#modal', '#modal_wl')
       .on('shown.bs.modal', function (e) {
+        $('#modal_wl').selectpicker('show')
         $('#new_patient').validator();
         $('#new_patient .datepicker').datepicker({
                         format: "yyyy-mm-dd"
                     });
-        })
+        $('#modal_wl').validator();
+        $('#modal_wl .datepicker').datepicker({
+                        format: "yyyy-mm-dd"
+                    });
+          })
       .on('hidden.bs.modal', function (e) {
         $('#new_patient').validator('destroy');
         $('#new_patient .datepicker').datepicker('destroy');
-      });
+        $('#modal_wl').validator('destroy');
+        $('#modal_wl .datepicker').datepicker('destroy');
+        $('#modal_wl').selectpicker('destroy');
+        });
 
     $('.create').click(function () {
       $modal.modal('show');
@@ -350,7 +404,7 @@
     //window.actionEvents not working if in the document.ready
     window.actionEvents = {
       'click .update': function (e,value,row) {
-      location.href = '{{=URL('default','update_user', scheme=True, host=True)}}/'+row.id;
+        location.href = '{{=URL('default','oph2py01/file', scheme=True, host=True)}}/'+row.id;
       },
       'click .remove': function (e, value, row) {
           if (confirm('Are you sure to delete this item?')) {
@@ -374,7 +428,8 @@
 
     window.actionEvents_wl = {
       'click .update': function (e,value,row) {
-      // location.href = '{{=URL('default','api_users/worklist', scheme=True, host=True)}}/'+row.id;
+        setSelect('.exam2do_OBR4', exams);
+        $('#modal_wl').modal('show');
       },
       'click .remove': function (e, value, row) {
           if (confirm('Are you sure to delete this item?')) {
@@ -439,7 +494,8 @@
       display.push({'id': worklist[i].worklist.id,
        'provider_OBR16': worklist[i].provider.first_name+' '+worklist[i].provider.last_name,
        'patient': worklist[i].patient.first_name+' '+worklist[i].patient.last_name,
-       'receving_facility_MSH6': worklist[i].facility.facility_name,
+       'receving_facility_MSH6': worklist[i].receiver.facility_name,
+       'sending_facility_MSH4': worklist[i].sender.facility_name,
        'status_flag': worklist[i].worklist.status_flag,
        'requested_time_OBR6': worklist[i].worklist.requested_time_OBR6,
        'modality_dest_OBR24': worklist[i].modality.modality_name,
@@ -494,7 +550,7 @@
 
   function actionFormatter_wl(value) {
       return [
-          '<a class="Update" href="javascript:" title="Update WL"><i class="glyphicon glyphicon-pencil"></i></a>  ',
+          '<a class="update" href="javascript:" title="Update WL"><i class="glyphicon glyphicon-pencil"></i></a>  ',
           '<a class="remove" href="javascript:" title="Delete"><i class="glyphicon glyphicon-remove-circle"></i></a>'
       ].join('');
   }
@@ -533,7 +589,6 @@
 
   function set_timers(timers) {
     $.each(timers, function(i){
-      console.log(timers[i]);
       $(timers[i]).timer({
         seconds: $(timers[i]).text()
       });
@@ -554,6 +609,19 @@
           age--;
       }
       return age;
+  }
+
+  function setSelect(id,rows) {
+    var items = rows.content;
+    html = [];
+    $.each(items, function(i){
+      keys = Object.keys(items[i]);
+      html.push('<option>'+items[i][keys]+'</option>');
+      console.log(items[i][keys]);
+    });
+    $('#form_wl '+id).html(html.join(''));
+    $('#form_wl '+id).attr('class', $('#form_wl select '+id).attr('class')+' selectpicker');
+    $('.selectpicker').selectpicker('refresh');
   }
 
   function resetForm($form) {

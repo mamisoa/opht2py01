@@ -24,13 +24,15 @@ def wl():
         patient = db.auth_user.with_alias('patient')
         creator = db.auth_user.with_alias('creator')
         editor = db.auth_user.with_alias('editor')
+        sender = db.facility.with_alias('sender')
+        receiver = db.facility.with_alias('receiver')
         db.worklist.created_by.readable = db.worklist.modified_by.readable = db.worklist.created_on.readable = db.worklist.modified_on.readable = db.worklist.id_auth_user.readable = True
         rows =  db(db.worklist).select(provider.id, provider.first_name, provider.last_name,
                         patient.id, patient.first_name, patient.last_name,
                         db.worklist.id, db.worklist.id_auth_user, db.worklist.exam2do_OBR4,
                         db.exam2do_OBR4.id, db.exam2do_OBR4.exam_description,
                         db.worklist.receving_facility_MSH6,
-                        db.facility.facility_name,
+                        sender.facility_name, receiver.facility_name,
                         db.worklist.status_flag, db.worklist.requested_time_OBR6,
                         db.modality.modality_name,
                         creator.first_name, creator.last_name, editor.first_name, editor.last_name,
@@ -39,7 +41,8 @@ def wl():
                         patient.on(patient.id==db.worklist.id_auth_user),
                         provider.on(provider.id==db.worklist.provider_OBR16),
                         db.exam2do_OBR4.on(db.exam2do_OBR4.id==db.worklist.exam2do_OBR4),
-                        db.facility.on(db.facility.id==db.worklist.receving_facility_MSH6),
+                        receiver.on(receiver.id==db.worklist.receving_facility_MSH6),
+                        sender.on(sender.id==db.worklist.sending_facility_MSH4),
                         db.modality.on(db.modality.id==db.worklist.modality_dest_OBR24),
                         creator.on(creator.id==db.worklist.created_by),
                         editor.on(editor.id==db.worklist.modified_by)

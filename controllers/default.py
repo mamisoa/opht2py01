@@ -71,6 +71,8 @@ def home():
             else:
                 membership = str(request.args(0))
     group = (db(db.auth_group.id == membership).select().first()).role #name of membership
+    exams = XML(rows2json('content',db(db.exam2do_OBR4).select(db.exam2do_OBR4.exam_description)))
+    facilities = XML(rows2json('content',db(db.facility).select(db.facility.facility_name)))
     return locals()
 
 @auth.requires_membership('IT')
