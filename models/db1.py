@@ -53,13 +53,6 @@ db.define_table('exam2do_OBR4',
     Field('exam_description','string'),
     auth.signature)
 
-db.define_table('status',
-    Field('id_worklist'),
-    Field('status_flag','list:string', required=True),
-    auth.signature)
-
-db.status.status_flag.requires=IS_IN_SET(('requested', 'in process', 'done', 'cancelled'))
-
 db.define_table('worklist',
     Field('id_auth_user', 'reference auth_user'),
     Field('sending_app_MSH3','string', default = 'Oph2Py'),
@@ -73,7 +66,6 @@ db.define_table('worklist',
     Field('modality_dest_OBR24', 'reference modality', required=True),
     Field('status_flag', 'list:string', required=True),
     auth.signature)
-
 
 query_sessions = (
 (db.auth_user.id == db.auth_membership.user_id)&

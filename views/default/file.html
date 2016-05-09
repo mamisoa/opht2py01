@@ -13,9 +13,10 @@
       .tooltip {
         font-size: 8px;
        }
-      .alert_main .alert_address .alert_phone {
+      .alert, .alert_main, .alert_address, .alert_phone {
         margin-left: 20px;
-        padding: 10px;
+        margin-bottom: 0px;
+        padding: 8px;
        }
        #panel_addresses .glyphicon, .glyphicon-remove, .glyphicon-edit {
          padding: 10px;
@@ -596,7 +597,7 @@ function test(obj,type) {
 }
 
 function showAlert(title, type, panel) {
-  $('.'+panel).attr('class', panel+' alert-' + type || 'success')
+  $('.'+panel).attr('class', panel+' alert alert-' + type || 'success')
     .html('<i class="glyphicon glyphicon-check"></i> ' + title).show();
   setTimeout(function () {
     $('.'+panel).hide();

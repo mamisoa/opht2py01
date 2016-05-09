@@ -71,8 +71,13 @@ def home():
             else:
                 membership = str(request.args(0))
     group = (db(db.auth_group.id == membership).select().first()).role #name of membership
-    exams = XML(rows2json('content',db(db.exam2do_OBR4).select(db.exam2do_OBR4.exam_description)))
-    facilities = XML(rows2json('content',db(db.facility).select(db.facility.facility_name)))
+    exams = XML(rows2json('content',db(db.exam2do_OBR4).select(db.exam2do_OBR4.id,db.exam2do_OBR4.exam_description)))
+    facilities = XML(rows2json('content',db(db.facility).select(db.facility.id,db.facility.facility_name)))
+    modalities = XML(rows2json('content',db(db.modality).select(db.modality.id,db.modality.modality_name)))
+    query_sessions = ((db.auth_user.id == db.auth_membership.user_id)&
+    ((db.auth_membership.group_id == 3)|(db.auth_membership.group_id == 4)|(db.auth_membership.group_id == 7))
+    )
+    providers = XML(rows2json('content',db(query_sessions).select(db.auth_user.id,db.auth_user.first_name,db.auth_user.last_name)))
     return locals()
 
 @auth.requires_membership('IT')

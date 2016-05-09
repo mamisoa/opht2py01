@@ -53,8 +53,8 @@
     <div class="col-md-12">
       <div>
         <h1>Worklist</h1>
-          <p class="toolbar">
-            <span class="alerte_wl"></span>
+          <p class="toolbar_wl">
+            <span class="alert_wl"></span>
           </p>
       </div>
       <table id="wl_table"
@@ -69,7 +69,7 @@
           data-query-params="queryParams"
           data-row-style="rowStyle"
           data-row-attributes="rowAttributes"
-          data-toolbar="#div_wl .toolbar">
+          data-toolbar="#div_wl .toolbar_wl">
         <thead>
           <tr>
             <th data-field="id" data-sortable="true">ID</th>
@@ -99,7 +99,7 @@
         <h1>{{=group}}s</h1>
           <p class="toolbar">
             <a href="javascript:" class="create btn btn-default">New {{=group}}</a>
-            <span class="alerte_listing"></span>
+            <span class="alert_listing"></span>
           </p>
       </div>
       <table id="table"
@@ -233,51 +233,102 @@
       <form id="form_wl">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title" id=""></h4>
+        <h4 class="modal-title">Task #<span class="message_unique_id_MSH10"></span> for <span class="patient"></span></h4>
       </div>
       <div class="modal-body">
         <div class="form-group hidden">
-          <label>ID:</label>
-          <input type="text" class="form-control wl_id" name="id" placeholder="ID" value="">
+          <label>Task ID:</label>
+          <input type="text" class="form-control id" name="id" placeholder="Task ID" value="">
+        </div>
+        <div class="form-group hidden">
+          <label>patient ID:</label>
+          <input type="text" class="form-control id_auth_user" name="id_auth_user" placeholder="Patient ID" value="">
         </div>
         <div class="row">
           <div class="form-group col-sm-6">
           <label>Sender:</label>
           <div class="input-group">
-            <input type="text" class="form-control sending_facility_MSH4" name="sending_facility_MSH4" placeholder="Sender" value="" required>
+            <select class="form-control sending_facility_MSH4 selectpicker" name="sending_facility_MSH4">
+            </select>
           </div>
             <div class="help-block with-errors"></div>
           </div>
           <div class="form-group col-sm-6">
             <label>receiver:</label>
-            <input type="text" class="form-control receving_facility_MSH6" name="receving_facility_MSH6" placeholder="Receiver" required>
-          </div>
+            <div class="input-group">
+              <select class="form-control receving_facility_MSH6 selectpicker" name="receving_facility_MSH6">
+              </select>
+            </div>
         </div>
-        <div class="form-group">
-          <label>Exam to be done</label>
+      </div>
+      <div class="row">
+        <div class="form-group col-sm-12">
+          <label>Exam to be done:</label>
           <div class="input-group">
-            <select class="form-control exam2do_OBR4" multiple>
+            <select class="form-control exam2do_OBR4 selectpicker" name="exam2do_OBR4">
             </select>
           </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-sm-12">
+          <label>Modality:</label>
+          <div class="input-group">
+            <select class="form-control modality_dest_OBR24 selectpicker" name="modality_dest_OBR24">
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-sm-12">
+          <label>Provider:</label>
+          <div class="input-group">
+            <select class="form-control provider_OBR16 selectpicker" name="provider_OBR16">
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-sm-12">
+          <label>Timeslot:</label>
+          <div class="input-group-group">
+            <input type="text" class="form-control requested_time_OBR6 datetime" name="requested_time_OBR6" placeholder="Timeslot" value="">
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-sm-12">
+          <label>Provider:</label>
+          <div class="input-group">
+            <select class="form-control status_flag selectpicker" name="status_flag">
+              <option value="requested">Requested</option>
+              <option value="in process">In process</option>
+              <option value="done">Done</option>
+              <option value="cancelled">cancelled</option>
+            </select>
+          </div>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Submit</button>
+        <button type="button" class="btn btn-primary submit">Submit</button>
       </div>
-    </form>
     </div>
+  </form>
   </div>
 </div>
 
 <script type="text/javascript">
-  var facilities = {{=facilities}}, exams = {{=exams}};
+  var facilities = {{=facilities}}, exams = {{=exams}}, modalities = {{=modalities}}, providers_req = {{=providers}};
+  providers = concatFirstLastname(providers_req);
   var API_URL = '{{=URL('api','users/membership/'+membership+'/user', scheme=True, host=True)}}';
   var $table = $('#table').bootstrapTable({
         url:'{{=URL('api','users_list/'+membership, scheme=True, host=True)}}'}),
       $table_wl = $('#wl_table').bootstrapTable({
         url: '{{=URL('api','wl', scheme=True, host=True)}}'
       });
-  var $alert = $('.alerte_listing').hide();
+  var $alert = $('.alert_listing').hide();
+  var $alert_wl = $('.alert_wl').hide();
   var timer_id = [];
 
   $(function() {
@@ -292,7 +343,7 @@
       $duplicate.hide();
     });
 
-    $('#new_patient .datepicker').datepicker({
+    $('#new_patient .datepicker','#form_wl .datepicker').datepicker({
                     format: "yyyy-mm-dd"
                 });
 
@@ -338,6 +389,35 @@
       }
     });
 
+    $modal_wl.find('.submit').click(function (e) {
+      if ( $('#form_wl .submit').hasClass('disabled'))
+        { e.preventDefault();
+          return true; }
+        else {
+        var row = {}, req;
+        e.preventDefault(); // on empeche l'envoi du formulaire par le navigateur
+        $('#form_wl').find('input[name]').each(function () {
+          row[$(this).attr('name')] = $(this).val();
+        });
+        $('#form_wl').find('select[name]').each(function () {
+          row[$(this).attr('name')] = $(this).val();
+        });
+        if (row['id'] == '') {
+          req = 'POST';
+          delete row['id'];
+          console.log('POST')
+          console.log(row);
+          post_wl_form(row,req);
+        } else {
+          req = 'PUT';
+          delete row['id_auth_user'];
+          console.log('PUT')
+          console.log(row);
+          post_wl_form(row,req);
+          }
+        }
+    });
+
     function post_new_user_form(row) {
       var API_URL = '{{=URL('api','users/auth_user', scheme=True, host=True)}}/';
       $.ajax({
@@ -349,18 +429,18 @@
           id = text.slice(text.indexOf('id(')+3,text.indexOf(') ***'));
           if ( id == 'None') {
             $modal.modal('hide');
-            showAlert('Unable to add new patient!','danger', 'alerte_listing');
+            showAlert('Unable to add new patient!','danger', 'alert_listing');
           } else {
           add_membership(id,2);
           $modal.modal('hide');
           resetForm($('#new_patient'));
           $table.bootstrapTable('refresh');
-          showAlert('Created','success', 'alerte_listing');
+          showAlert('Created','success', 'alert_listing');
           }
           },
           error: function () {
             $modal.modal('hide');
-            showAlert('Unable to add new patient!','danger', 'alerte_listing');
+            showAlert('Unable to add new patient!','danger', 'alert_listing');
           }
         });
     }
@@ -389,9 +469,36 @@
           }
         },
         error: function () {
-          showAlert('Unable to check if duplicate!','danger', 'alerte_listing');
+          showAlert('Unable to check if duplicate!','danger', 'alert_listing');
         }
       });
+    }
+
+    function post_wl_form(row,req) {
+      var API_URL = (req == 'POST' ? '{{=URL('api','wl/worklist', scheme=True, host=True)}}/' : '{{=URL('api','wl/worklist', scheme=True, host=True)}}/'+ row.id);
+      var mode = (req == 'POST' ? 'add':'edit');
+      $.ajax({
+        url: API_URL,
+        type: req == 'POST' ? 'post':'put',
+        contentType: 'application/json',
+        data: JSON.stringify(row),
+        success: function (text) {
+          id = text.slice(text.indexOf('id(')+3,text.indexOf(') ***'));
+          if ( id == 'None') {
+            $modal_wl.modal('hide');
+            showAlert('Unable to '+mode+' task','danger','alert_wl');
+          } else {
+          $modal_wl.modal('hide');
+          resetForm($('#form_wl'));
+          $table_wl.bootstrapTable('refresh');
+          showAlert(titleCase(mode+'ed'),'success','alert_wl');
+          }
+          },
+          error: function () {
+            $modal_wl.modal('hide');
+            showAlert('Unable to '+mode+'  task!','danger','alert_wl');
+          }
+        });
     }
 
     $('#wl_table').on('post-body.bs.table', function () {
@@ -413,23 +520,72 @@
                   type: 'delete',
                   success: function () {
                       $table.bootstrapTable('refresh');
-                      showAlert('Delete item successful!', 'success', 'alerte_listing');
+                      showAlert('Delete item successful!', 'success', 'alert_listing');
                   },
                   error: function () {
-                      showAlert('Delete item error!', 'danger', 'alerte_listing');
+                      showAlert('Delete item error!', 'danger', 'alert_listing');
                   }
               })
           }
       },
       'click .open':function (e,value,row) {
         location.href ='{{=URL('default','file', scheme=True, host=True)}}/'+row.id;
+      },
+      'click .worklist':function (e,value,row) {
+        setSelect('#form_wl select.exam2do_OBR4', exams, 'exam_description');
+        setSelect('#form_wl select.sending_facility_MSH4', facilities, 'facility_name');
+        setSelect('#form_wl select.receving_facility_MSH6', facilities, 'facility_name');
+        setSelect('#form_wl select.provider_OBR16', providers, 'name');
+        $('#form_wl .id_auth_user').val(row.id);
+        $('#form_wl .provider_OBR16').val(72);
+        $('#form_wl .patient').text(row.last_name + ' '+row.first_name);
+        $('.selectpicker').selectpicker('refresh');
+        $('#modal_wl').modal('show');
       }
     }
 
     window.actionEvents_wl = {
       'click .update': function (e,value,row) {
-        setSelect('.exam2do_OBR4', exams);
+        setSelect('#form_wl select.exam2do_OBR4', exams, 'exam_description');
+        setSelect('#form_wl select.sending_facility_MSH4', facilities, 'facility_name');
+        setSelect('#form_wl select.receving_facility_MSH6', facilities, 'facility_name');
+        setSelect('#form_wl select.provider_OBR16', providers, 'name');
+        setSelect('#form_wl select.modality_dest_OBR24', modalities, 'modality_name');
+        $('#form_wl .patient').text(row.patient);
+        $('#form_wl .id').val(row.id);
+        $('#form_wl .id_auth_user').val(row.id_auth_user);
+        $('#form_wl .message_unique_id_MSH10').text(row.message_unique_id_MSH10);
+        $('#form_wl input.requested_time_OBR6').val(row.requested_time_OBR6);
+        $('#form_wl select.sending_facility_MSH4').val(row.sending_facility_MSH4);
+        $('#form_wl select.receving_facility_MSH6').val(row.receving_facility_MSH6);
+        $('#form_wl select.exam2do_OBR4').val(row.exam2do_OBR4);
+        $('#form_wl select.provider_OBR16').val(row.provider_id);
+        $('#form_wl select.status_flag').val(row.status_flag);
+        console.log(row);
+        $('.selectpicker').selectpicker('refresh');
         $('#modal_wl').modal('show');
+      },
+      'click .done': function (e,value,row) {
+        console.log(row);
+        simple_row = {id: row.id, status_flag: 'done'};
+        $.ajax({
+          url:  '{{=URL('api','wl/worklist', scheme=True, host=True)}}/'+ row.id,
+          type: 'put',
+          contentType: 'application/json',
+          data: JSON.stringify(simple_row),
+          success: function (text) {
+            id = text.slice(text.indexOf('id(')+3,text.indexOf(') ***'));
+            if ( id == 'None') {
+              showAlert('Unable to set task','danger','alert_wl');
+            } else {
+            $table_wl.bootstrapTable('refresh');
+            showAlert(titleCase('Task set to DONE'),'success','alert_wl');
+            }
+            },
+            error: function () {
+              showAlert('Unable to set task!to done','danger','alert_wl');
+            }
+          });
       },
       'click .remove': function (e, value, row) {
           if (confirm('Are you sure to delete this item?')) {
@@ -438,23 +594,24 @@
                   type: 'delete',
                   success: function () {
                       $table_wl.bootstrapTable('refresh');
-                      showAlert('Delete item successful!', 'success', 'alerte_wl');
+                      showAlert('Delete item successful!', 'success', 'alert_wl');
                   },
                   error: function () {
-                      showAlert('Delete item error!', 'danger', 'alerte_wl');
+                      showAlert('Delete item error!', 'danger', 'alert_wl');
                   }
               })
           }
       }
     }
 
-    function showAlert(title, type, div) {
-      $alert.attr('class', div+' alert alert-' + type || 'success')
-            .html('<i class="glyphicon glyphicon-check"></i> ' + title).show();
-      setTimeout(function () {
-          $alert.hide();
-          }, 5000);
-    }
+
+  function showAlert(title, type, div) {
+    $('.'+div).attr('class', div+' alert alert-' + type || 'success')
+          .html('<i class="glyphicon glyphicon-check"></i> ' + title).show();
+    setTimeout(function () {
+        $('.'+div).hide();
+      }, 5000);
+  }
 
   function add_membership(user_id,membership) {
     var row = {'user_id': user_id, 'group_id': {{=membership}}};
@@ -467,7 +624,7 @@
         console.log(text);
       },
       error: function () {
-        showAlert('Unable to set membership!','danger', 'alerte_listing');
+        showAlert('Unable to set membership!','danger', 'alert_listing');
       }
     });
   }
@@ -493,9 +650,13 @@
     $.each(worklist, function(i) {
       display.push({'id': worklist[i].worklist.id,
        'provider_OBR16': worklist[i].provider.first_name+' '+worklist[i].provider.last_name,
+       'provider_id': worklist[i].provider.id,
        'patient': worklist[i].patient.first_name+' '+worklist[i].patient.last_name,
+       'id_auth_user': worklist[i].worklist.id_auth_user,
        'receving_facility_MSH6': worklist[i].receiver.facility_name,
        'sending_facility_MSH4': worklist[i].sender.facility_name,
+       'message_unique_id_MSH10': worklist[i].worklist.message_unique_id_MSH10,
+       'requested_time_OBR6': worklist[i].worklist.requested_time_OBR6,
        'status_flag': worklist[i].worklist.status_flag,
        'requested_time_OBR6': worklist[i].worklist.requested_time_OBR6,
        'modality_dest_OBR24': worklist[i].modality.modality_name,
@@ -550,8 +711,9 @@
 
   function actionFormatter_wl(value) {
       return [
-          '<a class="update" href="javascript:" title="Update WL"><i class="glyphicon glyphicon-pencil"></i></a>  ',
-          '<a class="remove" href="javascript:" title="Delete"><i class="glyphicon glyphicon-remove-circle"></i></a>'
+          '<a class="update" href="javascript:" title="Update task"><i class="glyphicon glyphicon-pencil"></i></a>  ',
+          '<a class="remove" href="javascript:" title="Delete task"><i class="glyphicon glyphicon-remove-circle"></i></a>',
+          '<a class="done" href="javascript:" title="Set task as done"><i class="glyphicon glyphicon-ok"></i></a>'
       ].join('');
   }
 
@@ -611,17 +773,24 @@
       return age;
   }
 
-  function setSelect(id,rows) {
+  function setSelect(id,rows,description) {
     var items = rows.content;
     html = [];
     $.each(items, function(i){
-      keys = Object.keys(items[i]);
-      html.push('<option>'+items[i][keys]+'</option>');
-      console.log(items[i][keys]);
+      html.push('<option value="'+items[i]['id']+'">'+items[i][description]+'</option>');
     });
-    $('#form_wl '+id).html(html.join(''));
-    $('#form_wl '+id).attr('class', $('#form_wl select '+id).attr('class')+' selectpicker');
+    $(id).html(html.join(''));
     $('.selectpicker').selectpicker('refresh');
+  }
+
+  function concatFirstLastname(rows) {
+    var items = rows.content;
+    var result = {content:[]};
+    result2 = [];
+    $.each(items, function(i) {
+      result['content'].push({'id':items[i]['id'],'name':items[i]['first_name']+' '+items[i]['last_name']});
+    });
+    return result;
   }
 
   function resetForm($form) {

@@ -30,8 +30,7 @@ def wl():
         rows =  db(db.worklist).select(provider.id, provider.first_name, provider.last_name,
                         patient.id, patient.first_name, patient.last_name,
                         db.worklist.id, db.worklist.id_auth_user, db.worklist.exam2do_OBR4,
-                        db.exam2do_OBR4.id, db.exam2do_OBR4.exam_description,
-                        db.worklist.receving_facility_MSH6,
+                        db.exam2do_OBR4.id, db.exam2do_OBR4.exam_description, db.worklist.message_unique_id_MSH10,
                         sender.facility_name, receiver.facility_name,
                         db.worklist.status_flag, db.worklist.requested_time_OBR6,
                         db.modality.modality_name,
@@ -54,6 +53,18 @@ def wl():
         if tablename=='worklist':
             db(db.worklist.id == record_id).delete()
             return 'Table: '+ tablename +' *** Deleted row id('+record_id+') *** \r\n'
+        else:
+            raise HTTP(400)
+    def PUT(tablename,record_id,**vars):
+        if tablename == 'worklist':
+            db(db.worklist._id==record_id).update(**vars)
+            return 'Table: '+ tablename +' *** Updated row id('+record_id+') ***  \r\n'
+        else:
+            raise HTTP(400)
+    def POST(tablename,**vars):
+        if tablename == 'worklist':
+            ret = db.worklist.validate_and_insert(**vars)
+            return 'Table: '+ tablename +' *** Added row id('+ str(ret.id) + ') *** ' + 'Error code : ' + str(ret.errors) + ' *** \r\n'
         else:
             raise HTTP(400)
     return locals()
