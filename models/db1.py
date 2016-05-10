@@ -51,12 +51,9 @@ db.define_table('insurance_sector',
 db.define_table('exam2do_OBR4',
     Field('loinc_code', 'string'),
     Field('exam_description','string'),
-    Field('laterality', 'list:string', default ='both', required=True),
     Field('cycle_num','integer', default='1'),
     Field('procedure_seq','string'),
     auth.signature)
-
-db.exam2do_OBR4.laterality.requires=IS_IN_SET(('both', 'right', 'left', 'none'))
 
 db.define_table('worklist',
     Field('id_auth_user', 'reference auth_user'),
@@ -69,9 +66,13 @@ db.define_table('worklist',
     Field('provider_OBR16', 'reference auth_user', required=True),
     Field('requested_time_OBR6', 'datetime', required=True),
     Field('modality_dest_OBR24', 'reference modality', required=True),
+    Field('laterality', 'list:string', default ='both', required=True),
     Field('status_flag', 'list:string', required=True),
     Field('counter', 'integer', default='0'),
     auth.signature)
+
+db.worklist.laterality.requires=IS_IN_SET(('both', 'right', 'left', 'none'))
+
 
 query_sessions = (
 (db.auth_user.id == db.auth_membership.user_id)&
