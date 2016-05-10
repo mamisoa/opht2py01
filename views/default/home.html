@@ -323,7 +323,7 @@ TEST
             <label class="btn btn-primary">
               <input type="radio" class="laterality_right" name="laterality" autocomplete="off" value="right">Right
             </label>
-            <div class="help-block with-errors">Required</div>
+            <div class="help-block with-errors">Required <span id="alert_lat" style="color:red;"></span></div>
             </div>
          </div>
         </div>
@@ -463,8 +463,9 @@ TEST
 
     $modal.find('.submit').click(function (e) {
       if ( $('#new_patient .submit').hasClass('disabled'))
-        { e.preventDefault();
-          return true; }
+        { // e.preventDefault();
+          // return true;
+        }
       else {
         var row = {};
         e.preventDefault(); // on empeche l'envoi du formulaire par le navigateur
@@ -481,8 +482,12 @@ TEST
 
     $modal_wl.find('.submit').click(function (e) {
       if ( $('#form_wl .submit').hasClass('disabled'))
-        { e.preventDefault();
-          return true; }
+        {
+          e.preventDefault();
+          $('.alert_lat').text('Class disabled error');
+
+          return true;
+        }
         else {
         var row = {}, req;
         e.preventDefault(); // on empeche l'envoi du formulaire par le navigateur
@@ -493,6 +498,7 @@ TEST
           row[$(this).attr('name')] = $(this).val();
         });
         if (!$('input:radio[name=laterality]').filter(':checked').val()) {
+          $('.alert_lat').text('Please set laterality');
           return true;
         } else {
         row['laterality']= $('input:radio[name=laterality]').filter(':checked').val();
@@ -510,7 +516,6 @@ TEST
           console.log(row);
           post_wl_form(row,req);
           }
-          $('div.laterality label.active input:radio').val('');
         }
     });
 
@@ -661,8 +666,11 @@ TEST
         $('#form_wl select.provider_OBR16').val(row.provider_id);
         $('#form_wl select.status_flag').val(row.status_flag);
         $('#form_wl input.warning').val(row.warning);
+        console.log('before init '+row.laterality)
         !row.counter ? $('#form_wl input.counter').val('0') : $('#form_wl input.counter').val(row.counter);
         !row.laterality? $('#form_wl input.laterality_both').prop('checked',true).parent().addClass('active') : $('#form_wl input.laterality_'+row.laterality).prop('checked',true).parent().addClass('active');
+        $('input:radio[name=laterality]').val(!row.laterality? 'both':row.laterality);
+        console.log('after init '+$('input:radio[name=laterality]').val());
         $('.selectpicker').selectpicker('refresh');
         $('#modal_wl').modal('show');
       },
