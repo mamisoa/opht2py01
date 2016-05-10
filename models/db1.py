@@ -69,6 +69,7 @@ db.define_table('worklist',
     Field('laterality', 'list:string', default ='both', required=True),
     Field('status_flag', 'list:string', required=True),
     Field('counter', 'integer', default='0'),
+    Field('warning', 'string'),
     auth.signature)
 
 db.worklist.laterality.requires=IS_IN_SET(('both', 'right', 'left', 'none'))

@@ -62,6 +62,11 @@
         background-color: red;
         color: white;
        }
+       .badge-warning {
+        margin-left: 15px;
+        background-color: white;
+        color: red;
+       }
        .counter {
         text-align: center;
        }
@@ -85,12 +90,14 @@
           data-show-columns="true"
           data-search="true"
           data-toggle="table"
+          data-locale="en-US"
           data-detail-view="true"
           data-detail-formatter="detailFormatter_wl"
           data-response-handler="responseHandler_wl"
           data-query-params="queryParams"
           data-row-style="rowStyle"
           data-row-attributes="rowAttributes"
+          data-pagination='true"'
           data-toolbar="#div_wl .toolbar_wl">
         <thead>
           <tr>
@@ -294,7 +301,7 @@ TEST
         <div class="form-group col-sm-12">
           <label>Exam to be done:</label>
           <div class="input-group">
-            <select class="form-control exam2do_OBR4 selectpicker" name="exam2do_OBR4">
+            <select class="form-control exam2do_OBR4 selectpicker" data-live-search="true" name="exam2do_OBR4">
             </select>
           </div>
         </div>
@@ -304,18 +311,19 @@ TEST
           <label>Laterality:<span style="color: red;" class="lat_req"></span></label>
           <div class="input-group">
             <div class="btn-group laterality" data-toggle="buttons">
-            <label class="btn btn-primary laterality_left">
-              <input type="radio" class="" name="laterality" autocomplete="off" value="left">Left
+            <label class="btn btn-primary">
+              <input type="radio" class="laterality_left" name="laterality" autocomplete="off" value="left">Left
             </label>
-            <label class="btn btn-primary laterality_both">
-              <input type="radio" class="" name="laterality" autocomplete="off" value="both">Both
+            <label class="btn btn-primary">
+              <input type="radio" class="laterality_both" name="laterality" autocomplete="off" value="both">Both
             </label>
-            <label class="btn btn-primary laterality_none">
-              <input type="radio" class="" name="laterality" autocomplete="off" value="none">None
+            <label class="btn btn-primary">
+              <input type="radio" class="laterality_none" name="laterality" autocomplete="off" value="none">None
             </label>
-            <label class="btn btn-primary laterality_right">
-              <input type="radio" class="" name="laterality" autocomplete="off" value="right">Right
+            <label class="btn btn-primary">
+              <input type="radio" class="laterality_right" name="laterality" autocomplete="off" value="right">Right
             </label>
+            <div class="help-block with-errors">Required</div>
             </div>
          </div>
         </div>
@@ -324,7 +332,7 @@ TEST
         <div class="form-group col-sm-12">
           <label>Modality:</label>
           <div class="input-group">
-            <select class="form-control modality_dest_OBR24 selectpicker" name="modality_dest_OBR24">
+            <select class="form-control modality_dest_OBR24 selectpicker" data-live-search="true" name="modality_dest_OBR24">
             </select>
           </div>
         </div>
@@ -333,7 +341,7 @@ TEST
         <div class="form-group col-sm-12">
           <label>Provider:</label>
           <div class="input-group">
-            <select class="form-control provider_OBR16 selectpicker" name="provider_OBR16">
+            <select class="form-control provider_OBR16 selectpicker" data-live-search="true" name="provider_OBR16">
             </select>
           </div>
         </div>
@@ -347,7 +355,7 @@ TEST
         </div>
       </div>
       <div class="row">
-        <div class="form-group col-sm-8">
+        <div class="form-group col-sm-4">
           <label>Status:</label>
           <div class="input-group">
             <select class="form-control status_flag selectpicker" name="status_flag">
@@ -358,7 +366,13 @@ TEST
             </select>
           </div>
         </div>
-        <div class="form-group col-sm-4">
+        <div class="form-group col-sm-12">
+          <label>Warning:</label>
+          <div class="input-group-group">
+            <input type="text" class="form-control warning" name="warning" placeholder="Warning" value="">
+          </div>
+        </div>
+        <div class="form-group col-sm-3">
           <label>Counter:</label>
           <div class="input-group">
             <span class="input-group-addon btn btn-info counter_down">-</span>
@@ -405,11 +419,7 @@ TEST
     } else {};
   });
 
-  $("div.laterality input:radio").change(function() {
-      var option1 = $(this).val();
-      $(this).val(option1);
-      console.log(option1);
-  });
+
 
   $(function() {
     var $modal = $('#modal').modal({show: false}),
@@ -482,11 +492,10 @@ TEST
         $('#form_wl').find('select[name]').each(function () {
           row[$(this).attr('name')] = $(this).val();
         });
-        if (!$("div.laterality label.active input:radio").val()) {
-          showAlert('Missing laterality','danger', 'lat_req');
+        if (!$('input:radio[name=laterality]').filter(':checked').val()) {
           return true;
         } else {
-        row['laterality']= $("div.laterality label.active input:radio").val();
+        row['laterality']= $('input:radio[name=laterality]').filter(':checked').val();
         };
         if (row['id'] == '') {
           req = 'POST';
@@ -618,6 +627,7 @@ TEST
         location.href ='{{=URL('default','file', scheme=True, host=True)}}/'+row.id;
       },
       'click .worklist':function (e,value,row) {
+        resetForm($('#form_wl'));
         setSelect('#form_wl select.exam2do_OBR4', exams, 'exam_description');
         setSelect('#form_wl select.sending_facility_MSH4', facilities, 'facility_name');
         setSelect('#form_wl select.receving_facility_MSH6', facilities, 'facility_name');
@@ -634,6 +644,7 @@ TEST
 
     window.actionEvents_wl = {
       'click .update': function (e,value,row) {
+        resetForm($('#form_wl'));
         setSelect('#form_wl select.exam2do_OBR4', exams, 'exam_description');
         setSelect('#form_wl select.sending_facility_MSH4', facilities, 'facility_name');
         setSelect('#form_wl select.receving_facility_MSH6', facilities, 'facility_name');
@@ -649,8 +660,9 @@ TEST
         $('#form_wl select.exam2do_OBR4').val(row.exam2do_OBR4);
         $('#form_wl select.provider_OBR16').val(row.provider_id);
         $('#form_wl select.status_flag').val(row.status_flag);
+        $('#form_wl input.warning').val(row.warning);
         !row.counter ? $('#form_wl input.counter').val('0') : $('#form_wl input.counter').val(row.counter);
-        !row.laterality? $('div.laterality label.active input:radio').val('both') : $('div.laterality label.active input:radio').val(row.laterality);
+        !row.laterality? $('#form_wl input.laterality_both').prop('checked',true).parent().addClass('active') : $('#form_wl input.laterality_'+row.laterality).prop('checked',true).parent().addClass('active');
         $('.selectpicker').selectpicker('refresh');
         $('#modal_wl').modal('show');
       },
@@ -789,6 +801,7 @@ TEST
        'procedure_seq': worklist[i].exam2do_OBR4.procedure_seq,
        'cycle_num': worklist[i].exam2do_OBR4.cycle_num,
        'laterality': worklist[i].worklist.laterality,
+       'warning': worklist[i].worklist.warning
       });
     });
     return display;
@@ -809,7 +822,7 @@ TEST
 
   function detailFormatter_wl(index, row) {
     var html = [];
-    label = {id: 'ID', exam2do_OBR4: 'Exam to be done', provider_OBR16: 'Provider', receving_facility_MSH6: 'Department',
+    label = {id: 'ID', exam_description: 'Exam to be done', provider_OBR16: 'Provider', receving_facility_MSH6: 'Department',
               requested_time_OBR6: 'Timeslot', modality_dest_OBR24: 'Modality destination', status_flag: 'Status'
             };
     $.each(row, function (key, value) {
@@ -884,8 +897,11 @@ TEST
 
   function examFormatter(value,row) {
     html = [];
-    if (!row.procedure_seq) { html.push(value+'<div class="pull-right">')}
-    else { html.push(value+'<div class="pull-right"><span class="badge badge-procedure">'+row.procedure_seq+'</span>')}
+    html.push(value+'<div class="pull-right">');
+    if (!row.procedure_seq) { }
+    else { html.push('<div class="pull-right"><span class="badge badge-procedure">'+row.procedure_seq+'</span>')};
+    if (!row.warning) { }
+    else { html.push('<div class="pull-right"><span class="badge badge-warning">'+row.warning+'</span>')};
     html.push('<span class="badge badge-laterality">'+row.laterality+'</span></div>');
     return html.join('');
   }
@@ -918,7 +934,7 @@ TEST
     var items = rows.content;
     html = [];
     $.each(items, function(i){
-      html.push('<option value="'+items[i]['id']+'">'+items[i][description]+'</option>');
+      html.push('<option value="'+items[i]['id']+'" data-tokens="'+items[i][description].split(" ",2)+'">'+items[i][description]+'</option>');
     });
     $(id).html(html.join(''));
     $('.selectpicker').selectpicker('refresh');
@@ -937,6 +953,6 @@ TEST
   function resetForm($form) {
     $form.find('input:text, input:password, input:file, select, textarea').val('');
     $form.find('input:radio, input:checkbox')
-       .removeAttr('checked').removeAttr('selected');
+       .removeAttr('checked').removeAttr('selected').parent().removeClass('active');
   }
 </script>

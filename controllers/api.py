@@ -29,7 +29,7 @@ def wl():
         db.worklist.created_by.readable = db.worklist.modified_by.readable = db.worklist.created_on.readable = db.worklist.modified_on.readable = db.worklist.id_auth_user.readable = True
         rows =  db(db.worklist).select(provider.id, provider.first_name, provider.last_name,
                         patient.id, patient.first_name, patient.last_name,
-                        db.worklist.id, db.worklist.id_auth_user, db.worklist.exam2do_OBR4,
+                        db.worklist.id, db.worklist.id_auth_user, db.worklist.exam2do_OBR4,db.worklist.warning,
                         db.exam2do_OBR4.id, db.exam2do_OBR4.exam_description, db.worklist.laterality,
                         db.exam2do_OBR4.cycle_num, db.exam2do_OBR4.procedure_seq,
                         db.worklist.message_unique_id_MSH10,
