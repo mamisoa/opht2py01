@@ -79,10 +79,21 @@
   <div class="row">
     <div class="col-md-12">
       <div>
-        <h1>Worklist</h1>
-          <p class="toolbar_wl">
+        <h1>Worklist from <span class="today"></span><span class="date_selection"><span class="date_after"></span> to <span class="date_before"></span></span></h1>
+          <div class="toolbar_wl">
+            <form id="search_date" class="form-inline">
             <span class="alert_wl"></span>
-          </p>
+              <div class="form-group">
+                <label class="">From:</label>
+                <input type="date" class="form-control date" name="date_after" placeholder="Date from">
+              </div>
+              <div class="form-group">
+                <label class="">to:</label>
+                <input type="date" class="form-control date" name="date_before" placeholder="Date to">
+              </div>
+              <button type="submit" class="btn btn-primary submit">Search</button>
+            </form>
+          </div>
       </div>
       <table id="wl_table"
           data-id-field="id"
@@ -97,7 +108,7 @@
           data-query-params="queryParams"
           data-row-style="rowStyle"
           data-row-attributes="rowAttributes"
-          data-pagination='true"'
+          data-pagination="true"
           data-toolbar="#div_wl .toolbar_wl">
         <thead>
           <tr>
@@ -141,6 +152,7 @@
           data-detail-formatter="detailFormatter"
           data-response-handler="responseHandler"
           data-query-params="queryParams"
+          data-pagination="true"
           data-toolbar=".toolbar">
         <thead>
           <tr>
@@ -150,10 +162,6 @@
             <th data-field="dob_pid7" data-sortable="true">Date of birth:</th>
             <th data-field="age" data-sortable="true">Age:</th>
             <th data-field="gender_pid8" data-sortable="true">Gender:</th>
-            <!-- <th data-field="birth_town_pid23" data-sortable="true">Town of birth:</th>
-            <th data-field="birth_country_pid23" data-sortable="true">Country of birth:</th>
-            <th data-field="idc_num">ID card number:</th>
-            <th data-field="ssn_pid19">SSN:</th> -->
             <th data-field="action"
                 data-align="center"
                 data-formatter="actionFormatter"
@@ -390,8 +398,6 @@ TEST
   </div>
 </div>
 
-
-
 <script type="text/javascript">
   var facilities = {{=facilities}}, exams = {{=exams}}, modalities = {{=modalities}}, providers_req = {{=providers}};
   providers = concatFirstLastname(providers_req);
@@ -404,6 +410,9 @@ TEST
   var $alert = $('.alert_listing').hide();
   var $alert_wl = $('.alert_wl').hide();
   var timer_id = [];
+  $('.date_selection').hide();
+
+  $('.today').text(Date.today().toString('yyyy-M-d'));
 
   $(".btn.counter_down").click(function() {
     value = parseInt($("input.counter").val());
@@ -418,7 +427,6 @@ TEST
       $("input.counter").val(value+1);
     } else {};
   });
-
 
 
   $(function() {
@@ -461,10 +469,23 @@ TEST
       $modal.modal('show');
     });
 
+    $('#search_date .submit').click(function(e){
+      e.preventDefault(); // on empeche l'envoi du formulaire par le navigateur
+      date_after= $('#search_date input[name=date_after]').val();
+      date_before= $('#search_date input[name=date_before]').val();
+      $('.today').hide();
+      $('.date_selection').show();
+      $('.date_selection span.date_after').text(date_after);
+      $('.date_selection span.date_before').text(date_before);
+      $table_wl.bootstrapTable('refresh',
+        {url: '{{=URL('api','wl', scheme=True, host=True)}}?date_after='+date_after+'&date_before='+date_before}
+      );
+    })
+
     $modal.find('.submit').click(function (e) {
       if ( $('#new_patient .submit').hasClass('disabled'))
-        { // e.preventDefault();
-          // return true;
+        { e.preventDefault();
+          return true;
         }
       else {
         var row = {};

@@ -16,18 +16,35 @@ def rows2json (tablename,rows):
     concat = concat + ']}'
     return concat
 
+def valid_date(datestring):
+    import datetime
+    try:
+        datetime.datetime.strptime(datestring, '%Y-%m-%d')
+        return True
+    except ValueError:
+        return False
+
 @request.restful()
 def wl():
+    import datetime
     response.view = 'generic.json'
-    def GET():
+    def GET(**vars):
         provider = db.auth_user.with_alias('provider')
         patient = db.auth_user.with_alias('patient')
         creator = db.auth_user.with_alias('creator')
         editor = db.auth_user.with_alias('editor')
         sender = db.facility.with_alias('sender')
         receiver = db.facility.with_alias('receiver')
+        # date_after = (datetime.datetime.strptime(request.vars.date_after,'"%Y-%m-%d"').date() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+        if (request.vars.date_before == None) or (request.vars.date_after == None) or (valid_date(request.vars.date_after) == False) or (valid_date(request.vars.date_before) == False):
+            date_before = datetime.date.today().strftime('%Y-%m-%d')
+            date_after = (datetime.datetime.strptime(date_before,'%Y-%m-%d').date() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+        else:
+            date_after = (request.vars.date_after).translate(None,'"')
+            date_before = (request.vars.date_before).translate(None,'"')
+        query=((db.worklist.created_on>date_after)&(db.worklist.created_on<date_before))
         db.worklist.created_by.readable = db.worklist.modified_by.readable = db.worklist.created_on.readable = db.worklist.modified_on.readable = db.worklist.id_auth_user.readable = True
-        rows =  db(db.worklist).select(provider.id, provider.first_name, provider.last_name,
+        rows =  db(query).select(provider.id, provider.first_name, provider.last_name,
                         patient.id, patient.first_name, patient.last_name,
                         db.worklist.id, db.worklist.id_auth_user, db.worklist.exam2do_OBR4,db.worklist.warning,
                         db.exam2do_OBR4.id, db.exam2do_OBR4.exam_description, db.worklist.laterality,
@@ -50,7 +67,7 @@ def wl():
                         ]
                         )
         data = rows2json('content',rows)
-        return  data
+        return data
     def DELETE(tablename,record_id):
         if tablename=='worklist':
             db(db.worklist.id == record_id).delete()
