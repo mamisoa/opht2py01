@@ -1,0 +1,53 @@
+.billing {
+    color: orange;
+}
+.update {
+    color: green;
+}
+.examination {
+    color: blue;
+}
+.remove {
+    color: red;
+}
+.worklist {
+    color: black;
+}
+.glyphicon {
+  margin: 5px;
+}
+.glyphicon-time {
+  color: orange;
+}
+.glyphicon-plus {
+  color: black;
+}
+.tooltip {
+  font-size: 8px;
+ }
+.input-group > .form-control, .input-group > .input-group-addon {
+  height: 46px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+.badge-timer,.badge-counter,.badge-procedure, .badge-laterality {
+  margin-left: 3px;
+}
+.badge-counter {
+ margin-top: 1px;
+ background-color: red;
+ color: white;
+}
+.badge-laterality {
+ margin-left: 15px;
+ background-color: red;
+ color: white;
+}
+.badge-warning {
+ margin-left: 15px;
+ background-color: white;
+ color: red;
+}
+.counter {
+ text-align: center;
+}

@@ -1,5 +1,6 @@
 {{extend 'layout.html'}}
 {{block head}}
+<link rel="stylesheet" href="{{=URL('static','css/home.css')}}" />
 <!-- bootstrap-table -->
 <link rel="stylesheet" href="{{=URL('static','css/bootstrap-table.css')}}" />
 <script src="{{=URL('static','js/bootstrap-table/bootstrap-table.js')}}"></script>
@@ -16,62 +17,6 @@
 <!-- https://github.com/silviomoreto/bootstrap-select.git -->
 <script src="{{=URL('static','js/bootstrap-select/js/bootstrap-select.min.js')}}"></script>
 <link rel="stylesheet" href="{{=URL('static','js/bootstrap-select/css/bootstrap-select.min.css')}}" />
-<style>
-       .billing {
-           color: orange;
-       }
-       .update {
-           color: green;
-       }
-       .examination {
-           color: blue;
-       }
-       .remove {
-           color: red;
-       }
-       .worklist {
-           color: black;
-       }
-       .glyphicon {
-         margin: 5px;
-       }
-       .glyphicon-time {
-         color: orange;
-       }
-       .glyphicon-plus {
-         color: black;
-       }
-       .tooltip {
-         font-size: 8px;
-        }
-       .input-group > .form-control, .input-group > .input-group-addon {
-         height: 46px;
-         padding-top: 10px;
-         padding-bottom: 10px;
-       }
-       .badge-timer,.badge-counter,.badge-procedure, .badge-laterality {
-         margin-left: 3px;
-       }
-       .badge-counter {
-        margin-top: 1px;
-        background-color: red;
-        color: white;
-       }
-       .badge-laterality {
-        margin-left: 15px;
-        background-color: red;
-        color: white;
-       }
-       .badge-warning {
-        margin-left: 15px;
-        background-color: white;
-        color: red;
-       }
-       .counter {
-        text-align: center;
-       }
-
-</style>
 {{end}}
 
 
@@ -825,6 +770,7 @@ TEST
        'modified_by': worklist[i].editor.first_name+' '+worklist[i].editor.last_name,
        'modified_on': worklist[i].worklist.modified_on,
        'exam2do_OBR4': worklist[i].exam2do_OBR4.id,
+       'controller': worklist[i].exam2do_OBR4.controller,
        'exam_description': worklist[i].exam2do_OBR4.exam_description,
        'counter': worklist[i].worklist.counter,
        'procedure_seq': worklist[i].exam2do_OBR4.procedure_seq,
@@ -875,12 +821,14 @@ TEST
       ].join('');
   }
 
-  function actionFormatter_wl(value) {
+  function actionFormatter_wl(value,row) {
+      var API_URL = '{{=URL('exams','none', scheme=True, host=True)}}'
+      API_URL = API_URL.slice(0,-5);
       return [
           '<a class="update" href="javascript:" title="Update task"><i class="glyphicon glyphicon-pencil"></i></a>  ',
           '<a class="remove" href="javascript:" title="Delete task"><i class="glyphicon glyphicon-remove-circle"></i></a>',
           '<a class="processing" href="javascript:" title="Set task as in process"><i class="glyphicon glyphicon-time"></i></a>',
-          '<a class="details" href="javascript:" title="Details"><i class="glyphicon glyphicon-plus"></i></a>',
+          '<a class="details" href="'+API_URL+'/'+row.controller+'?id_auth_user='+row.id_auth_user+'&id_worklist='+row.id+'" title="Details"><i class="glyphicon glyphicon-plus"></i></a>',
           '<a class="done" href="javascript:" title="Set task as done"><i class="glyphicon glyphicon-ok"></i></a>'
       ].join('');
   }

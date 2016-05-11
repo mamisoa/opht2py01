@@ -37,8 +37,8 @@ def wl():
         receiver = db.facility.with_alias('receiver')
         # date_after = (datetime.datetime.strptime(request.vars.date_after,'"%Y-%m-%d"').date() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
         if (request.vars.date_before == None) or (request.vars.date_after == None) or (valid_date(request.vars.date_after) == False) or (valid_date(request.vars.date_before) == False):
-            date_before = datetime.date.today().strftime('%Y-%m-%d')
-            date_after = (datetime.datetime.strptime(date_before,'%Y-%m-%d').date() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+            date_after = datetime.date.today().strftime('%Y-%m-%d')
+            date_before = (datetime.datetime.strptime(date_after,'%Y-%m-%d').date() + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
         else:
             date_after = (request.vars.date_after).translate(None,'"')
             date_before = (request.vars.date_before).translate(None,'"')
@@ -46,7 +46,8 @@ def wl():
         db.worklist.created_by.readable = db.worklist.modified_by.readable = db.worklist.created_on.readable = db.worklist.modified_on.readable = db.worklist.id_auth_user.readable = True
         rows =  db(query).select(provider.id, provider.first_name, provider.last_name,
                         patient.id, patient.first_name, patient.last_name,
-                        db.worklist.id, db.worklist.id_auth_user, db.worklist.exam2do_OBR4,db.worklist.warning,
+                        db.worklist.id, db.worklist.id_auth_user,
+                        db.worklist.exam2do_OBR4,db.worklist.warning, db.exam2do_OBR4.controller,
                         db.exam2do_OBR4.id, db.exam2do_OBR4.exam_description, db.worklist.laterality,
                         db.exam2do_OBR4.cycle_num, db.exam2do_OBR4.procedure_seq,
                         db.worklist.message_unique_id_MSH10,
@@ -117,7 +118,6 @@ def users_list():
         else:
             raise HTTP(400)
     return locals()
-
 
 @request.restful()
 def users():
@@ -198,6 +198,46 @@ def users():
             return 'Table: '+ tablename +' *** Added row id('+ str(ret.id) + ') *** ' + 'Error code : ' + str(ret.errors) + ' *** \r\n'
         elif tablename == 'worklist':
             ret = db.worklist.validate_and_insert(**vars)
+            return 'Table: '+ tablename +' *** Added row id('+ str(ret.id) + ') *** ' + 'Error code : ' + str(ret.errors) + ' *** \r\n'
+        else:
+            raise HTTP(400)
+    return locals()
+
+
+@request.restful()
+def topo():
+    response.view = 'generic.json'
+    def GET(**vars):
+        patient = db.auth_user.with_alias('patient')
+        creator = db.auth_user.with_alias('creator')
+        editor = db.auth_user.with_alias('editor')
+        db.topography.created_by.readable = db.topography.modified_by.readable = db.topography.created_on.readable = db.topography.modified_on.readable = db.topography.id_auth_user.readable = True
+        rows =  db((db.topography.id_auth_user==request.vars.id_auth_user)&(db.topography.id_worklist==request.vars.id_worklist)).select(db.topography.id,
+                        db.topography.id_auth_user, db.topography.id_worklist,
+                        db.topography.laterality, db.topography.k1, db.topography.k2, db.topography.axis1, db.topography.axis2,
+                        db.topography.created_by,db.topography.created_on, db.topography.modified_by,db.topography.modified_on,
+                        patient.first_name, patient.last_name, creator.first_name, creator.last_name, editor.first_name, editor.last_name,
+                        left=[patient.on(patient.id==db.topography.id_auth_user),
+                        creator.on(creator.id==db.topography.created_by),
+                        editor.on(editor.id==db.topography.modified_by)
+                        ])
+        data = rows2json('content',rows)
+        return data
+    def DELETE(tablename,record_id):
+        if tablename=='topography':
+            db(db.topography.id == record_id).delete()
+            return 'Table: '+ tablename +' *** Deleted row id('+record_id+') *** \r\n'
+        else:
+            raise HTTP(400)
+    def PUT(tablename,record_id,**vars):
+        if tablename == 'topography':
+            db(db.topography._id==record_id).update(**vars)
+            return 'Table: '+ tablename +' *** Updated row id('+record_id+') ***  \r\n'
+        else:
+            raise HTTP(400)
+    def POST(tablename,**vars):
+        if tablename == 'topography':
+            ret = db.topography.validate_and_insert(**vars)
             return 'Table: '+ tablename +' *** Added row id('+ str(ret.id) + ') *** ' + 'Error code : ' + str(ret.errors) + ' *** \r\n'
         else:
             raise HTTP(400)

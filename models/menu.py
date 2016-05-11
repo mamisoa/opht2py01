@@ -35,7 +35,13 @@ response.menu = [
             (T('AutoRx'), False, URL('default', 'autorx'), []),
             (T('DICOM'), False, URL('default', 'dicom'), [])
         ]),
-    (T('Manage'), False, URL('default', 'manage'), [])
+    (T('Manage'), False, URL('manage', 'all_users'),
+        [
+            (T('Worklist'), False, URL('manage', 'worklist'), []),
+            (T('Exams'), False, URL('manage', 'exam2do_OBR4'), []),
+            (T('Modalities'), False, URL('manage', 'modality'), []),
+            (T('Facilities'), False, URL('manage', 'facility'), [])
+        ])
 ]
 
 DEVELOPMENT_MENU = True

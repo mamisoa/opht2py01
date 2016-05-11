@@ -1,0 +1,458 @@
+{{extend 'layout.html'}}
+{{block head}}
+<!-- https://github.com/silviomoreto/bootstrap-select.git -->
+<!-- bootstrap-table -->
+<link rel="stylesheet" href="{{=URL('static','css/bootstrap-table.css')}}" />
+<script src="{{=URL('static','js/bootstrap-table/bootstrap-table.js')}}"></script>
+<script src="{{=URL('static','js/bootstrap-table/locales/bootstrap-table-fr-BE.min.js')}}"></script>
+<script src="{{=URL('static','js/bootstrap-select/js/bootstrap-select.min.js')}}"></script>
+<link rel="stylesheet" href="{{=URL('static','js/bootstrap-select/css/bootstrap-select.min.css')}}" />
+<style>
+.btn-left {
+  background-color: red;
+}
+.btn-right {
+  background-color: blue;
+}
+.glyphicon-remove-circle {
+  color: red;
+  margin-left: 10px;
+}
+
+</style>
+{{end}}
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-4">
+    <h3>Right Eye:<small></small></h3>
+    <form action="" id="form_right">
+      <div class="row">
+        <div class="form-group col-sm-6 hidden">
+          <label>Patient id:</label>
+          <input type="text" class="form-control id_auth_user" name="id_auth_user" value="">
+        </div>
+        <div class="form-group col-sm-6 hidden">
+          <label>Worklist ID:</label>
+          <input type="text" class="form-control id_worklist" name="id_worklist" value="">
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-sm-6">
+          <label>K1:</label>
+          <div class="input-group">
+            <span class="input-group-addon btn btn-info counter_down_k1">-</span>
+            <input type="text" class="form-control counter_k1" name="k1" placeholder="K1" value="43.00">
+            <span class="input-group-addon btn btn-info counter_up_k1">+</span>
+          </div>
+        </div>
+        <div class="form-group col-sm-6">
+          <label>K2:</label>
+          <div class="input-group">
+            <span class="input-group-addon btn btn-info counter_down_k2">-</span>
+            <input type="text" class="form-control counter_k2" name="k2" placeholder="K2" value="43.00">
+            <span class="input-group-addon btn btn-info counter_up_k2">+</span>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-sm-6">
+          <label>Axis K1:</label>
+          <div class="input-group">
+            <span class="input-group-addon btn btn-info counter_down_axis1">-</span>
+            <input type="text" class="form-control counter_axis1" name="axis1" placeholder="Axis K1" value="180">
+            <span class="input-group-addon btn btn-info counter_up_axis1">+</span>
+          </div>
+        </div>
+        <div class="form-group col-sm-6">
+          <label>Axis K2:</label>
+          <div class="input-group">
+            <span class="input-group-addon btn btn-info counter_down_axis2">-</span>
+            <input type="text" class="form-control counter_axis2" name="axis2" placeholder="Axis K2" value="180">
+            <span class="input-group-addon btn btn-info counter_up_axis2">+</span>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group">
+          <button type="submit" class="form-control btn btn-primary submit btn-right">Submit Right Eye</button>
+        </div>
+      </div>
+    </form>
+  </div> <!--col-md-4 -->
+  <div class="col-md-4">
+    <h3>Left Eye:<small></small></h3>
+    <form action="" id="form_left">
+      <div class="row">
+        <div class="form-group col-sm-6 hidden">
+          <label>Patient id:</label>
+          <input type="text" class="form-control id_auth_user" name="id_auth_user" value="">
+        </div>
+        <div class="form-group col-sm-6 hidden">
+          <label>Worklist ID:</label>
+          <input type="text" class="form-control id_worklist" name="id_worklist" value="">
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-sm-6">
+          <label>K1:</label>
+          <div class="input-group">
+            <span class="input-group-addon btn btn-info counter_down_k1">-</span>
+            <input type="text" class="form-control counter_k1" name="k1" placeholder="K1" value="43.00">
+            <span class="input-group-addon btn btn-info counter_up_k1">+</span>
+          </div>
+        </div>
+        <div class="form-group col-sm-6">
+          <label>K2:</label>
+          <div class="input-group">
+            <span class="input-group-addon btn btn-info counter_down_k2">-</span>
+            <input type="text" class="form-control counter_k2" name="k2" placeholder="K2" value="43.00">
+            <span class="input-group-addon btn btn-info counter_up_k2">+</span>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-sm-6">
+          <label>Axis K1:</label>
+          <div class="input-group">
+            <span class="input-group-addon btn btn-info counter_down_axis1">-</span>
+            <input type="text" class="form-control counter_axis1" name="axis1" placeholder="Axis K1" value="180">
+            <span class="input-group-addon btn btn-info counter_up_axis1">+</span>
+          </div>
+        </div>
+        <div class="form-group col-sm-6">
+          <label>Axis K2:</label>
+          <div class="input-group">
+            <span class="input-group-addon btn btn-info counter_down_axis2">-</span>
+            <input type="text" class="form-control counter_axis2" name="axis2" placeholder="Axis K2" value="180">
+            <span class="input-group-addon btn btn-info counter_up_axis2">+</span>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group">
+          <button type="submit" class="form-control btn  btn-primary submit btn-left">Submit Left Eye</button>
+        </div>
+      </div>
+    </form>
+  </div> <!-- col-md-4 -->
+  <div class="col-md-4">
+    <div>
+      <h1>Topo/keratometry <span class="first_name"></span><span class="last_name"></span></h1>
+        <div class="toolbar_km">
+          <span class="alert_km"></span>
+        </div>
+    </div>
+    <table id="table_km"
+        data-id-field="id"
+        data-show-refresh="true"
+        data-show-columns="true"
+        data-search="true"
+        data-toggle="table"
+        data-locale="en-US"
+        data-detail-view="true"
+        data-response-handler="responseHandler_km"
+        data-query-params="queryParams"
+        data-row-style="rowStyle"
+        data-row-attributes="rowAttributes"
+        data-pagination="true"
+        data-toolbar=".toolbar_km">
+      <thead>
+        <tr>
+          <th data-field="id" data-sortable="true">ID</th>
+          <th data-field="laterality" data-title="Eye:" data-sortable="true">Eye:</th>
+          <th data-field="k1" data-title="K1:" data-sortable="true">K1:</th>
+          <th data-field="k2" data-title="K2:" data-sortable="true">K2:</th>
+          <th data-field="axis2" data-title="Axis 1:" data-sortable="true">Axis 1:</th>
+          <th data-field="axis2" data-title="Axis 2:" data-sortable="true">Axis 2:</th>
+          <th data-field="action_km"
+              data-align="center"
+              data-formatter="actionFormatter_km"
+              data-events="actionEvents_km">Action</th>
+        </tr>
+      </thead>
+    </table>
+  </div> <!-- col-md-4 -->
+</div>
+</div> <!--container-fluid -->
+
+
+<div class="modal fade" id="modal_km" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form action="" id="form_km">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="">Edit keratometry for<span class="patient"></span></h4>
+      </div>
+      <div class="modal-body">
+        <div class="col-md-4">
+            <div class="row">
+              <div class="form-group col-sm-4 hidden">
+                <label>Id:</label>
+                <input type="text" class="form-control id" name="id" value="">
+              </div>
+              <div class="form-group col-sm-4 hidden">
+                <label>Patient id:</label>
+                <input type="text" class="form-control id_auth_user" name="id_auth_user" value="">
+              </div>
+              <div class="form-group col-sm-4 hidden">
+                <label>Worklist ID:</label>
+                <input type="text" class="form-control id_worklist" name="id_worklist" value="">
+              </div>
+            </div>
+            <div class="row">
+              <div class="form-group col-sm-12">
+                <label>Laterality:<span style="color: red;" class="lat_req"></span></label>
+                <div class="input-group">
+                  <div class="btn-group laterality" data-toggle="buttons">
+                  <label class="btn btn-primary">
+                    <input type="radio" class="laterality_left" name="laterality" autocomplete="off" value="left">Left
+                  </label>
+                  <label class="btn btn-primary">
+                    <input type="radio" class="laterality_right" name="laterality" autocomplete="off" value="right">Right
+                  </label>
+                  <div class="help-block with-errors">Required<span id="alert_lat" style="color:red;"></span></div>
+                  </div>
+               </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="form-group col-sm-6">
+                <label>K1:</label>
+                <div class="input-group">
+                  <span class="input-group-addon btn btn-info counter_down_k1">-</span>
+                  <input type="text" class="form-control counter_k1 k1" name="k1" placeholder="K1" value="43.00">
+                  <span class="input-group-addon btn btn-info counter_up_k1">+</span>
+                </div>
+              </div>
+              <div class="form-group col-sm-6">
+                <label>K2:</label>
+                <div class="input-group">
+                  <span class="input-group-addon btn btn-info counter_down_k2">-</span>
+                  <input type="text" class="form-control counter_k2 k2" name="k2" placeholder="K2" value="43.00">
+                  <span class="input-group-addon btn btn-info counter_up_k2">+</span>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="form-group col-sm-6">
+                <label>Axis K1:</label>
+                <div class="input-group">
+                  <span class="input-group-addon btn btn-info counter_down_axis1">-</span>
+                  <input type="text" class="form-control counter_axis1 axis1" name="axis1" placeholder="Axis K1" value="180">
+                  <span class="input-group-addon btn btn-info counter_up_axis1">+</span>
+                </div>
+              </div>
+              <div class="form-group col-sm-6">
+                <label>Axis K2:</label>
+                <div class="input-group">
+                  <span class="input-group-addon btn btn-info counter_down_axis2">-</span>
+                  <input type="text" class="form-control counter_axis2 axis2" name="axis2" placeholder="Axis K2" value="180">
+                  <span class="input-group-addon btn btn-info counter_up_axis2">+</span>
+                </div>
+              </div>
+            </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary submit">Submit</button>
+    </div>
+  </form>
+
+    </div>
+  </div>
+</div>
+
+
+<script type="text/javascript">
+
+var $table_km = $('#table_km').bootstrapTable({
+      url:'{{=URL('api','topo', scheme=True, host=True)}}?id_worklist={{=id_worklist}}&id_auth_user={{=id_auth_user}}'});
+
+$(function() {
+
+var $modal_km = $('#modal_km').modal({show: false});
+
+
+setCounter('#form_right','axis1',5,0,180);
+setCounter('#form_right','axis2',5,0,180);
+setCounter('#form_right','k1',0.50,30,70);
+setCounter('#form_right','k2',0.50,30,70);
+
+setCounter('#form_left','axis1',5,0,180);
+setCounter('#form_left','axis2',5,0,180);
+setCounter('#form_left','k1',0.50,30,70);
+setCounter('#form_left','k2',0.50,30,70);
+
+setCounter('#form_km','axis1',5,0,180);
+setCounter('#form_km','axis2',5,0,180);
+setCounter('#form_km','k1',0.50,30,70);
+setCounter('#form_km','k2',0.50,30,70);
+
+function setCounter (id_count, count_class,step, min, max) {
+  $(id_count+' .btn.counter_down_'+count_class).click(function() {
+    value = parseFloat($(id_count+' input.counter_'+count_class).val());
+    if (value >= (min+step)) {
+      $(id_count+' input.counter_'+count_class).val(value-step);
+    } else {};
+  });
+
+  $(id_count+' .btn.counter_up_'+count_class).click(function() {
+    value = parseFloat($(id_count+' input.counter_'+count_class).val());
+    if (value <= (max-step)) {
+      $(id_count+' input.counter_'+count_class).val(value+step);
+    } else {};
+  });
+}
+
+$('#form_right .submit').click(function(e){
+  var row = {};
+  $('#form_right input.id_auth_user').val({{=id_auth_user}});
+  $('#form_right input.id_worklist').val({{=id_worklist}});
+  e.preventDefault();
+  $('#form_right').find('input[name]').each(function () {
+    row[$(this).attr('name')] = $(this).val();
+  });
+  row['laterality']='right';
+  console.log(row);
+  post_km_form(row,'POST','right');
+})
+
+$('#form_left .submit').click(function(e){
+  var row = {};
+  $('#form_left input.id_auth_user').val({{=id_auth_user}});
+  $('#form_left input.id_worklist').val({{=id_worklist}});
+  e.preventDefault();
+  $('#form_left').find('input[name]').each(function () {
+    row[$(this).attr('name')] = $(this).val();
+  });
+  row['laterality']='left';
+  post_km_form(row,'POST','left');
+})
+
+$('#form_km .submit').click(function(e){
+  var row = {};
+  e.preventDefault();
+  $('#form_km').find('input[name]').each(function () {
+    row[$(this).attr('name')] = $(this).val();
+  });
+  row['laterality']= $('#form_km input:radio[name=laterality]').filter(':checked').val();
+  console.log(row);
+  post_km_form(row,'PUT','left');
+})
+
+
+
+function post_km_form(row,req,lat) {
+  var API_URL = (req == 'POST' ? '{{=URL('api','topo/topography', scheme=True, host=True)}}/' : '{{=URL('api','topo/topography', scheme=True, host=True)}}/'+ row.id);
+  var mode = (req == 'POST' ? 'add':'edit');
+  $.ajax({
+    url: API_URL,
+    type: req == 'POST' ? 'post':'put',
+    contentType: 'application/json',
+    data: JSON.stringify(row),
+    success: function (text) {
+      id = text.slice(text.indexOf('id(')+3,text.indexOf(') ***'));
+      if ( id == 'None') {
+        showAlert('Unable to '+mode+' keratometry','danger','alert_km');
+      } else {
+      $table_km.bootstrapTable('refresh');
+      showAlert(titleCase(mode+'ed'),'success','alert_km');
+      };
+      $modal_km.modal('hide');
+    },
+    error: function () {
+        showAlert('Unable to '+mode+' keratometry!','danger','alert_km');
+      }
+    });
+}
+
+});
+
+
+window.actionEvents_km = {
+  'click .update': function (e,value,row) {
+    resetForm($('#form_km'));
+    $('#form_km input.id').val(row.id);
+    $('#form_km input.id_auth_user').val(row.id_auth_user);
+    $('#form_km input.id_worklist').val(row.id_worklist);
+    $('#form_km input.k1').val(row.k1);
+    $('#form_km input.k2').val(row.k2);
+    $('#form_km input.axis1').val(row.axis1);
+    $('#form_km input.axis2').val(row.axis2);
+    $('#form_km input.laterality_'+row.laterality).prop('checked',true).parent().addClass('active');
+    $('#modal_km').modal('show');
+    },
+  'click .remove': function (e, value, row) {
+      if (confirm('Are you sure to delete this keratometry?')) {
+          $.ajax({
+              url: '{{=URL('api','topo/topography', scheme=True, host=True)}}/'+ row.id,
+              type: 'delete',
+              success: function () {
+                  $table_km.bootstrapTable('refresh');
+                  showAlert('Delete keratometry successful!', 'success', 'alert_listing');
+              },
+              error: function () {
+                  showAlert('Delete keratometry error!', 'danger', 'alert_listing');
+              }
+          })
+      }
+  }
+}
+
+function responseHandler_km(res) {
+  topo = res.content;
+  display = [];
+  $.each(topo, function(i) {
+    display.push({'id': topo[i].topography.id,
+     'patient': topo[i].patient.first_name+' '+topo[i].patient.last_name,
+     'id_auth_user': topo[i].topography.id_auth_user,
+     'id_worklist': topo[i].topography.id_worklist,
+     'id_auth_user': topo[i].topography.id_auth_user,
+     'k1': topo[i].topography.k1,
+     'k2': topo[i].topography.k2,
+     'axis1': topo[i].topography.axis1,
+     'axis2': topo[i].topography.axis2,
+     'created_by': topo[i].creator.first_name+' '+topo[i].creator.last_name,
+     'created_on': topo[i].topography.created_on,
+     'modified_by': topo[i].editor.first_name+' '+topo[i].editor.last_name,
+     'modified_on': topo[i].topography.modified_on,
+     'laterality': topo[i].topography.laterality
+    });
+  });
+  return display;
+}
+
+function queryParams(params) {
+    return {};
+}
+
+function actionFormatter_km(value) {
+    return [
+        '<a class="update" href="javascript:" title="Edit"><i class="glyphicon glyphicon-pencil"></i></a>  ',
+        '<a class="remove" href="javascript:" title="Delete"><i class="glyphicon glyphicon-remove-circle"></i></a>'
+    ].join('');
+}
+
+
+  function showAlert(title, type, div) {
+    $('.'+div).attr('class', div+' alert alert-' + type || 'success')
+          .html('<i class="glyphicon glyphicon-check"></i> ' + title).show();
+    setTimeout(function () {
+        $('.'+div).hide();
+      }, 5000);
+  }
+
+  function resetForm($form) {
+    $form.find('input:text, input:password, input:file, select, textarea').val('');
+    $form.find('input:radio, input:checkbox')
+       .removeAttr('checked').removeAttr('selected').parent().removeClass('active');
+  }
+
+  function titleCase(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1); }
+
+
+</script>

@@ -53,6 +53,7 @@ db.define_table('exam2do_OBR4',
     Field('exam_description','string'),
     Field('cycle_num','integer', default='1'),
     Field('procedure_seq','string'),
+    Field('controller','string'),
     auth.signature)
 
 db.define_table('worklist',

@@ -80,11 +80,6 @@ def home():
     providers = XML(rows2json('content',db(query_sessions).select(db.auth_user.id,db.auth_user.first_name,db.auth_user.last_name)))
     return locals()
 
-@auth.requires_membership('IT')
-def manage():
-    grid = SQLFORM.smartgrid(db.auth_user,linked_tables=['auth_membership','address','phone'])
-    return locals()
-
 def rows2json (tablename,rows):
     import datetime
     import json
@@ -102,27 +97,6 @@ def rows2json (tablename,rows):
     concat = concat.strip(',')
     concat = concat + ']}'
     return concat
-
-def update_user():
-    record = db.auth_user(request.args(0)) or redirect(URL('home'))
-    form = SQLFORM(db.auth_user, record)
-    if form.process().accepted:
-       response.flash = 'form accepted'
-       redirect(URL('patients'))
-    elif form.errors:
-       response.flash = 'form has errors'
-    return dict(form=form)
-
-def create_user(): # first arg gives group_id
-    group = request.args(0) or redirect(URL('home'))
-    form = SQLFORM(db.auth_user)
-    if form.process(onvalidation=check_duplicate).accepted:
-        response.flash = 'form accepted'
-        db.auth_membership.insert(user_id=form.vars.id,group_id=group)
-        redirect(URL('home/'+str(group)))
-    elif form.errors:
-        response.flash = 'Form has errors'
-    return dict(form=form)
 
 def check_duplicate(form):
     form.vars.first_name = form.vars.first_name.capitalize()
@@ -155,15 +129,6 @@ def get_user_name(id):
     lastname= username[0].last_name
     return dict(lastname=lastname,firstname=firstname)
 
-def create_address ():
-    try:
-        user_id = request.args(0)
-        if (db(db.auth_user.id == request.args(0)).count() == 0):
-            redirect(URL('home'))
-    except ValueError:
-        redirect(URL('home'))
-        form = SQLFORM(db.address,user_id)
-    return locals()
 
 def test():
     import datetime
