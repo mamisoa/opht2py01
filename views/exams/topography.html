@@ -1,3 +1,12 @@
+{{patientname = db(db.auth_user.id == id_auth_user).select(db.auth_user.first_name, db.auth_user.last_name, db.auth_user.dob_pid7).first()
+  patient = patientname.first_name + ' ' + patientname.last_name
+  dob = patientname.dob_pid7
+  worklistid = db(db.worklist.id == id_worklist).select(db.worklist.message_unique_id_MSH10, db.exam2do_OBR4.exam_description, db.worklist.requested_time_OBR6, left=[db.exam2do_OBR4.on(db.exam2do_OBR4.id==db.worklist.exam2do_OBR4)]).first()
+  exam = worklistid.exam2do_OBR4.exam_description
+  timeslot = worklistid.worklist.requested_time_OBR6
+  task = worklistid.worklist.message_unique_id_MSH10 }}
+
+
 {{extend 'layout.html'}}
 {{block head}}
 <!-- https://github.com/silviomoreto/bootstrap-select.git -->
@@ -8,259 +17,361 @@
 <script src="{{=URL('static','js/bootstrap-select/js/bootstrap-select.min.js')}}"></script>
 <link rel="stylesheet" href="{{=URL('static','js/bootstrap-select/css/bootstrap-select.min.css')}}" />
 <style>
-.btn-left {
-  background-color: red;
-}
-.btn-right {
-  background-color: blue;
-}
-.glyphicon-remove-circle {
-  color: red;
-  margin-left: 10px;
-}
+  .btn-left {
+    background-color: red;
+  }
+  .btn-right {
+    background-color: blue;
+  }
+  .glyphicon-remove-circle {
+    color: red;
+    margin-left: 10px;
+  }
+
+  input {
+    text-align: center;
+  }
+
+  .btn-back {
+    margin: 10px;
+  }
+
+  .btn-done {
+    margin-top: 0px;
+    margin-left: 5px;
+    margin-bottom: 3px;
+  }
+
+  .task {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+  .col-centered{
+      float: none;
+      margin: 0 auto;
+  }
+
+  h3, h1 {
+    text-align: center;
+  }
+
+  .encode {
+    background-color: yellow;
+    color: green;
+  }
+
+  .recorded {
+    background-color: green;
+    color: white;
+  }
+
+  .righteye {
+    color: blue;
+    border: 2px solid blue;
+  }
+
+  .lefteye {
+    color: red;
+    border: 2px solid red;
+  }
+
+  .lefteye,.righteye {
+    margin-top: 5px;
+  }
+
+  .botheyes {
+    margin-bottom: 10px;
+  }
+
+  .form, .toptable {
+    margin: 10px;
+  }
+
+  .patient {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
 
 </style>
 {{end}}
 
 <div class="container-fluid">
-  <div class="row">
+  <div class="row"> <!--header -->
     <div class="col-md-4">
-    <h3>Right Eye:<small></small></h3>
-    <form action="" id="form_right">
-      <div class="row">
-        <div class="form-group col-sm-6 hidden">
-          <label>Patient id:</label>
-          <input type="text" class="form-control id_auth_user" name="id_auth_user" value="">
-        </div>
-        <div class="form-group col-sm-6 hidden">
-          <label>Worklist ID:</label>
-          <input type="text" class="form-control id_worklist" name="id_worklist" value="">
-        </div>
-      </div>
-      <div class="row">
-        <div class="form-group col-sm-6">
-          <label>K1:</label>
-          <div class="input-group">
-            <span class="input-group-addon btn btn-info counter_down_k1">-</span>
-            <input type="text" class="form-control counter_k1" name="k1" placeholder="K1" value="43.00">
-            <span class="input-group-addon btn btn-info counter_up_k1">+</span>
-          </div>
-        </div>
-        <div class="form-group col-sm-6">
-          <label>K2:</label>
-          <div class="input-group">
-            <span class="input-group-addon btn btn-info counter_down_k2">-</span>
-            <input type="text" class="form-control counter_k2" name="k2" placeholder="K2" value="43.00">
-            <span class="input-group-addon btn btn-info counter_up_k2">+</span>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="form-group col-sm-6">
-          <label>Axis K1:</label>
-          <div class="input-group">
-            <span class="input-group-addon btn btn-info counter_down_axis1">-</span>
-            <input type="text" class="form-control counter_axis1" name="axis1" placeholder="Axis K1" value="180">
-            <span class="input-group-addon btn btn-info counter_up_axis1">+</span>
-          </div>
-        </div>
-        <div class="form-group col-sm-6">
-          <label>Axis K2:</label>
-          <div class="input-group">
-            <span class="input-group-addon btn btn-info counter_down_axis2">-</span>
-            <input type="text" class="form-control counter_axis2" name="axis2" placeholder="Axis K2" value="180">
-            <span class="input-group-addon btn btn-info counter_up_axis2">+</span>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="form-group">
-          <button type="submit" class="form-control btn btn-primary submit btn-right">Submit Right Eye</button>
-        </div>
-      </div>
-    </form>
-  </div> <!--col-md-4 -->
-  <div class="col-md-4">
-    <h3>Left Eye:<small></small></h3>
-    <form action="" id="form_left">
-      <div class="row">
-        <div class="form-group col-sm-6 hidden">
-          <label>Patient id:</label>
-          <input type="text" class="form-control id_auth_user" name="id_auth_user" value="">
-        </div>
-        <div class="form-group col-sm-6 hidden">
-          <label>Worklist ID:</label>
-          <input type="text" class="form-control id_worklist" name="id_worklist" value="">
-        </div>
-      </div>
-      <div class="row">
-        <div class="form-group col-sm-6">
-          <label>K1:</label>
-          <div class="input-group">
-            <span class="input-group-addon btn btn-info counter_down_k1">-</span>
-            <input type="text" class="form-control counter_k1" name="k1" placeholder="K1" value="43.00">
-            <span class="input-group-addon btn btn-info counter_up_k1">+</span>
-          </div>
-        </div>
-        <div class="form-group col-sm-6">
-          <label>K2:</label>
-          <div class="input-group">
-            <span class="input-group-addon btn btn-info counter_down_k2">-</span>
-            <input type="text" class="form-control counter_k2" name="k2" placeholder="K2" value="43.00">
-            <span class="input-group-addon btn btn-info counter_up_k2">+</span>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="form-group col-sm-6">
-          <label>Axis K1:</label>
-          <div class="input-group">
-            <span class="input-group-addon btn btn-info counter_down_axis1">-</span>
-            <input type="text" class="form-control counter_axis1" name="axis1" placeholder="Axis K1" value="180">
-            <span class="input-group-addon btn btn-info counter_up_axis1">+</span>
-          </div>
-        </div>
-        <div class="form-group col-sm-6">
-          <label>Axis K2:</label>
-          <div class="input-group">
-            <span class="input-group-addon btn btn-info counter_down_axis2">-</span>
-            <input type="text" class="form-control counter_axis2" name="axis2" placeholder="Axis K2" value="180">
-            <span class="input-group-addon btn btn-info counter_up_axis2">+</span>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="form-group">
-          <button type="submit" class="form-control btn  btn-primary submit btn-left">Submit Left Eye</button>
-        </div>
-      </div>
-    </form>
-  </div> <!-- col-md-4 -->
-  <div class="col-md-4">
-    <div>
-      <h1>Topo/keratometry <span class="first_name"></span><span class="last_name"></span></h1>
-        <div class="toolbar_km">
-          <span class="alert_km"></span>
-        </div>
+      <a href="{{=URL('default','home', scheme=True, host=True )}}" class="btn btn-info btn-back" role="button">Back</a>
     </div>
-    <table id="table_km"
-        data-id-field="id"
-        data-show-refresh="true"
-        data-show-columns="true"
-        data-search="true"
-        data-toggle="table"
-        data-locale="en-US"
-        data-detail-view="true"
-        data-response-handler="responseHandler_km"
-        data-query-params="queryParams"
-        data-row-style="rowStyle"
-        data-row-attributes="rowAttributes"
-        data-pagination="true"
-        data-toolbar=".toolbar_km">
-      <thead>
-        <tr>
-          <th data-field="id" data-sortable="true">ID</th>
-          <th data-field="laterality" data-title="Eye:" data-sortable="true">Eye:</th>
-          <th data-field="k1" data-title="K1:" data-sortable="true">K1:</th>
-          <th data-field="k2" data-title="K2:" data-sortable="true">K2:</th>
-          <th data-field="axis2" data-title="Axis 1:" data-sortable="true">Axis 1:</th>
-          <th data-field="axis2" data-title="Axis 2:" data-sortable="true">Axis 2:</th>
-          <th data-field="action_km"
-              data-align="center"
-              data-formatter="actionFormatter_km"
-              data-events="actionEvents_km">Action</th>
-        </tr>
-      </thead>
-    </table>
-  </div> <!-- col-md-4 -->
-</div>
+    <div class="col-md-4 patient">
+        <h1>Patient <strong>{{=patient}}</strong> <small>{{=dob}}</small></h1>
+    </div>
+    <div class="col-md-4">
+      <div class="pull-right task">
+        <span class="timeslot well">
+          <span>Task planned for <em>{{=timeslot}}</em></span>
+        </span>
+        <span class="btn-done">
+          <button type="button" class="btn btn-success btn-done glyphicon glyphicon-ok"></button>
+        </span>
+      </div> <!--task -->
+    </div>
+  </div> <!--header -->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="well well-sm">
+        <h3>{{=exam.upper()}}</h3>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+      <div class="col-md-8 botheyes">
+        <div class="well well-sm encode">
+          <h3>Please encode keratometry:</h3>
+        </div>
+        <div class="row">
+          <div class="col-md-6"> <!--righteye -->
+            <div class="righteye">
+              <div  class="well well-sm"><h3>Right Eye<small></small></h3></div>
+              <form id="form_right" class="form">
+                <div class="row">
+                  <div class="form-group col-sm-6 hidden">
+                    <label>Patient id:</label>
+                    <input type="text" class="form-control id_auth_user" name="id_auth_user" value="">
+                  </div>
+                  <div class="form-group col-sm-6 hidden">
+                    <label>Worklist ID:</label>
+                    <input type="text" class="form-control id_worklist" name="id_worklist" value="">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group col-sm-6 k">
+                    <label>K1:</label>
+                    <div class="input-group">
+                      <span class="input-group-addon btn btn-info counter_down_k1">-</span>
+                      <input type="text" class="form-control counter_k1" name="k1" placeholder="K1" value="43.00">
+                      <span class="input-group-addon btn btn-info counter_up_k1">+</span>
+                    </div>
+                  </div>
+                  <div class="form-group col-sm-6">
+                    <label>Axis K1:</label>
+                    <div class="input-group">
+                      <span class="input-group-addon btn btn-info counter_down_axis1">-</span>
+                      <input type="text" class="form-control counter_axis1" name="axis1" placeholder="Axis K1" value="180">
+                      <span class="input-group-addon btn btn-info counter_up_axis1">+</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group col-sm-6">
+                    <label>K2:</label>
+                    <div class="input-group">
+                      <span class="input-group-addon btn btn-info counter_down_k2">-</span>
+                      <input type="text" class="form-control counter_k2" name="k2" placeholder="K2" value="43.00">
+                      <span class="input-group-addon btn btn-info counter_up_k2">+</span>
+                    </div>
+                  </div>
+                  <div class="form-group col-sm-6">
+                    <label>Axis K2:</label>
+                    <div class="input-group">
+                      <span class="input-group-addon btn btn-info counter_down_axis2">-</span>
+                      <input type="text" class="form-control counter_axis2" name="axis2" placeholder="Axis K2" value="180">
+                      <span class="input-group-addon btn btn-info counter_up_axis2">+</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group">
+                    <div class="col-md-6 col-centered">
+                      <button type="submit" class="form-control btn btn-primary submit btn-right">Submit Right Eye</button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div> <!--righteye -->
+          </div> <!--righteye col-md-4 -->
+          <div class="col-md-6"> <!--lefteye -->
+            <div class="lefteye">
+                <div  class="well well-sm"><h3>Left Eye<small></small></h3></div>
+                <form action="" id="form_left" class="form">
+                  <div class="row">
+                    <div class="form-group col-sm-6 hidden">
+                      <label>Patient id:</label>
+                      <input type="text" class="form-control id_auth_user" name="id_auth_user" value="">
+                    </div>
+                    <div class="form-group col-sm-6 hidden">
+                      <label>Worklist ID:</label>
+                      <input type="text" class="form-control id_worklist" name="id_worklist" value="">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="form-group col-sm-6">
+                      <label>K1:</label>
+                      <div class="input-group">
+                        <span class="input-group-addon btn btn-info counter_down_k1">-</span>
+                        <input type="text" class="form-control counter_k1" name="k1" placeholder="K1" value="43.00">
+                        <span class="input-group-addon btn btn-info counter_up_k1">+</span>
+                      </div>
+                    </div>
+                    <div class="form-group col-sm-6">
+                      <label>K2:</label>
+                      <div class="input-group">
+                        <span class="input-group-addon btn btn-info counter_down_k2">-</span>
+                        <input type="text" class="form-control counter_k2" name="k2" placeholder="K2" value="43.00">
+                        <span class="input-group-addon btn btn-info counter_up_k2">+</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="form-group col-sm-6">
+                      <label>Axis K1:</label>
+                      <div class="input-group">
+                        <span class="input-group-addon btn btn-info counter_down_axis1">-</span>
+                        <input type="text" class="form-control counter_axis1" name="axis1" placeholder="Axis K1" value="180">
+                        <span class="input-group-addon btn btn-info counter_up_axis1">+</span>
+                      </div>
+                    </div>
+                    <div class="form-group col-sm-6">
+                      <label>Axis K2:</label>
+                      <div class="input-group">
+                        <span class="input-group-addon btn btn-info counter_down_axis2">-</span>
+                        <input type="text" class="form-control counter_axis2" name="axis2" placeholder="Axis K2" value="180">
+                        <span class="input-group-addon btn btn-info counter_up_axis2">+</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="form-group">
+                      <div class="col-md-6 col-centered">
+                        <button type="submit" class="form-control btn  btn-primary submit btn-left">Submit Left Eye</button>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+            </div> <!--lefteye -->
+          </div> <!-- left eye col-md-4 -->
+        </div>
+      </div> <!-- botheyes -->
+      <div class="col-md-4"> <!-- table -->
+          <div class="well well-sm recorded">
+            <h3>Keratometries recorded for this task:</h3>
+          </div>
+            <div class="toolbar_km">
+              <span class="alert_km"></span>
+            </div>
+        <table id="table_km"
+            data-id-field="id"
+            data-show-refresh="true"
+            data-show-columns="true"
+            data-search="true"
+            data-toggle="table"
+            data-locale="en-US"
+            data-detail-view="true"
+            data-response-handler="responseHandler_km"
+            data-query-params="queryParams"
+            data-row-style="rowStyle"
+            data-row-attributes="rowAttributes"
+            data-pagination="true"
+            data-toolbar=".toolbar_km">
+          <thead>
+            <tr>
+              <th data-field="id" data-sortable="true">ID</th>
+              <th data-field="laterality" data-title="Eye:" data-sortable="true">Eye:</th>
+              <th data-field="k1" data-title="K1:" data-sortable="true">K1:</th>
+              <th data-field="k2" data-title="K2:" data-sortable="true">K2:</th>
+              <th data-field="axis2" data-title="Axis 1:" data-sortable="true">Axis 1:</th>
+              <th data-field="axis2" data-title="Axis 2:" data-sortable="true">Axis 2:</th>
+              <th data-field="action_km"
+                  data-align="center"
+                  data-formatter="actionFormatter_km"
+                  data-events="actionEvents_km">Action</th>
+            </tr>
+          </thead>
+        </table>
+      </div> <!-- table col-md-4 -->
+  </div>
 </div> <!--container-fluid -->
 
-
+<!-- modal -->
 <div class="modal fade" id="modal_km" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <form action="" id="form_km">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title" id="">Edit keratometry for<span class="patient"></span></h4>
-      </div>
-      <div class="modal-body">
-        <div class="col-md-4">
-            <div class="row">
-              <div class="form-group col-sm-4 hidden">
-                <label>Id:</label>
-                <input type="text" class="form-control id" name="id" value="">
-              </div>
-              <div class="form-group col-sm-4 hidden">
-                <label>Patient id:</label>
-                <input type="text" class="form-control id_auth_user" name="id_auth_user" value="">
-              </div>
-              <div class="form-group col-sm-4 hidden">
-                <label>Worklist ID:</label>
-                <input type="text" class="form-control id_worklist" name="id_worklist" value="">
-              </div>
-            </div>
-            <div class="row">
-              <div class="form-group col-sm-12">
-                <label>Laterality:<span style="color: red;" class="lat_req"></span></label>
-                <div class="input-group">
-                  <div class="btn-group laterality" data-toggle="buttons">
-                  <label class="btn btn-primary">
-                    <input type="radio" class="laterality_left" name="laterality" autocomplete="off" value="left">Left
-                  </label>
-                  <label class="btn btn-primary">
-                    <input type="radio" class="laterality_right" name="laterality" autocomplete="off" value="right">Right
-                  </label>
-                  <div class="help-block with-errors">Required<span id="alert_lat" style="color:red;"></span></div>
-                  </div>
-               </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="form-group col-sm-6">
-                <label>K1:</label>
-                <div class="input-group">
-                  <span class="input-group-addon btn btn-info counter_down_k1">-</span>
-                  <input type="text" class="form-control counter_k1 k1" name="k1" placeholder="K1" value="43.00">
-                  <span class="input-group-addon btn btn-info counter_up_k1">+</span>
-                </div>
-              </div>
-              <div class="form-group col-sm-6">
-                <label>K2:</label>
-                <div class="input-group">
-                  <span class="input-group-addon btn btn-info counter_down_k2">-</span>
-                  <input type="text" class="form-control counter_k2 k2" name="k2" placeholder="K2" value="43.00">
-                  <span class="input-group-addon btn btn-info counter_up_k2">+</span>
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="form-group col-sm-6">
-                <label>Axis K1:</label>
-                <div class="input-group">
-                  <span class="input-group-addon btn btn-info counter_down_axis1">-</span>
-                  <input type="text" class="form-control counter_axis1 axis1" name="axis1" placeholder="Axis K1" value="180">
-                  <span class="input-group-addon btn btn-info counter_up_axis1">+</span>
-                </div>
-              </div>
-              <div class="form-group col-sm-6">
-                <label>Axis K2:</label>
-                <div class="input-group">
-                  <span class="input-group-addon btn btn-info counter_down_axis2">-</span>
-                  <input type="text" class="form-control counter_axis2 axis2" name="axis2" placeholder="Axis K2" value="180">
-                  <span class="input-group-addon btn btn-info counter_up_axis2">+</span>
-                </div>
-              </div>
-            </div>
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="">Edit keratometry for <span class="patient">{{=patient}}</span></h4>
         </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary submit">Submit</button>
-    </div>
-  </form>
-
+        <div class="modal-body">
+              <div class="row">
+                <div class="form-group col-sm-4 hidden">
+                  <label>Id:</label>
+                  <input type="text" class="form-control id" name="id" value="">
+                </div>
+                <div class="form-group col-sm-4 hidden">
+                  <label>Patient id:</label>
+                  <input type="text" class="form-control id_auth_user" name="id_auth_user" value="">
+                </div>
+                <div class="form-group col-sm-4 hidden">
+                  <label>Worklist ID:</label>
+                  <input type="text" class="form-control id_worklist" name="id_worklist" value="">
+                </div>
+              </div>
+              <div class="row"> <!-- laterality -->
+                <div class="form-group col-sm-12">
+                  <label>Laterality:<span style="color: red;" class="lat_req"></span></label>
+                  <div class="input-group">
+                    <div class="btn-group laterality" data-toggle="buttons">
+                    <label class="btn btn-primary">
+                      <input type="radio" class="laterality_left" name="laterality" autocomplete="off" value="left">Left
+                    </label>
+                    <label class="btn btn-primary">
+                      <input type="radio" class="laterality_right" name="laterality" autocomplete="off" value="right">Right
+                    </label>
+                    <div class="help-block with-errors">Required<span id="alert_lat" style="color:red;"></span></div>
+                    </div>
+                 </div>
+                </div>
+              </div>  <!-- laterality -->
+              <div class="row"> <!-- k1/k1 -->
+                <div class="form-group col-sm-6">
+                  <label>K1:</label>
+                  <div class="input-group">
+                    <span class="input-group-addon btn btn-info counter_down_k1">-</span>
+                    <input type="text" class="form-control counter_k1 k1" name="k1" placeholder="K1" value="43.00">
+                    <span class="input-group-addon btn btn-info counter_up_k1">+</span>
+                  </div>
+                </div>
+                <div class="form-group col-sm-6">
+                  <label>K2:</label>
+                  <div class="input-group">
+                    <span class="input-group-addon btn btn-info counter_down_k2">-</span>
+                    <input type="text" class="form-control counter_k2 k2" name="k2" placeholder="K2" value="43.00">
+                    <span class="input-group-addon btn btn-info counter_up_k2">+</span>
+                  </div>
+                </div>
+              </div>  <!-- k1/k2 -->
+              <div class="row"> <!-- k1/k2 -->
+                <div class="form-group col-sm-6">
+                  <label>Axis K1:</label>
+                  <div class="input-group">
+                    <span class="input-group-addon btn btn-info counter_down_axis1">-</span>
+                    <input type="text" class="form-control counter_axis1 axis1" name="axis1" placeholder="Axis K1" value="180">
+                    <span class="input-group-addon btn btn-info counter_up_axis1">+</span>
+                  </div>
+                </div>
+                <div class="form-group col-sm-6">
+                  <label>Axis K2:</label>
+                  <div class="input-group">
+                    <span class="input-group-addon btn btn-info counter_down_axis2">-</span>
+                    <input type="text" class="form-control counter_axis2 axis2" name="axis2" placeholder="Axis K2" value="180">
+                    <span class="input-group-addon btn btn-info counter_up_axis2">+</span>
+                  </div>
+                </div>
+              </div> <!-- k1/k2 -->
+          </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary submit">Submit</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
