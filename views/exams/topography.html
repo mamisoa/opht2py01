@@ -1,11 +1,12 @@
 {{patientname = db(db.auth_user.id == id_auth_user).select(db.auth_user.first_name, db.auth_user.last_name, db.auth_user.dob_pid7).first()
   patient = patientname.first_name + ' ' + patientname.last_name
   dob = patientname.dob_pid7
-  worklistid = db(db.worklist.id == id_worklist).select(db.worklist.message_unique_id_MSH10, db.exam2do_OBR4.exam_description, db.worklist.requested_time_OBR6, left=[db.exam2do_OBR4.on(db.exam2do_OBR4.id==db.worklist.exam2do_OBR4)]).first()
+  worklistid = db(db.worklist.id == id_worklist).select(db.worklist.message_unique_id_MSH10, db.exam2do_OBR4.exam_description, db.worklist.requested_time_OBR6, db.worklist.status_flag, left=[db.exam2do_OBR4.on(db.exam2do_OBR4.id==db.worklist.exam2do_OBR4)]).first()
   exam = worklistid.exam2do_OBR4.exam_description
   timeslot = worklistid.worklist.requested_time_OBR6
-  task = worklistid.worklist.message_unique_id_MSH10 }}
-
+  task = worklistid.worklist.message_unique_id_MSH10
+  status = worklistid.worklist.status_flag }}
+{{pass}}
 
 {{extend 'layout.html'}}
 {{block head}}
@@ -42,8 +43,11 @@
     margin-bottom: 3px;
   }
 
+.glyphicon-menu-down {
+}
+
   .task {
-    margin-top: 10px;
+    margin-top: 20px;
     margin-bottom: 10px;
   }
 
@@ -110,7 +114,7 @@
           <span>Task planned for <em>{{=timeslot}}</em></span>
         </span>
         <span class="btn-done">
-          <button type="button" class="btn btn-success btn-done glyphicon glyphicon-ok"></button>
+          <button type="button" class="btn-info btn"><span class="icon-done"></span><span class="text-done">Set to done</span></button>
         </span>
       </div> <!--task -->
     </div>
@@ -381,6 +385,11 @@
 
 var $table_km = $('#table_km').bootstrapTable({
       url:'{{=URL('api','topo', scheme=True, host=True)}}?id_worklist={{=id_worklist}}&id_auth_user={{=id_auth_user}}'});
+var status_flag = '{{=status}}';
+{{pass}}
+if (status_flag == '[&#x27;done&#x27;]') {
+  $('.btn-done').attr('class','hidden');
+}
 
 $(function() {
 
@@ -454,6 +463,9 @@ $('#form_km .submit').click(function(e){
   post_km_form(row,'PUT','left');
 })
 
+$('.btn-done').click(function() {
+  set_task_done('{{=id_worklist}}')
+});
 
 
 function post_km_form(row,req,lat) {
@@ -482,6 +494,33 @@ function post_km_form(row,req,lat) {
 
 });
 
+function set_task_done(id_worklist) {
+  $.ajax({
+    url: '{{=URL('api','wl/worklist', scheme=True, host=True)}}/'+id_worklist,
+    type: 'put',
+    contentType: 'application/json',
+    data: JSON.stringify({ status_flag: 'done'}),
+    success: function(text) {
+      id = text.slice(text.indexOf('id(')+3,text.indexOf(') ***'));
+      if ( id == 'None') {
+        $('.btn-done button').removeClass('btn-info');
+        $('.btn-done button').addClass('btn-danger');
+        showAlert('done error','danger','alert_km');
+      } else {
+        $('.btn-done button').removeClass('btn-info');
+        $('.btn-done button').addClass('btn-success');
+        $('.btn-done span.icon-done').addClass('glyphicon glyphicon-check');
+        $('.btn-done span.text-done').html('Done');
+        $('.btn-done button').prop('disabled', true);
+        setTimeout(function () {
+          window.location.href = '{{=URL('default','home', scheme=True, host=True)}}'; }, 3000);
+      };
+    },
+    error: function () {
+      console.log('done error');
+    }
+  });
+}
 
 window.actionEvents_km = {
   'click .update': function (e,value,row) {
