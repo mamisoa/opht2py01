@@ -30,4 +30,9 @@ def call():
 def topography():
     id_auth_user = request.vars.id_auth_user
     id_worklist = request.vars.id_worklist
-    return locals()# dict (id_worklist=id_worklist, patient=patient, task=task, dob=dob)
+    return locals()
+
+def tono():
+    id_auth_user = request.vars.id_auth_user
+    id_worklist = request.vars.id_worklist
+    return locals()

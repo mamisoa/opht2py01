@@ -1,0 +1,695 @@
+{{patientname = db(db.auth_user.id == id_auth_user).select(db.auth_user.first_name, db.auth_user.last_name, db.auth_user.dob_pid7).first()
+  patient = patientname.first_name + ' ' + patientname.last_name
+  dob = patientname.dob_pid7
+  worklistid = db(db.worklist.id == id_worklist).select(db.worklist.message_unique_id_MSH10, db.exam2do_OBR4.exam_description, db.worklist.requested_time_OBR6, db.worklist.status_flag, left=[db.exam2do_OBR4.on(db.exam2do_OBR4.id==db.worklist.exam2do_OBR4)]).first()
+  exam = worklistid.exam2do_OBR4.exam_description
+  timeslot = worklistid.worklist.requested_time_OBR6
+  task = worklistid.worklist.message_unique_id_MSH10
+  status = worklistid.worklist.status_flag }}
+{{pass}}
+
+{{extend 'layout.html'}}
+{{block head}}
+<!-- https://github.com/silviomoreto/bootstrap-select.git -->
+<!-- bootstrap-table -->
+<link rel="stylesheet" href="{{=URL('static','css/bootstrap-table.css')}}" />
+<script src="{{=URL('static','js/bootstrap-table/bootstrap-table.js')}}"></script>
+<script src="{{=URL('static','js/bootstrap-table/locales/bootstrap-table-fr-BE.min.js')}}"></script>
+<script src="{{=URL('static','js/bootstrap-select/js/bootstrap-select.min.js')}}"></script>
+<link rel="stylesheet" href="{{=URL('static','js/bootstrap-select/css/bootstrap-select.min.css')}}" />
+<style>
+  .btn-left {
+    background-color: red;
+  }
+  .btn-right {
+    background-color: blue;
+  }
+  .glyphicon-remove-circle {
+    color: red;
+    margin-left: 10px;
+  }
+
+  input {
+    text-align: center;
+  }
+
+  .btn-back {
+    margin: 10px;
+  }
+
+  .btn-done {
+    margin-top: 0px;
+    margin-left: 5px;
+    margin-bottom: 3px;
+  }
+
+  .task {
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
+
+  .col-centered{
+      float: none;
+      margin: 0 auto;
+  }
+
+  h3, h1 {
+    text-align: center;
+  }
+
+  .encode {
+    background-color: yellow;
+    color: green;
+  }
+
+  .recorded {
+    background-color: green;
+    color: white;
+  }
+
+  .righteye {
+    color: blue;
+    border: 2px solid blue;
+  }
+
+  .lefteye {
+    color: red;
+    border: 2px solid red;
+  }
+
+  .lefteye,.righteye {
+    margin-top: 5px;
+  }
+
+  .botheyes {
+    margin-bottom: 10px;
+  }
+
+  .form, .toptable {
+    margin: 10px;
+  }
+
+  .patient {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+</style>
+
+{{end}}
+
+<div class="container-fluid">
+  <div class="row"> <!--header -->
+    <div class="col-md-4">
+      <a href="{{=URL('default','home', scheme=True, host=True )}}" class="btn btn-info btn-back" role="button">Back</a>
+    </div>
+    <div class="col-md-4 patient">
+        <h1>Patient <strong>{{=patient}}</strong> <small>{{=dob}}</small></h1>
+    </div>
+    <div class="col-md-4">
+      <div class="pull-right task">
+        <span class="timeslot well">
+          <span>Task planned for <em>{{=timeslot}}</em></span>
+        </span>
+        <span class="btn-done">
+          <button type="button" class="btn-info btn"><span class="icon-done"></span><span class="text-done">Set to done</span></button>
+        </span>
+      </div> <!--task -->
+    </div>
+  </div> <!--header -->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="well well-sm">
+        <h3>{{=exam.upper()}}</h3>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+      <div class="col-md-8 botheyes">
+        <div class="well well-sm encode">
+          <h3>Please encode tono/pachymetry:</h3>
+        </div>
+        <div class="row">
+          <div class="col-md-6"> <!--righteye -->
+            <div class="righteye">
+              <div  class="well well-sm"><h3>Right Eye<small></small></h3></div>
+              <form id="form_right" class="form">
+                <div class="row">
+                  <div class="form-group col-sm-6 hidden">
+                    <label>Patient id:</label>
+                    <input type="text" class="form-control id_auth_user" name="id_auth_user" value="">
+                  </div>
+                  <div class="form-group col-sm-6 hidden">
+                    <label>Worklist ID:</label>
+                    <input type="text" class="form-control id_worklist" name="id_worklist" value="">
+                  </div>
+                </div>
+                <div class="row"> <!-- tono -->
+                  <div class="form-group col-sm-12">
+                    <label>Air tonometry:</label>
+                    <div class="input-group">
+                      <span class="input-group-addon btn btn-info counter_down_tono">-</span>
+                      <input type="text" class="form-control counter_tono tono" name="tonometry" placeholder="tono" value="17.00">
+                      <span class="input-group-addon btn btn-info counter_up_tono">+</span>
+                    </div>
+                  </div><!-- tono -->
+                </div>
+                <div class="row">
+                  <div class="form-group col-sm-12"><!-- pachy -->
+                    <label>Optical pachymetry:</label>
+                    <div class="input-group">
+                      <span class="input-group-addon btn btn-info counter_down_pachy">-</span>
+                      <input type="text" class="form-control counter_pachy pachy" name="pachymetry" placeholder="pachy" value="550">
+                      <span class="input-group-addon btn btn-info counter_up_pachy">+</span>
+                    </div>
+                  </div><!-- pachy -->
+                </div>
+                <div class="row">
+                  <div class="form-group">
+                    <div class="col-md-6 col-centered">
+                      <button type="submit" class="form-control btn btn-primary submit btn-right">Submit Right Eye</button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div> <!--righteye -->
+          </div> <!--righteye col-md-6 -->
+          <div class="col-md-6"> <!--lefteye -->
+            <div class="lefteye">
+              <div  class="well well-sm"><h3>Left Eye<small></small></h3></div>
+              <form id="form_left" class="form">
+                <div class="row">
+                  <div class="form-group col-sm-6 hidden">
+                    <label>Patient id:</label>
+                    <input type="text" class="form-control id_auth_user" name="id_auth_user" value="">
+                  </div>
+                  <div class="form-group col-sm-6 hidden">
+                    <label>Worklist ID:</label>
+                    <input type="text" class="form-control id_worklist" name="id_worklist" value="">
+                  </div>
+                </div>
+                <div class="row"> <!-- tono -->
+                  <div class="form-group col-sm-12">
+                    <label>Air tonometry:</label>
+                    <div class="input-group">
+                      <span class="input-group-addon btn btn-info counter_down_tono">-</span>
+                      <input type="text" class="form-control counter_tono tono" name="tonometry" placeholder="tono" value="17.00">
+                      <span class="input-group-addon btn btn-info counter_up_tono">+</span>
+                    </div>
+                  </div><!-- tono -->
+                </div>
+                <div class="row">
+                  <div class="form-group col-sm-12"><!-- pachy -->
+                    <label>Optical pachymetry:</label>
+                    <div class="input-group">
+                      <span class="input-group-addon btn btn-info counter_down_pachy">-</span>
+                      <input type="text" class="form-control counter_pachy pachy" name="pachymetry" placeholder="pachy" value="550">
+                      <span class="input-group-addon btn btn-info counter_up_pachy">+</span>
+                    </div>
+                  </div><!-- pachy -->
+                </div>
+                <div class="row">
+                  <div class="form-group">
+                    <div class="col-md-6 col-centered">
+                      <button type="submit" class="form-control btn btn-primary submit btn-left">Submit Left Eye</button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div> <!--lefteye -->
+          </div> <!-- left eye col-md-6 -->
+        </div>
+      </div> <!-- botheyes -->
+      <div class="col-md-4"> <!-- table -->
+          <div class="well well-sm recorded">
+            <h3>Tonometries recorded for this task:</h3>
+          </div>
+            <div class="toolbar_tn">
+              <span class="alert_tn"></span>
+            </div>
+        <table id="table_tn"
+            data-id-field="id"
+            data-show-refresh="true"
+            data-show-columns="true"
+            data-search="true"
+            data-toggle="table"
+            data-locale="en-US"
+            data-detail-view="true"
+            data-response-handler="responseHandler_tn"
+            data-query-params="queryParams"
+            data-row-style="rowStyle"
+            data-row-attributes="rowAttributes"
+            data-pagination="true"
+            data-toolbar=".toolbar_tn">
+          <thead>
+            <tr>
+              <th data-field="id" data-sortable="true">ID</th>
+              <th data-field="laterality" data-title="Eye:" data-sortable="true">Eye:</th>
+              <th data-field="created_on" data-title="Time:" data-sortable="true">Time:</th>
+              <th data-field="techno" data-title="Method:" data-sortable="true">Method:</th>
+              <th data-field="tonometry" data-title="TIO:" data-sortable="true">TIO:</th>
+              <th data-field="pachymetry" data-title="Pachy:" data-sortable="true">Pachy:</th>
+              <th data-field="action_tn"
+                  data-align="center"
+                  data-formatter="actionFormatter_tn"
+                  data-events="actionEvents_tn">Action</th>
+            </tr>
+          </thead>
+        </table>
+      </div> <!-- table col-md-4 -->
+  </div>
+  <div class="row">
+    <div class="col-md-8 botheyes">
+      <div class="well well-sm encode">
+        <h3>Please encode aplanation:</h3>
+      </div>
+      <div class="row">
+        <div class="col-md-6"> <!--righteye -->
+          <div class="righteye">
+            <div  class="well well-sm"><h3>Right Eye<small></small></h3></div>
+            <form id="form_right_apla" class="form">
+              <div class="row">
+                <div class="form-group col-sm-6 hidden">
+                  <label>Patient id:</label>
+                  <input type="text" class="form-control id_auth_user" name="id_auth_user" value="">
+                </div>
+                <div class="form-group col-sm-6 hidden">
+                  <label>Worklist ID:</label>
+                  <input type="text" class="form-control id_worklist" name="id_worklist" value="">
+                </div>
+              </div>
+              <div class="row"> <!-- tono -->
+                <div class="form-group col-sm-12">
+                  <label>Aplanation tonometry:</label>
+                  <div class="input-group">
+                    <span class="input-group-addon btn btn-info counter_down_tono">-</span>
+                    <input type="text" class="form-control counter_tono tono" name="tonometry" placeholder="tono" value="17.00">
+                    <span class="input-group-addon btn btn-info counter_up_tono">+</span>
+                  </div>
+                </div><!-- tono -->
+              </div>
+              <div class="row">
+                <div class="form-group col-sm-12 hidden"><!-- techno -->
+                  <label>Method:</label>
+                  <div class="input-group">
+                    <input type="text" class="form-control" name="techno" value="apla">
+                  </div>
+                </div><!-- techno -->
+              </div>
+              <div class="row">
+                <div class="form-group">
+                  <div class="col-md-6 col-centered">
+                    <button type="submit" class="form-control btn btn-primary submit btn-right">Submit Right Eye</button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div> <!--righteye -->
+        </div> <!--righteye col-md-6 -->
+        <div class="col-md-6"> <!--lefteye -->
+          <div class="lefteye">
+            <div  class="well well-sm"><h3>Left Eye<small></small></h3></div>
+            <form id="form_left_apla" class="form">
+              <div class="row">
+                <div class="form-group col-sm-6 hidden">
+                  <label>Patient id:</label>
+                  <input type="text" class="form-control id_auth_user" name="id_auth_user" value="">
+                </div>
+                <div class="form-group col-sm-6 hidden">
+                  <label>Worklist ID:</label>
+                  <input type="text" class="form-control id_worklist" name="id_worklist" value="">
+                </div>
+              </div>
+              <div class="row"> <!-- tono -->
+                <div class="form-group col-sm-12">
+                  <label>Aplanation tonometry:</label>
+                  <div class="input-group">
+                    <span class="input-group-addon btn btn-info counter_down_tono">-</span>
+                    <input type="text" class="form-control counter_tono tono" name="tonometry" placeholder="tono" value="17.00">
+                    <span class="input-group-addon btn btn-info counter_up_tono">+</span>
+                  </div>
+                </div><!-- tono -->
+              </div>
+              <div class="row">
+                <div class="form-group col-sm-12 hidden"><!-- techno -->
+                  <label>Method:</label>
+                  <div class="input-group">
+                    <input type="text" class="form-control" name="techno" value="apla">
+                  </div>
+                </div><!-- techno -->
+              </div>
+              <div class="row">
+                <div class="form-group">
+                  <div class="col-md-6 col-centered">
+                    <button type="submit" class="form-control btn btn-primary submit btn-left">Submit Left Eye</button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div> <!--lefteye -->
+        </div> <!-- left eye col-md-6 -->
+      </div>
+    </div> <!-- botheyes -->
+  </div>
+</div> <!--container-fluid -->
+
+<!-- modal -->
+<div class="modal fade" id="modal_tn" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form action="" id="form_tn">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="">Edit tono/pachymetry for <span class="patient">{{=patient}}</span></h4>
+        </div>
+        <div class="modal-body">
+              <div class="row">
+                <div class="form-group col-sm-4 hidden">
+                  <label>Id:</label>
+                  <input type="text" class="form-control id" name="id" value="">
+                </div>
+                <div class="form-group col-sm-4 hidden">
+                  <label>Patient id:</label>
+                  <input type="text" class="form-control id_auth_user" name="id_auth_user" value="">
+                </div>
+                <div class="form-group col-sm-4 hidden">
+                  <label>Worklist ID:</label>
+                  <input type="text" class="form-control id_worklist" name="id_worklist" value="">
+                </div>
+              </div>
+              <div class="row"> <!-- laterality/techno -->
+                <div class="form-group col-sm-6">
+                  <label>Laterality:<span style="color: red;" class="lat_req"></span></label>
+                  <div class="input-group">
+                    <div class="btn-group laterality" data-toggle="buttons">
+                    <label class="btn btn-primary">
+                      <input type="radio" class="laterality_left" name="laterality" autocomplete="off" value="left">Left
+                    </label>
+                    <label class="btn btn-primary">
+                      <input type="radio" class="laterality_right" name="laterality" autocomplete="off" value="right">Right
+                    </label>
+                    <div class="help-block with-errors">Required<span id="alert_lat" style="color:red;"></span></div>
+                    </div>
+                 </div>
+                </div>
+                <div class="form-group col-sm-6">
+                  <label>Method:<span style="color: red;" class="lat_req"></span></label>
+                  <div class="input-group">
+                    <div class="btn-group techno" data-toggle="buttons">
+                    <label class="btn btn-primary techno_air">
+                      <input type="radio" class="techno_air" name="techno" autocomplete="off" value="air">Air
+                    </label>
+                    <label class="btn btn-primary">
+                      <input type="radio" class="techno_apla" name="techno" autocomplete="off" value="apla">Aplanation
+                    </label>
+                    <div class="help-block with-errors">Required<span id="alert_techno" style="color:red;"></span></div>
+                    </div>
+                 </div>
+                </div>
+              </div>  <!-- laterality/techno -->
+              <div class="row"> <!-- tono/pachy -->
+                <div class="form-group col-sm-6">
+                  <label>Tonometry:</label>
+                  <div class="input-group">
+                    <span class="input-group-addon btn btn-info counter_down_tono">-</span>
+                    <input type="text" class="form-control counter_tono tono" name="tonometry" placeholder="TIO" value="17.00">
+                    <span class="input-group-addon btn btn-info counter_up_tono">+</span>
+                  </div>
+                </div>
+                <div class="form-group col-sm-6">
+                  <label>Optical pachymetry:</label>
+                  <div class="input-group">
+                    <span class="input-group-addon btn btn-info counter_down_pachy">-</span>
+                    <input type="text" class="form-control counter_pachy pachy" name="pachymetry" placeholder="Pachy" value="550">
+                    <span class="input-group-addon btn btn-info counter_up_pachy">+</span>
+                  </div>
+                </div>
+              </div>  <!-- tono/pachy -->
+          </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary submit">Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<script type="text/javascript">
+
+var $table_tn = $('#table_tn').bootstrapTable({
+      url:'{{=URL('api','tono', scheme=True, host=True)}}?id_worklist={{=id_worklist}}&id_auth_user={{=id_auth_user}}'});
+var status_flag = '{{=status}}';
+{{pass}}
+if (status_flag == '[&#x27;done&#x27;]') {
+  $('.btn-done').attr('class','hidden');
+}
+
+$(function() {
+
+var $modal_tn = $('#modal_tn').modal({show: false});
+
+
+setCounter('#form_right','tono',0.5,0,80);
+setCounter('#form_right','pachy',2,300,700);
+
+setCounter('#form_left','tono',0.5,0,80);
+setCounter('#form_left','pachy',2,300,700);
+
+setCounter('#form_tn','tono',0.5,0,80);
+setCounter('#form_tn','pachy',2,300,700);
+
+setCounter('#form_left_apla','tono',0.5,0,80);
+setCounter('#form_right_apla','tono',0.5,0,80);
+
+
+function setCounter (id_count, count_class,step, min, max) {
+  $(id_count+' .btn.counter_down_'+count_class).click(function() {
+    value = parseFloat($(id_count+' input.counter_'+count_class).val());
+    if (value >= (min+step)) {
+      $(id_count+' input.counter_'+count_class).val(value-step);
+    } else {};
+  });
+
+  $(id_count+' .btn.counter_up_'+count_class).click(function() {
+    value = parseFloat($(id_count+' input.counter_'+count_class).val());
+    if (value <= (max-step)) {
+      $(id_count+' input.counter_'+count_class).val(value+step);
+    } else {};
+  });
+}
+
+$('#form_right .submit').click(function(e){
+  var row = {};
+  $('#form_right input.id_auth_user').val({{=id_auth_user}});
+  $('#form_right input.id_worklist').val({{=id_worklist}});
+  e.preventDefault();
+  $('#form_right').find('input[name]').each(function () {
+    row[$(this).attr('name')] = $(this).val();
+  });
+  row['laterality']='right';
+  row['techno']='air';
+  post_tn_form(row,'POST','right');
+})
+
+$('#form_right_apla .submit').click(function(e){
+  var row = {};
+  $('#form_right_apla input.id_auth_user').val({{=id_auth_user}});
+  $('#form_right_apla input.id_worklist').val({{=id_worklist}});
+  e.preventDefault();
+  $('#form_right_apla').find('input[name]').each(function () {
+    row[$(this).attr('name')] = $(this).val();
+  });
+  row['laterality']='right';
+  row['techno']='apla';
+  post_tn_form(row,'POST','right');
+})
+
+$('#form_left .submit').click(function(e){
+  var row = {};
+  $('#form_left input.id_auth_user').val({{=id_auth_user}});
+  $('#form_left input.id_worklist').val({{=id_worklist}});
+  e.preventDefault();
+  $('#form_left').find('input[name]').each(function () {
+    row[$(this).attr('name')] = $(this).val();
+  });
+  row['laterality']='left';
+  row['techno']='air';
+  post_tn_form(row,'POST','left');
+})
+
+$('#form_left_apla .submit').click(function(e){
+  var row = {};
+  $('#form_left_apla input.id_auth_user').val({{=id_auth_user}});
+  $('#form_left_apla input.id_worklist').val({{=id_worklist}});
+  e.preventDefault();
+  $('#form_left_apla').find('input[name]').each(function () {
+    row[$(this).attr('name')] = $(this).val();
+  });
+  row['laterality']='left';
+  row['techno']='apla';
+  post_tn_form(row,'POST','left');
+})
+
+$('#form_tn .submit').click(function(e){
+  var row = {};
+  e.preventDefault();
+  $('#form_tn').find('input[name]').each(function () {
+    row[$(this).attr('name')] = $(this).val();
+  });
+  row['laterality']= $('#form_tn input:radio[name=laterality]').filter(':checked').val();
+  row['techno']= $('#form_tn input:radio[name=techno]').filter(':checked').val();
+  console.log(row);
+  post_tn_form(row,'PUT','left');
+})
+
+$('.btn-done').click(function() {
+  set_task_done('{{=id_worklist}}')
+});
+
+function post_tn_form(row,req,lat) {
+  var API_URL = (req == 'POST' ? '{{=URL('api','tono/tono', scheme=True, host=True)}}/' : '{{=URL('api','tono/tono', scheme=True, host=True)}}/'+ row.id);
+  var mode = (req == 'POST' ? 'add':'edit');
+  $.ajax({
+    url: API_URL,
+    type: req == 'POST' ? 'post':'put',
+    contentType: 'application/json',
+    data: JSON.stringify(row),
+    success: function (text) {
+      id = text.slice(text.indexOf('id(')+3,text.indexOf(') ***'));
+      if ( id == 'None') {
+        showAlert('Unable to '+mode+' tonometry','danger','alert_tn');
+      } else {
+      $table_tn.bootstrapTable('refresh');
+      showAlert(titleCase(mode+'ed'),'success','alert_tn');
+      };
+      $modal_tn.modal('hide');
+    },
+    error: function () {
+        showAlert('Unable to '+mode+' tonometry!','danger','alert_tn');
+      }
+    });
+}
+
+});
+
+function set_task_done(id_worklist) {
+  $.ajax({
+    url: '{{=URL('api','wl/worklist', scheme=True, host=True)}}/'+id_worklist,
+    type: 'put',
+    contentType: 'application/json',
+    data: JSON.stringify({ status_flag: 'done'}),
+    success: function(text) {
+      id = text.slice(text.indexOf('id(')+3,text.indexOf(') ***'));
+      if ( id == 'None') {
+        $('.btn-done button').removeClass('btn-info');
+        $('.btn-done button').addClass('btn-danger');
+        showAlert('done error','danger','alert_tn');
+      } else {
+        $('.btn-done button').removeClass('btn-info');
+        $('.btn-done button').addClass('btn-success');
+        $('.btn-done span.icon-done').addClass('glyphicon glyphicon-check');
+        $('.btn-done span.text-done').html('Done');
+        $('.btn-done button').prop('disabled', true);
+        setTimeout(function () {
+          window.location.href = '{{=URL('default','home', scheme=True, host=True)}}'; }, 3000);
+      };
+    },
+    error: function () {
+      console.log('done error');
+    }
+  });
+}
+
+window.actionEvents_tn = {
+  'click .update': function (e,value,row) {
+    resetForm($('#form_tn'));
+    $('#form_tn input.id').val(row.id);
+    $('#form_tn input.id_auth_user').val(row.id_auth_user);
+    $('#form_tn input.id_worklist').val(row.id_worklist);
+    $('#form_tn input.tono').val(row.tonometry);
+    $('#form_tn input.pachy').val(row.pachymetry);
+    $('#form_tn input.laterality_'+row.laterality).prop('checked',true).parent().addClass('active');
+    $('#form_tn input.techno_'+row.techno).prop('checked',true).parent().addClass('active');
+    console.log(row.techno);
+    if (row.techno == 'apla'){
+      $('#form_tn input.techno_apla').prop('disabled', false).parent().removeAttr('disabled');
+      $('#form_tn input.techno_air').prop('disabled', true).parent().attr('disabled', 'disabled');
+      $('#form_tn input.pachy').prop('disabled', true).parent().attr('disabled', 'disabled');
+    } else {
+      $('#form_tn input.techno_apla').prop('disabled', true).parent().attr('disabled', 'disabled');
+      $('#form_tn input.techno_air').prop('disabled', false).parent().removeAttr('disabled');
+      $('#form_tn input.pachy').prop('disabled', false).parent().removeAttr('disabled');
+    }
+    $('#modal_tn').modal('show');
+    },
+  'click .remove': function (e, value, row) {
+      if (confirm('Are you sure to delete this tonometry?')) {
+          $.ajax({
+              url: '{{=URL('api','tono/tono', scheme=True, host=True)}}/'+ row.id,
+              type: 'delete',
+              success: function () {
+                  $table_tn.bootstrapTable('refresh');
+                  showAlert('Delete tonometry successful!', 'success', 'alert_listing');
+              },
+              error: function () {
+                  showAlert('Delete tonometry error!', 'danger', 'alert_listing');
+              }
+          })
+      }
+  }
+}
+
+function responseHandler_tn(res) {
+  tono = res.content;
+  display = [];
+  $.each(tono, function(i) {
+    display.push({'id': tono[i].tono.id,
+     'patient': tono[i].patient.first_name+' '+tono[i].patient.last_name,
+     'id_auth_user': tono[i].tono.id_auth_user,
+     'id_worklist': tono[i].tono.id_worklist,
+     'id_auth_user': tono[i].tono.id_auth_user,
+     'pachymetry': tono[i].tono.pachymetry,
+     'tonometry': tono[i].tono.tonometry,
+     'techno': tono[i].tono.techno,
+     'created_by': tono[i].creator.first_name+' '+tono[i].creator.last_name,
+     'created_on': tono[i].tono.created_on,
+     'modified_by': tono[i].editor.first_name+' '+tono[i].editor.last_name,
+     'modified_on': tono[i].tono.modified_on,
+     'laterality': tono[i].tono.laterality
+    });
+  });
+  return display;
+}
+
+function queryParams(params) {
+    return {};
+}
+
+function actionFormatter_tn(value) {
+    return [
+        '<a class="update" href="javascript:" title="Edit"><i class="glyphicon glyphicon-pencil"></i></a>  ',
+        '<a class="remove" href="javascript:" title="Delete"><i class="glyphicon glyphicon-remove-circle"></i></a>'
+    ].join('');
+}
+
+
+  function showAlert(title, type, div) {
+    $('.'+div).attr('class', div+' alert alert-' + type || 'success')
+          .html('<i class="glyphicon glyphicon-check"></i> ' + title).show();
+    setTimeout(function () {
+        $('.'+div).hide();
+      }, 5000);
+  }
+
+  function resetForm($form) {
+    $form.find('input:text, input:password, input:file, select, textarea').val('');
+    $form.find('input:radio, input:checkbox')
+       .removeAttr('checked').removeAttr('selected').parent().removeClass('active');
+  }
+
+  function titleCase(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1); }
+
+
+</script>

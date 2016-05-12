@@ -242,3 +242,42 @@ def topo():
         else:
             raise HTTP(400)
     return locals()
+
+@request.restful()
+def tono():
+    response.view = 'generic.json'
+    def GET(**vars):
+        patient = db.auth_user.with_alias('patient')
+        creator = db.auth_user.with_alias('creator')
+        editor = db.auth_user.with_alias('editor')
+        db.tono.created_by.readable = db.tono.modified_by.readable = db.tono.created_on.readable = db.tono.modified_on.readable = db.tono.id_auth_user.readable = True
+        rows =  db((db.tono.id_auth_user==request.vars.id_auth_user)&(db.tono.id_worklist==request.vars.id_worklist)).select(db.tono.id,
+                        db.tono.id_auth_user, db.tono.id_worklist,
+                        db.tono.laterality, db.tono.tonometry, db.tono.pachymetry, db.tono.techno,
+                        db.tono.created_by,db.tono.created_on, db.tono.modified_by,db.tono.modified_on,
+                        patient.first_name, patient.last_name, creator.first_name, creator.last_name, editor.first_name, editor.last_name,
+                        left=[patient.on(patient.id==db.tono.id_auth_user),
+                        creator.on(creator.id==db.tono.created_by),
+                        editor.on(editor.id==db.tono.modified_by)
+                        ])
+        data = rows2json('content',rows)
+        return data
+    def DELETE(tablename,record_id):
+        if tablename=='tono':
+            db(db.tono.id == record_id).delete()
+            return 'Table: '+ tablename +' *** Deleted row id('+record_id+') *** \r\n'
+        else:
+            raise HTTP(400)
+    def PUT(tablename,record_id,**vars):
+        if tablename == 'tono':
+            db(db.tono._id==record_id).update(**vars)
+            return 'Table: '+ tablename +' *** Updated row id('+record_id+') ***  \r\n'
+        else:
+            raise HTTP(400)
+    def POST(tablename,**vars):
+        if tablename == 'tono':
+            ret = db.tono.validate_and_insert(**vars)
+            return 'Table: '+ tablename +' *** Added row id('+ str(ret.id) + ') *** ' + 'Error code : ' + str(ret.errors) + ' *** \r\n'
+        else:
+            raise HTTP(400)
+    return locals()
