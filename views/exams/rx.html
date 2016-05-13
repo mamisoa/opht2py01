@@ -94,6 +94,11 @@
     margin-top: 10px;
     margin-bottom: 10px;
   }
+
+  .rx_origin_btn {
+    margin-left: 10px;
+    margin-right: -10px;
+  }
 </style>
 
 {{end}}
@@ -126,6 +131,7 @@
   </div>
   <div class="row botheyes"> <!-- botheyes -->
     <div class="row righteye">
+      <div  class="well well-sm"><h3>Right Eye<small></small></h3></div>
       <form id="form_right" class="form">
         <div class="row"> <!-- hidden wl auth_user -->
           <div class="form-group col-sm-6 hidden">
@@ -137,28 +143,30 @@
             <input type="text" class="form-control id_worklist" name="id_worklist" value="">
           </div>
         </div> <!-- hidden wl auth_user -->
-        <div class="row rx"> <!-- 1st row glass autorx rx -->
+        <div class="row rx_origin"> <!-- 1st row glass autorx rx -->
           <div class="row"> <!-- rx type -->
-            <div class="form-group col-sm-5"> <!-- lun/autorx/dil/cyclo -->
-              <label>Origin<div class="btn-group rx_origin" data-toggle="buttons">
-                <label class="btn btn-primary">
-                  <input type="radio" class="rx_origin_autorx" name="rx_origin" autocomplete="off" value="autorx">AutoRx
-                </label>
-                <label class="btn btn-primary">
-                  <input type="radio" class="rx_origin_glass" name="rx_origin" autocomplete="off" value="glass">Glasses
-                </label>
-                <label class="btn btn-primary">
-                  <input type="radio" class="rx_origin_trial" name="rx_origin" autocomplete="off" value="trial">Trial
-                </label>
-                <label class="btn btn-primary">
-                  <input type="radio" class="rx_origin_cyclo" name="rx_origin" autocomplete="off" value="cyclo">Cyclo
-                </label>
-                <label class="btn btn-primary">
-                  <input type="radio" class="rx_origin_dil" name="rx_origin" autocomplete="off" value="dil">Dilatation
-                </label>
-                <div class="help-block with-errors">Required<span id="alert_rx_origin" style="color:red;"></span></div>
+            <div class="form-group col-sm-5 rx_origin_btn"> <!-- lun/autorx/dil/cyclo -->
+                <label>Origin:<span style="color: red;" class="rx_origin_req"></span></label>
+                <div class="input-group">
+                  <div class="btn-group rx_origin" data-toggle="buttons">
+                    <label class="btn btn-primary">
+                      <input type="radio" class="rx_origin_autorx" name="rx_origin" autocomplete="off" value="autorx">AutoRx
+                    </label>
+                    <label class="btn btn-primary">
+                      <input type="radio" class="rx_origin_glass" name="rx_origin" autocomplete="off" value="glass">Glasses
+                    </label>
+                    <label class="btn btn-primary">
+                      <input type="radio" class="rx_origin_trial" name="rx_origin" autocomplete="off" value="trial">Trial
+                    </label>
+                    <label class="btn btn-primary">
+                      <input type="radio" class="rx_origin_cyclo" name="rx_origin" autocomplete="off" value="cyclo">Cyclo
+                    </label>
+                    <label class="btn btn-primary">
+                      <input type="radio" class="rx_origin_dil" name="rx_origin" autocomplete="off" value="dil">Dilatation
+                    </label>
+                    <div class="help-block with-errors">Required<span id="alert_rx_origin" style="color:red;"></span></div>
                 </div>
-             </div>
+              </div>
             </div> <!-- lun/autorx/dil/cyclo -->
             <div class="form-group col-sm-5 glass_type"> <!-- glass type -->
               <label>Type:<span style="color: red;" class="glass_type_req"></span></label>
@@ -179,13 +187,16 @@
                   <div class="help-block with-errors">Required<span id="alert_glass_type" style="color:red;"></span></div>
                 </div>
              </div>
-           </div> <!-- glass type -->
+            </div> <!-- glass type -->
+            <div class="col-sm-2"> <!-- get from machines -->
+              <label></label>
+                <div class="input-group">
+                  <button type="button" class="btn btn-info" name="machines">Get</button>
+                </div>
+            </div> <!-- get from machines -->
           </div>  <!-- rx type -->
-          <div class="col-sm-2"> <!-- get from machines -->
-            <button type="button" class="btn btn-info" name="machines">Get</button>
-          </div> <!-- get from machines -->
         </div> <!-- 1st row -->
-        <div class="row far"> <!-- 2nd row rx far -->
+        <div class="row rx_far"> <!-- 2nd row rx far -->
           <div class="col-sm-2">
             Far
           </div> <!--far -->
@@ -217,7 +228,7 @@
             <label>VA</label>
             <div class="input-group">
               <span class="input-group-addon btn btn-info counter_down_va_far">-</span>
-              <input type="text" class="form-control counter_va_far va_far" name="va_far" placeholder="VA" value="180">
+              <input type="text" class="form-control counter_va_far va_far" name="va_far" placeholder="VA" value="1.0">
               <span class="input-group-addon btn btn-info counter_up_va_far">+</span>
             </div>
           </div> <!-- va far -->
@@ -238,7 +249,7 @@
             </div>
           </div> <!-- add_int far -->
         </div><!-- 3rd row -->
-        <div class="row inter"> <!-- 4th row rx int -->
+        <div class="row rx_inter"> <!-- 4th row rx int -->
           <div class="col-sm-2">
             INT
           </div> <!--int -->
@@ -270,7 +281,7 @@
             <label>VA</label>
             <div class="input-group">
               <span class="input-group-addon btn btn-info counter_down_va_int">-</span>
-              <input type="text" class="form-control counter_va_int va_int" name="va_int" placeholder="VA" value="180">
+              <input type="text" class="form-control counter_va_int va_int" name="va_int" placeholder="VA" value="1.0">
               <span class="input-group-addon btn btn-info counter_up_va_int">+</span>
             </div>
           </div> <!-- va int -->
@@ -291,7 +302,7 @@
             </div>
           </div> <!-- add_close -->
         </div><!--5th row -->
-        <div class="row close"> <!-- 6th row close -->
+        <div class="row rx_close"> <!-- 6th row close -->
           <div class="col-sm-2">
             CLOSE
           </div> <!--close -->
@@ -323,7 +334,7 @@
             <label>VA</label>
             <div class="input-group">
               <span class="input-group-addon btn btn-info counter_down_va_close">-</span>
-              <input type="text" class="form-control counter_va_close va_close" name="va_close" placeholder="VA" value="180">
+              <input type="text" class="form-control counter_va_close va_close" name="va_close" placeholder="VA" value="1.0">
               <span class="input-group-addon btn btn-info counter_up_va_close">+</span>
             </div>
           </div> <!-- va close -->
@@ -336,14 +347,16 @@
           </div> <!-- opto close -->
         </div> <!-- 6th row close -->
         <div class="row note"> <!-- 7th row note -->
-          <div class="input-group">
-            <span class="input-group-addon"></span>
-            <input type="text" class="form-control" name="note" placeholder="Note">
+          <div class="col-sm-12">
+            <div class="input-group">
+              <span class="input-group-addon"></span>
+              <input type="text" class="form-control" name="note" placeholder="Note">
+            </div>
           </div>
         </div>
         <div class="row"> <!-- submit righteye -->
-          <div class="form-group">
-            <div class="col-md-6 col-centered">
+          <div class="col-md-6 col-centered">
+            <div class="form-group">
               <button type="submit" class="form-control btn btn-primary submit btn-right">Submit Right Eye</button>
             </div>
           </div>
@@ -351,6 +364,7 @@
       </form> <!--form right -->
     </div> <!-- righteye -->
     <div class="row lefteye">
+      <div  class="well well-sm"><h3>Left Eye<small></small></h3></div>
       <form id="form_left" class="form">
         <div class="row"> <!-- hidden wl auth_user -->
           <div class="form-group col-sm-6 hidden">
@@ -362,28 +376,30 @@
             <input type="text" class="form-control id_worklist" name="id_worklist" value="">
           </div>
         </div> <!-- hidden wl auth_user -->
-        <div class="row rx"> <!-- 1st row glass autorx rx -->
+        <div class="row rx_origin"> <!-- 1st row glass autorx rx -->
           <div class="row"> <!-- rx type -->
-            <div class="form-group col-sm-5"> <!-- lun/autorx/dil/cyclo -->
-              <label>Origin<div class="btn-group rx_origin" data-toggle="buttons">
-                <label class="btn btn-primary">
-                  <input type="radio" class="rx_origin_autorx" name="rx_origin" autocomplete="off" value="autorx">AutoRx
-                </label>
-                <label class="btn btn-primary">
-                  <input type="radio" class="rx_origin_glass" name="rx_origin" autocomplete="off" value="glass">Glasses
-                </label>
-                <label class="btn btn-primary">
-                  <input type="radio" class="rx_origin_trial" name="rx_origin" autocomplete="off" value="trial">Trial
-                </label>
-                <label class="btn btn-primary">
-                  <input type="radio" class="rx_origin_cyclo" name="rx_origin" autocomplete="off" value="cyclo">Cyclo
-                </label>
-                <label class="btn btn-primary">
-                  <input type="radio" class="rx_origin_dil" name="rx_origin" autocomplete="off" value="dil">Dilatation
-                </label>
-                <div class="help-block with-errors">Required<span id="alert_rx_origin" style="color:red;"></span></div>
+            <div class="form-group col-sm-5 rx_origin_btn"> <!-- lun/autorx/dil/cyclo -->
+                <label>Origin:<span style="color: red;" class="rx_origin_req"></span></label>
+                <div class="input-group">
+                  <div class="btn-group rx_origin" data-toggle="buttons">
+                    <label class="btn btn-primary">
+                      <input type="radio" class="rx_origin_autorx" name="rx_origin" autocomplete="off" value="autorx">AutoRx
+                    </label>
+                    <label class="btn btn-primary">
+                      <input type="radio" class="rx_origin_glass" name="rx_origin" autocomplete="off" value="glass">Glasses
+                    </label>
+                    <label class="btn btn-primary">
+                      <input type="radio" class="rx_origin_trial" name="rx_origin" autocomplete="off" value="trial">Trial
+                    </label>
+                    <label class="btn btn-primary">
+                      <input type="radio" class="rx_origin_cyclo" name="rx_origin" autocomplete="off" value="cyclo">Cyclo
+                    </label>
+                    <label class="btn btn-primary">
+                      <input type="radio" class="rx_origin_dil" name="rx_origin" autocomplete="off" value="dil">Dilatation
+                    </label>
+                    <div class="help-block with-errors">Required<span id="alert_rx_origin" style="color:red;"></span></div>
                 </div>
-             </div>
+              </div>
             </div> <!-- lun/autorx/dil/cyclo -->
             <div class="form-group col-sm-5 glass_type"> <!-- glass type -->
               <label>Type:<span style="color: red;" class="glass_type_req"></span></label>
@@ -404,13 +420,16 @@
                   <div class="help-block with-errors">Required<span id="alert_glass_type" style="color:red;"></span></div>
                 </div>
              </div>
-           </div> <!-- glass type -->
+            </div> <!-- glass type -->
+            <div class="col-sm-2"> <!-- get from machines -->
+              <label></label>
+                <div class="input-group">
+                  <button type="button" class="btn btn-info" name="machines">Get</button>
+                </div>
+            </div> <!-- get from machines -->
           </div>  <!-- rx type -->
-          <div class="col-sm-2"> <!-- get from machines -->
-            <button type="button" class="btn btn-info" name="machines">Get</button>
-          </div> <!-- get from machines -->
         </div> <!-- 1st row -->
-        <div class="row far"> <!-- 2nd row rx far -->
+        <div class="row rx_far"> <!-- 2nd row rx far -->
           <div class="col-sm-2">
             Far
           </div> <!--far -->
@@ -442,7 +461,7 @@
             <label>VA</label>
             <div class="input-group">
               <span class="input-group-addon btn btn-info counter_down_va_far">-</span>
-              <input type="text" class="form-control counter_va_far va_far" name="va_far" placeholder="VA" value="180">
+              <input type="text" class="form-control counter_va_far va_far" name="va_far" placeholder="VA" value="1.0">
               <span class="input-group-addon btn btn-info counter_up_va_far">+</span>
             </div>
           </div> <!-- va far -->
@@ -463,7 +482,7 @@
             </div>
           </div> <!-- add_int far -->
         </div><!-- 3rd row -->
-        <div class="row inter"> <!-- 4th row rx int -->
+        <div class="row rx_inter"> <!-- 4th row rx int -->
           <div class="col-sm-2">
             INT
           </div> <!--int -->
@@ -495,7 +514,7 @@
             <label>VA</label>
             <div class="input-group">
               <span class="input-group-addon btn btn-info counter_down_va_int">-</span>
-              <input type="text" class="form-control counter_va_int va_int" name="va_int" placeholder="VA" value="180">
+              <input type="text" class="form-control counter_va_int va_int" name="va_int" placeholder="VA" value="1.0">
               <span class="input-group-addon btn btn-info counter_up_va_int">+</span>
             </div>
           </div> <!-- va int -->
@@ -516,7 +535,7 @@
             </div>
           </div> <!-- add_close -->
         </div><!--5th row -->
-        <div class="row close"> <!-- 6th row close -->
+        <div class="row rx_close"> <!-- 6th row close -->
           <div class="col-sm-2">
             CLOSE
           </div> <!--close -->
@@ -548,7 +567,7 @@
             <label>VA</label>
             <div class="input-group">
               <span class="input-group-addon btn btn-info counter_down_va_close">-</span>
-              <input type="text" class="form-control counter_va_close va_close" name="va_close" placeholder="VA" value="180">
+              <input type="text" class="form-control counter_va_close va_close" name="va_close" placeholder="VA" value="1.0">
               <span class="input-group-addon btn btn-info counter_up_va_close">+</span>
             </div>
           </div> <!-- va close -->
@@ -561,15 +580,17 @@
           </div> <!-- opto close -->
         </div> <!-- 6th row close -->
         <div class="row note"> <!-- 7th row note -->
-          <div class="input-group">
-            <span class="input-group-addon"></span>
-            <input type="text" class="form-control" name="note" placeholder="Note">
+          <div class="col-sm-12">
+            <div class="input-group">
+              <span class="input-group-addon"></span>
+              <input type="text" class="form-control" name="note" placeholder="Note">
+            </div>
           </div>
         </div>
-        <div class="row"> <!-- submit lefteye -->
-          <div class="form-group">
-            <div class="col-md-6 col-centered">
-              <button type="submit" class="form-control btn btn-primary submit btn-left">Submit Left Eye</button>
+        <div class="row"> <!-- submit righteye -->
+          <div class="col-md-6 col-centered">
+            <div class="form-group">
+              <button type="submit" class="form-control btn btn-primary submit btn-right">Submit Right Eye</button>
             </div>
           </div>
         </div>

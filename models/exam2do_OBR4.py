@@ -52,7 +52,7 @@ db.define_table('rx',
     Field('sph_close','decimal(2,2)'),
     Field('cyl_close','decimal(2,2)'),
     Field('axis_close', 'integer'),
-    Field('note','string')
+    Field('note','string'),
     auth.signature)
 
 db.rx.rx_origin.requires = IS_IN_SET(('autorx','glass','trial','cyclo','dil'))
