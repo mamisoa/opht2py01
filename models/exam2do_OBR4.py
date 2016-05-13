@@ -38,3 +38,21 @@ db.define_table ('optotype',
     auth.signature)
 
 db.optotype.distance.requires = IS_IN_SET(('far','intermediate','close'))
+
+db.define_table('rx',
+    Field('id_auth_user','reference auth_user', required=True),
+    Field('id_worklist','reference worklist'),
+    Field('rx_origin', 'list:string', required=True),
+    Field('sph_far','decimal(2,2)'),
+    Field('cyl_far','decimal(2,2)'),
+    Field('axis_far', 'integer'),
+    Field('sph_int','decimal(2,2)'),
+    Field('cyl_int','decimal(2,2)'),
+    Field('axis_int', 'integer'),
+    Field('sph_close','decimal(2,2)'),
+    Field('cyl_close','decimal(2,2)'),
+    Field('axis_close', 'integer'),
+    Field('note','string')
+    auth.signature)
+
+db.rx.rx_origin.requires = IS_IN_SET(('autorx','glass','trial','cyclo','dil'))
