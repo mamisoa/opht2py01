@@ -36,3 +36,8 @@ def tono():
     id_auth_user = request.vars.id_auth_user
     id_worklist = request.vars.id_worklist
     return locals()
+
+def rx():
+    id_auth_user = request.vars.id_auth_user
+    id_worklist = request.vars.id_worklist
+    return locals()

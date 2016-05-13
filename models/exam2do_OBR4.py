@@ -31,3 +31,10 @@ db.tono.laterality.requires = IS_IN_SET(('right','left'))
 db.capsulotomy.laterality.requires = IS_IN_SET(('right','left'))
 db.topography.laterality.requires = IS_IN_SET(('right','left'))
 db.tono.techno.requires = IS_IN_SET(('air','apla'))
+
+db.define_table ('optotype',
+    Field('distance', 'list:string', required=True),
+    Field('opto', 'string', required=True),
+    auth.signature)
+
+db.optotype.distance.requires = IS_IN_SET(('far','intermediate','close'))

@@ -1,2 +1,478 @@
+{{patientname = db(db.auth_user.id == id_auth_user).select(db.auth_user.first_name, db.auth_user.last_name, db.auth_user.dob_pid7).first()
+  patient = patientname.first_name + ' ' + patientname.last_name
+  dob = patientname.dob_pid7
+  worklistid = db(db.worklist.id == id_worklist).select(db.worklist.message_unique_id_MSH10, db.exam2do_OBR4.exam_description, db.worklist.requested_time_OBR6, db.worklist.status_flag, left=[db.exam2do_OBR4.on(db.exam2do_OBR4.id==db.worklist.exam2do_OBR4)]).first()
+  exam = worklistid.exam2do_OBR4.exam_description
+  timeslot = worklistid.worklist.requested_time_OBR6
+  task = worklistid.worklist.message_unique_id_MSH10
+  status = worklistid.worklist.status_flag }}
+{{pass}}
+
 {{extend 'layout.html'}}
-{{=form}}
+
+{{block head}}
+<!-- https://github.com/silviomoreto/bootstrap-select.git -->
+<!-- bootstrap-table -->
+<link rel="stylesheet" href="{{=URL('static','css/bootstrap-table.css')}}" />
+<script src="{{=URL('static','js/bootstrap-table/bootstrap-table.js')}}"></script>
+<script src="{{=URL('static','js/bootstrap-table/locales/bootstrap-table-fr-BE.min.js')}}"></script>
+<script src="{{=URL('static','js/bootstrap-select/js/bootstrap-select.min.js')}}"></script>
+<link rel="stylesheet" href="{{=URL('static','js/bootstrap-select/css/bootstrap-select.min.css')}}" />
+<style>
+  .btn-left {
+    background-color: red;
+  }
+  .btn-right {
+    background-color: blue;
+  }
+  .glyphicon-remove-circle {
+    color: red;
+    margin-left: 10px;
+  }
+
+  input {
+    text-align: center;
+  }
+
+  .btn-back {
+    margin: 10px;
+  }
+
+  .btn-done {
+    margin-top: 0px;
+    margin-left: 5px;
+    margin-bottom: 3px;
+  }
+
+  .task {
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
+
+  .col-centered {
+      float: none;
+      margin: 0 auto;
+  }
+
+  h3, h1 {
+    text-align: center;
+  }
+
+  .encode {
+    background-color: yellow;
+    color: green;
+  }
+
+  .recorded {
+    background-color: green;
+    color: white;
+  }
+
+  .righteye {
+    color: blue;
+    border: 2px solid blue;
+  }
+
+  .lefteye {
+    color: red;
+    border: 2px solid red;
+  }
+
+  .lefteye,.righteye {
+    margin-top: 5px;
+  }
+
+  .botheyes {
+    margin-bottom: 10px;
+  }
+
+  .form, .toptable {
+    margin: 10px;
+  }
+
+  .patient {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+</style>
+
+{{end}}
+
+<div class="container-fluid">
+  <div class="row righteye">
+    <form id="form_right" class="form">
+      <div class="row"> <!-- hidden wl auth_user -->
+        <div class="form-group col-sm-6 hidden">
+          <label>Patient id:</label>
+          <input type="text" class="form-control id_auth_user" name="id_auth_user" value="">
+        </div>
+        <div class="form-group col-sm-6 hidden">
+          <label>Worklist ID:</label>
+          <input type="text" class="form-control id_worklist" name="id_worklist" value="">
+        </div>
+      </div> <!-- hidden wl auth_user -->
+      <div class="row rx"> <!-- 1st row glass autorx rx -->
+        <div class="col-sm-5"> <!-- lun/autorx/dil/cyclo -->
+          Type rx
+        </div> <!-- lun/autorx/dil/cyclo -->
+        <div class="col-sm-5">  <!-- mono/bif/pro/deg -->
+          type lunettes
+        </div> <!-- mono/bif/pro/deg -->
+        <div class="col-sm-2"> <!-- get from machines -->
+          <button type="button" class="btn btn-info" name="machines">Get</button>
+        </div> <!-- get from machines -->
+      </div> <!-- 1st row -->
+      <div class="row far"> <!-- 2nd row rx far -->
+        <div class="col-sm-2">
+          Far
+        </div> <!--far -->
+        <div class="col-sm-2"> <!-- sph far -->
+          <label>Sph</label>
+          <div class="input-group">
+            <span class="input-group-addon btn btn-info counter_down_sph_far">-</span>
+            <input type="text" class="form-control counter_sph_far sph_far" name="sph_far" placeholder="SPH" value="+0.00">
+            <span class="input-group-addon btn btn-info counter_up_sph_far">+</span>
+          </div>
+        </div> <!-- sph far -->
+        <div class="col-sm-2"> <!-- cyl far -->
+          <label>Cyl</label>
+          <div class="input-group">
+            <span class="input-group-addon btn btn-info counter_down_cyl_far">-</span>
+            <input type="text" class="form-control counter_cyl_far cyl_far" name="cyl_far" placeholder="CYL" value="+0.00">
+            <span class="input-group-addon btn btn-info counter_up_cyl_far">+</span>
+          </div>
+        </div> <!-- cyl far -->
+        <div class="col-sm-2"> <!-- axis far -->
+          <label>Axis</label>
+          <div class="input-group">
+            <span class="input-group-addon btn btn-info counter_down_axis_far">-</span>
+            <input type="text" class="form-control counter_axis_far axis_far" name="axis_far" placeholder="AXIS" value="180">
+            <span class="input-group-addon btn btn-info counter_up_axis_far">+</span>
+          </div>
+        </div> <!-- axis far -->
+        <div class="col-sm-2"> <!-- va far -->
+          <label>VA</label>
+          <div class="input-group">
+            <span class="input-group-addon btn btn-info counter_down_va_far">-</span>
+            <input type="text" class="form-control counter_va_far va_far" name="va_far" placeholder="VA" value="180">
+            <span class="input-group-addon btn btn-info counter_up_va_far">+</span>
+          </div>
+        </div> <!-- va far -->
+        <div class="col-sm-2"> <!-- opto far -->
+          <label>Opto:</label>
+          <div class="input-group">
+            <select class="form-control opto_far selectpicker" name="opto_far">
+            </select>
+          </div>
+        </div> <!-- opto far -->
+      </div> <!-- 2nd row -->
+      <div class="row add_int"><!-- 3rd row add_int -->
+        <div class="col-sm-4 col-centered"> <!-- add_int far -->
+          <div class="input-group">
+            <span class="input-group-addon btn btn-info counter_down_add_int_far">-</span>
+            <input type="text" class="form-control counter_add_int_far add_int_far" name="add_int_far" placeholder="add_int" value="+0.00">
+            <span class="input-group-addon btn btn-info counter_up_add_int_far">+</span>
+          </div>
+        </div> <!-- add_int far -->
+      </div><!-- 3rd row -->
+      <div class="row inter"> <!-- 4th row rx int -->
+        <div class="col-sm-2">
+          INT
+        </div> <!--int -->
+        <div class="col-sm-2"> <!-- sph int -->
+          <label>Sph</label>
+          <div class="input-group">
+            <span class="input-group-addon btn btn-info counter_down_sph_int">-</span>
+            <input type="text" class="form-control counter_sph_int sph_int" name="sph_int" placeholder="SPH" value="+0.00">
+            <span class="input-group-addon btn btn-info counter_up_sph_int">+</span>
+          </div>
+        </div> <!-- sph int -->
+        <div class="col-sm-2"> <!-- cyl int -->
+          <label>Cyl</label>
+          <div class="input-group">
+            <span class="input-group-addon btn btn-info counter_down_cyl_int">-</span>
+            <input type="text" class="form-control counter_cyl_int cyl_int" name="cyl_int" placeholder="CYL" value="+0.00">
+            <span class="input-group-addon btn btn-info counter_up_cyl_int">+</span>
+          </div>
+        </div> <!-- cyl int -->
+        <div class="col-sm-2"> <!-- axis int -->
+          <label>Axis</label>
+          <div class="input-group">
+            <span class="input-group-addon btn btn-info counter_down_axis_int">-</span>
+            <input type="text" class="form-control counter_axis_int axis_int" name="axis_int" placeholder="AXIS" value="180">
+            <span class="input-group-addon btn btn-info counter_up_axis_int">+</span>
+          </div>
+        </div> <!-- axis int -->
+        <div class="col-sm-2"> <!-- va int -->
+          <label>VA</label>
+          <div class="input-group">
+            <span class="input-group-addon btn btn-info counter_down_va_int">-</span>
+            <input type="text" class="form-control counter_va_int va_int" name="va_int" placeholder="VA" value="180">
+            <span class="input-group-addon btn btn-info counter_up_va_int">+</span>
+          </div>
+        </div> <!-- va int -->
+        <div class="col-sm-2"> <!-- opto int -->
+          <label>Opto:</label>
+          <div class="input-group">
+            <select class="form-control opto_int selectpicker" name="opto_int">
+            </select>
+          </div>
+        </div> <!-- opto int -->
+      </div> <!-- 4th row int-->
+      <div class="row add"><!-- 5th row add-close -->
+        <div class="col-sm-4 col-centered"> <!-- add_close-->
+          <div class="input-group">
+            <span class="input-group-addon btn btn-info counter_down_add_close_far">-</span>
+            <input type="text" class="form-control counter_add_close_far add_close_far" name="add_close_far" placeholder="add_close" value="+0.00">
+            <span class="input-group-addon btn btn-info counter_up_add_close_far">+</span>
+          </div>
+        </div> <!-- add_close -->
+      </div><!--5th row -->
+      <div class="row close"> <!-- 6th row close -->
+        <div class="col-sm-2">
+          CLOSE
+        </div> <!--close -->
+        <div class="col-sm-2"> <!-- sph close -->
+          <label>Sph</label>
+          <div class="input-group">
+            <span class="input-group-addon btn btn-info counter_down_sph_close">-</span>
+            <input type="text" class="form-control counter_sph_close sph_close" name="sph_close" placeholder="SPH" value="+0.00">
+            <span class="input-group-addon btn btn-info counter_up_sph_close">+</span>
+          </div>
+        </div> <!-- sph close -->
+        <div class="col-sm-2"> <!-- cyl close -->
+          <label>Cyl</label>
+          <div class="input-group">
+            <span class="input-group-addon btn btn-info counter_down_cyl_close">-</span>
+            <input type="text" class="form-control counter_cyl_close cyl_close" name="cyl_close" placeholder="CYL" value="+0.00">
+            <span class="input-group-addon btn btn-info counter_up_cyl_close">+</span>
+          </div>
+        </div> <!-- cyl close -->
+        <div class="col-sm-2"> <!-- axis close -->
+          <label>Axis</label>
+          <div class="input-group">
+            <span class="input-group-addon btn btn-info counter_down_axis_close">-</span>
+            <input type="text" class="form-control counter_axis_close axis_close" name="axis_close" placeholder="AXIS" value="180">
+            <span class="input-group-addon btn btn-info counter_up_axis_close">+</span>
+          </div>
+        </div> <!-- axis close -->
+        <div class="col-sm-2"> <!-- va close -->
+          <label>VA</label>
+          <div class="input-group">
+            <span class="input-group-addon btn btn-info counter_down_va_close">-</span>
+            <input type="text" class="form-control counter_va_close va_close" name="va_close" placeholder="VA" value="180">
+            <span class="input-group-addon btn btn-info counter_up_va_close">+</span>
+          </div>
+        </div> <!-- va close -->
+        <div class="col-sm-2"> <!-- opto close -->
+          <label>Opto:</label>
+          <div class="input-group">
+            <select class="form-control opto_close selectpicker" name="opto_close">
+            </select>
+          </div>
+        </div> <!-- opto close -->
+      </div> <!-- 6th row close -->
+      <div class="row note"> <!-- 7th row note -->
+        <div class="input-group">
+          <span class="input-group-addon"></span>
+          <input type="text" class="form-control" name="note" placeholder="Note">
+        </div>
+      </div>
+      <div class="row"> <!-- submit righteye -->
+        <div class="form-group">
+          <div class="col-md-6 col-centered">
+            <button type="submit" class="form-control btn btn-primary submit btn-right">Submit Right Eye</button>
+          </div>
+        </div>
+      </div>
+    </form> <!--form right -->
+  </div> <!-- righteye -->
+  <div class="row lefteye">
+    <form id="form_left" class="form">
+      <div class="row"> <!-- hidden wl auth_user -->
+        <div class="form-group col-sm-6 hidden">
+          <label>Patient id:</label>
+          <input type="text" class="form-control id_auth_user" name="id_auth_user" value="">
+        </div>
+        <div class="form-group col-sm-6 hidden">
+          <label>Worklist ID:</label>
+          <input type="text" class="form-control id_worklist" name="id_worklist" value="">
+        </div>
+      </div> <!-- hidden wl auth_user -->
+      <div class="row rx"> <!-- 1st row glass autorx rx -->
+        <div class="col-sm-5"> <!-- lun/autorx/dil/cyclo -->
+          Type rx
+        </div> <!-- lun/autorx/dil/cyclo -->
+        <div class="col-sm-5">  <!-- mono/bif/pro/deg -->
+          type lunettes
+        </div> <!-- mono/bif/pro/deg -->
+        <div class="col-sm-2"> <!-- get from machines -->
+          <button type="button" class="btn btn-info" name="machines">Get</button>
+        </div> <!-- get from machines -->
+      </div> <!-- 1st row -->
+      <div class="row far"> <!-- 2nd row rx far -->
+        <div class="col-sm-2">
+          Far
+        </div> <!--far -->
+        <div class="col-sm-2"> <!-- sph far -->
+          <label>Sph</label>
+          <div class="input-group">
+            <span class="input-group-addon btn btn-info counter_down_sph_far">-</span>
+            <input type="text" class="form-control counter_sph_far sph_far" name="sph_far" placeholder="SPH" value="+0.00">
+            <span class="input-group-addon btn btn-info counter_up_sph_far">+</span>
+          </div>
+        </div> <!-- sph far -->
+        <div class="col-sm-2"> <!-- cyl far -->
+          <label>Cyl</label>
+          <div class="input-group">
+            <span class="input-group-addon btn btn-info counter_down_cyl_far">-</span>
+            <input type="text" class="form-control counter_cyl_far cyl_far" name="cyl_far" placeholder="CYL" value="+0.00">
+            <span class="input-group-addon btn btn-info counter_up_cyl_far">+</span>
+          </div>
+        </div> <!-- cyl far -->
+        <div class="col-sm-2"> <!-- axis far -->
+          <label>Axis</label>
+          <div class="input-group">
+            <span class="input-group-addon btn btn-info counter_down_axis_far">-</span>
+            <input type="text" class="form-control counter_axis_far axis_far" name="axis_far" placeholder="AXIS" value="180">
+            <span class="input-group-addon btn btn-info counter_up_axis_far">+</span>
+          </div>
+        </div> <!-- axis far -->
+        <div class="col-sm-2"> <!-- va far -->
+          <label>VA</label>
+          <div class="input-group">
+            <span class="input-group-addon btn btn-info counter_down_va_far">-</span>
+            <input type="text" class="form-control counter_va_far va_far" name="va_far" placeholder="VA" value="180">
+            <span class="input-group-addon btn btn-info counter_up_va_far">+</span>
+          </div>
+        </div> <!-- va far -->
+        <div class="col-sm-2"> <!-- opto far -->
+          <label>Opto:</label>
+          <div class="input-group">
+            <select class="form-control opto_far selectpicker" name="opto_far">
+            </select>
+          </div>
+        </div> <!-- opto far -->
+      </div> <!-- 2nd row -->
+      <div class="row add_int"><!-- 3rd row add_int -->
+        <div class="col-sm-4 col-centered"> <!-- add_int far -->
+          <div class="input-group">
+            <span class="input-group-addon btn btn-info counter_down_add_int_far">-</span>
+            <input type="text" class="form-control counter_add_int_far add_int_far" name="add_int_far" placeholder="add_int" value="+0.00">
+            <span class="input-group-addon btn btn-info counter_up_add_int_far">+</span>
+          </div>
+        </div> <!-- add_int far -->
+      </div><!-- 3rd row -->
+      <div class="row inter"> <!-- 4th row rx int -->
+        <div class="col-sm-2">
+          INT
+        </div> <!--int -->
+        <div class="col-sm-2"> <!-- sph int -->
+          <label>Sph</label>
+          <div class="input-group">
+            <span class="input-group-addon btn btn-info counter_down_sph_int">-</span>
+            <input type="text" class="form-control counter_sph_int sph_int" name="sph_int" placeholder="SPH" value="+0.00">
+            <span class="input-group-addon btn btn-info counter_up_sph_int">+</span>
+          </div>
+        </div> <!-- sph int -->
+        <div class="col-sm-2"> <!-- cyl int -->
+          <label>Cyl</label>
+          <div class="input-group">
+            <span class="input-group-addon btn btn-info counter_down_cyl_int">-</span>
+            <input type="text" class="form-control counter_cyl_int cyl_int" name="cyl_int" placeholder="CYL" value="+0.00">
+            <span class="input-group-addon btn btn-info counter_up_cyl_int">+</span>
+          </div>
+        </div> <!-- cyl int -->
+        <div class="col-sm-2"> <!-- axis int -->
+          <label>Axis</label>
+          <div class="input-group">
+            <span class="input-group-addon btn btn-info counter_down_axis_int">-</span>
+            <input type="text" class="form-control counter_axis_int axis_int" name="axis_int" placeholder="AXIS" value="180">
+            <span class="input-group-addon btn btn-info counter_up_axis_int">+</span>
+          </div>
+        </div> <!-- axis int -->
+        <div class="col-sm-2"> <!-- va int -->
+          <label>VA</label>
+          <div class="input-group">
+            <span class="input-group-addon btn btn-info counter_down_va_int">-</span>
+            <input type="text" class="form-control counter_va_int va_int" name="va_int" placeholder="VA" value="180">
+            <span class="input-group-addon btn btn-info counter_up_va_int">+</span>
+          </div>
+        </div> <!-- va int -->
+        <div class="col-sm-2"> <!-- opto int -->
+          <label>Opto:</label>
+          <div class="input-group">
+            <select class="form-control opto_int selectpicker" name="opto_int">
+            </select>
+          </div>
+        </div> <!-- opto int -->
+      </div> <!-- 4th row int-->
+      <div class="row add"><!-- 5th row add-close -->
+        <div class="col-sm-4 col-centered"> <!-- add_close-->
+          <div class="input-group">
+            <span class="input-group-addon btn btn-info counter_down_add_close_far">-</span>
+            <input type="text" class="form-control counter_add_close_far add_close_far" name="add_close_far" placeholder="add_close" value="+0.00">
+            <span class="input-group-addon btn btn-info counter_up_add_close_far">+</span>
+          </div>
+        </div> <!-- add_close -->
+      </div><!--5th row -->
+      <div class="row close"> <!-- 6th row close -->
+        <div class="col-sm-2">
+          CLOSE
+        </div> <!--close -->
+        <div class="col-sm-2"> <!-- sph close -->
+          <label>Sph</label>
+          <div class="input-group">
+            <span class="input-group-addon btn btn-info counter_down_sph_close">-</span>
+            <input type="text" class="form-control counter_sph_close sph_close" name="sph_close" placeholder="SPH" value="+0.00">
+            <span class="input-group-addon btn btn-info counter_up_sph_close">+</span>
+          </div>
+        </div> <!-- sph close -->
+        <div class="col-sm-2"> <!-- cyl close -->
+          <label>Cyl</label>
+          <div class="input-group">
+            <span class="input-group-addon btn btn-info counter_down_cyl_close">-</span>
+            <input type="text" class="form-control counter_cyl_close cyl_close" name="cyl_close" placeholder="CYL" value="+0.00">
+            <span class="input-group-addon btn btn-info counter_up_cyl_close">+</span>
+          </div>
+        </div> <!-- cyl close -->
+        <div class="col-sm-2"> <!-- axis close -->
+          <label>Axis</label>
+          <div class="input-group">
+            <span class="input-group-addon btn btn-info counter_down_axis_close">-</span>
+            <input type="text" class="form-control counter_axis_close axis_close" name="axis_close" placeholder="AXIS" value="180">
+            <span class="input-group-addon btn btn-info counter_up_axis_close">+</span>
+          </div>
+        </div> <!-- axis close -->
+        <div class="col-sm-2"> <!-- va close -->
+          <label>VA</label>
+          <div class="input-group">
+            <span class="input-group-addon btn btn-info counter_down_va_close">-</span>
+            <input type="text" class="form-control counter_va_close va_close" name="va_close" placeholder="VA" value="180">
+            <span class="input-group-addon btn btn-info counter_up_va_close">+</span>
+          </div>
+        </div> <!-- va close -->
+        <div class="col-sm-2"> <!-- opto close -->
+          <label>Opto:</label>
+          <div class="input-group">
+            <select class="form-control opto_close selectpicker" name="opto_close">
+            </select>
+          </div>
+        </div> <!-- opto close -->
+      </div> <!-- 6th row close -->
+      <div class="row note"> <!-- 7th row note -->
+        <div class="input-group">
+          <span class="input-group-addon"></span>
+          <input type="text" class="form-control" name="note" placeholder="Note">
+        </div>
+      </div>
+      <div class="row"> <!-- submit lefteye -->
+        <div class="form-group">
+          <div class="col-md-6 col-centered">
+            <button type="submit" class="form-control btn btn-primary submit btn-left">Submit Left Eye</button>
+          </div>
+        </div>
+      </div>
+    </form> <!--form left -->
+  </div> <!-- lefteye -->
+</div> <!-- container-fluid -->
