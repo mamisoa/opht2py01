@@ -243,9 +243,9 @@
         <div class="row add_int"><!-- 3rd row add_int -->
           <div class="col-md-4 col-centered"> <!-- add_int far -->
             <div class="input-group">
-              <span class="input-group-addon btn btn-info counter_down_add_int_far">-</span>
-              <input type="text" class="form-control counter_add_int_far add_int_far" name="add_int_far" placeholder="add_int" value="+0.00">
-              <span class="input-group-addon btn btn-info counter_up_add_int_far">+</span>
+              <span class="input-group-addon btn btn-info counter_down_add_int">-</span>
+              <input type="text" class="form-control counter_add_int add_int" name="add_int" placeholder="add_int" value="+0.00">
+              <span class="input-group-addon btn btn-info counter_up_add_int">+</span>
             </div>
           </div> <!-- add_int far -->
         </div><!-- 3rd row -->
@@ -296,9 +296,9 @@
         <div class="row add"><!-- 5th row add-close -->
           <div class="col-md-4 col-centered"> <!-- add_close-->
             <div class="input-group">
-              <span class="input-group-addon btn btn-info counter_down_add_close_far">-</span>
-              <input type="text" class="form-control counter_add_close_far add_close_far" name="add_close_far" placeholder="add_close" value="+0.00">
-              <span class="input-group-addon btn btn-info counter_up_add_close_far">+</span>
+              <span class="input-group-addon btn btn-info counter_down_add_close">-</span>
+              <input type="text" class="form-control counter_add_close add_close" name="add_close" placeholder="add_close" value="+0.00">
+              <span class="input-group-addon btn btn-info counter_up_add_close">+</span>
             </div>
           </div> <!-- add_close -->
         </div><!--5th row -->
@@ -334,7 +334,7 @@
             <label>VA</label>
             <div class="input-group">
               <span class="input-group-addon btn btn-info counter_down_va_close">-</span>
-              <input type="text" class="form-control counter_va_close va_close" name="va_close" placeholder="VA" value="1.0">
+              <input type="text" class="form-control counter_va_close va_close" name="va_close" placeholder="VA" value="2">
               <span class="input-group-addon btn btn-info counter_up_va_close">+</span>
             </div>
           </div> <!-- va close -->
@@ -476,9 +476,9 @@
         <div class="row add_int"><!-- 3rd row add_int -->
           <div class="col-md-4 col-centered"> <!-- add_int far -->
             <div class="input-group">
-              <span class="input-group-addon btn btn-info counter_down_add_int_far">-</span>
-              <input type="text" class="form-control counter_add_int_far add_int_far" name="add_int_far" placeholder="add_int" value="+0.00">
-              <span class="input-group-addon btn btn-info counter_up_add_int_far">+</span>
+              <span class="input-group-addon btn btn-info counter_down_add_int">-</span>
+              <input type="text" class="form-control counter_add_int add_int" name="add_int" placeholder="add_int" value="+0.00">
+              <span class="input-group-addon btn btn-info counter_up_add_int">+</span>
             </div>
           </div> <!-- add_int far -->
         </div><!-- 3rd row -->
@@ -529,9 +529,9 @@
         <div class="row add"><!-- 5th row add-close -->
           <div class="col-md-4 col-centered"> <!-- add_close-->
             <div class="input-group">
-              <span class="input-group-addon btn btn-info counter_down_add_close_far">-</span>
-              <input type="text" class="form-control counter_add_close_far add_close_far" name="add_close_far" placeholder="add_close" value="+0.00">
-              <span class="input-group-addon btn btn-info counter_up_add_close_far">+</span>
+              <span class="input-group-addon btn btn-info counter_down_add_close">-</span>
+              <input type="text" class="form-control counter_add_close add_close" name="add_close" placeholder="add_close" value="+0.00">
+              <span class="input-group-addon btn btn-info counter_up_add_close">+</span>
             </div>
           </div> <!-- add_close -->
         </div><!--5th row -->
@@ -567,7 +567,7 @@
             <label>VA</label>
             <div class="input-group">
               <span class="input-group-addon btn btn-info counter_down_va_close">-</span>
-              <input type="text" class="form-control counter_va_close va_close" name="va_close" placeholder="VA" value="1.0">
+              <input type="text" class="form-control counter_va_close va_close" name="va_close" placeholder="VA" value="2">
               <span class="input-group-addon btn btn-info counter_up_va_close">+</span>
             </div>
           </div> <!-- va close -->
@@ -598,3 +598,148 @@
     </div> <!-- lefteye -->
   </div> <!--botheyes -->
 </div> <!-- container-fluid -->
+
+<script type="text/javascript">
+
+var status_flag = '{{=status}}';
+{{pass}}
+if (status_flag == '[&#x27;done&#x27;]') {
+  $('.btn-done').attr('class','hidden');
+}
+
+setCounter('#form_right','sph_far',0.25,-30,30,2,true);
+setCounter('#form_right','cyl_far',0.25,-11,11,2,true);
+setCounter('#form_right','axis_far',5,0,180,0,false);
+setCounter('#form_right','va_far',0.02,0,2,2,false);
+setCounter('#form_right','sph_int',0.25,-30,30,2,true);
+setCounter('#form_right','cyl_int',0.25,-11,11,2,true);
+setCounter('#form_right','axis_int',5,0,180,0,false);
+setCounter('#form_right','add_int',0.25,0,10,2,true);
+setCounter('#form_right','va_int',0.02,0,2,2,false);
+setCounter('#form_right','sph_close',0.25,-30,30,2,true);
+setCounter('#form_right','cyl_close',0.25,-11,11,2,true);
+setCounter('#form_right','axis_close',5,0,180,0,false);
+setCounter('#form_right','va_close',0.02,0,8,2,false);
+setCounter('#form_right','add_close',0.25,0,10,2,true);
+
+$('#form_right input.add_close').on( 'input', function (){
+  add = parseFloat($('#form_right input.sph_far').val())+parseFloat($('#form_right input.add_close').val());
+  add = round2dec(add);
+  $('#form_right input.sph_close').val(add);
+})
+$('#form_right input.add_int').on( 'input', function (){
+  add = parseFloat($('#form_right input.sph_far').val())+parseFloat($('#form_right input.add_int').val());
+  add = round2dec(add);
+  $('#form_right input.sph_int').val(add);
+})
+
+setCounter('#form_left','sph_far',0.25,-30,30,2,true);
+setCounter('#form_left','cyl_far',0.25,-11,11,2,true);
+setCounter('#form_left','axis_far',5,0,180,0,false);
+setCounter('#form_left','va_far',0.02,0,2,2,false);
+setCounter('#form_left','sph_int',0.25,-30,30,2,true);
+setCounter('#form_left','cyl_int',0.25,-11,11,2,true);
+setCounter('#form_left','axis_int',5,0,180,0,false);
+setCounter('#form_left','add_int',0.25,0,10,2,true);
+setCounter('#form_left','va_int',0.02,0,2,2,false);
+setCounter('#form_left','sph_close',0.25,-30,30,2,true);
+setCounter('#form_left','cyl_close',0.25,-11,11,2,true);
+setCounter('#form_left','axis_close',5,0,180,0,false);
+setCounter('#form_left','va_close',0.02,0,8,2,false);
+setCounter('#form_left','add_close',0.25,0,10,2,true);
+
+$('#form_left input.add_close').on( 'input', function (){
+  add = parseFloat($('#form_left input.sph_far').val())+parseFloat($('#form_left input.add_close').val());
+  add = round2dec(add);
+  $('#form_left input.sph_close').val(add);
+})
+$('#form_left input.add_int').on( 'input', function (){
+  add = parseFloat($('#form_left input.sph_far').val())+parseFloat($('#form_left input.add_int').val());
+  add = round2dec(add);
+  $('#form_left input.sph_int').val(add);
+})
+
+function set_task_done(id_worklist) {
+  $.ajax({
+    url: '{{=URL('api','wl/worklist', scheme=True, host=True)}}/'+id_worklist,
+    type: 'put',
+    contentType: 'application/json',
+    data: JSON.stringify({ status_flag: 'done'}),
+    success: function(text) {
+      id = text.slice(text.indexOf('id(')+3,text.indexOf(') ***'));
+      if ( id == 'None') {
+        $('.btn-done button').removeClass('btn-info');
+        $('.btn-done button').addClass('btn-danger');
+        showAlert('done error','danger','alert_tn');
+      } else {
+        $('.btn-done button').removeClass('btn-info');
+        $('.btn-done button').addClass('btn-success');
+        $('.btn-done span.icon-done').addClass('glyphicon glyphicon-check');
+        $('.btn-done span.text-done').html('Done');
+        $('.btn-done button').prop('disabled', true);
+        setTimeout(function () {
+          window.location.href = '{{=URL('default','home', scheme=True, host=True)}}'; }, 3000);
+      };
+    },
+    error: function () {
+      console.log('done error');
+    }
+  });
+}
+
+function setCounter (id_count, count_class,step, min, max, precision,sign) {
+  $(id_count+' .btn.counter_down_'+count_class).click(function() {
+    value = parseFloat($(id_count+' input.counter_'+count_class).val());
+    if (value >= (min+step)) {
+      set = value-step;
+      set = Math.round(set*100)/100;
+      sign == true? (set > 0? result='+'+set.toFixed(precision) : (result=set.toFixed(precision))) : result=set.toFixed(precision);
+      $(id_count+' input.counter_'+count_class).val(result);
+    } else {};
+    if (count_class == 'add_close') {
+      add = set + parseFloat($(id_count+' input.sph_far').val());
+      $(id_count+' input.sph_close').val(round2dec(add));
+    } else if (count_class == 'add_int') {
+      add = set + parseFloat($(id_count+' input.sph_far').val());
+      $(id_count+' input.sph_int').val(round2dec(add)); }
+  });
+
+  $(id_count+' .btn.counter_up_'+count_class).click(function() {
+    value = parseFloat($(id_count+' input.counter_'+count_class).val());
+    if (value <= (max-step)) {
+      set = value+step;
+      set = Math.round(set*100)/100;
+      sign == true? (set > 0? result='+'+set.toFixed(precision) : (result=set.toFixed(precision))) : result=set.toFixed(precision);
+      $(id_count+' input.counter_'+count_class).val(result);
+    } else {};
+    if (count_class == 'add_close') {
+      add = set + parseFloat($(id_count+' input.sph_far').val());
+      $(id_count+' input.sph_close').val(round2dec(add));
+    } else if (count_class == 'add_int') {
+      add = set + parseFloat($(id_count+' input.sph_far').val());
+      $(id_count+' input.sph_int').val(round2dec(add)); }
+  });
+}
+
+function round2dec(num) {
+  num = Math.round(num*100)/100;
+  num = num.toFixed(2);
+  num >0? num='+'+num : {};
+  return num;
+}
+
+function showAlert(title, type, div) {
+  $('.'+div).attr('class', div+' alert alert-' + type || 'success')
+        .html('<i class="glyphicon glyphicon-check"></i> ' + title).show();
+  setTimeout(function () {
+      $('.'+div).hide();
+    }, 5000);
+}
+
+function resetForm($form) {
+  $form.find('input:text, input:password, input:file, select, textarea').val('');
+  $form.find('input:radio, input:checkbox')
+     .removeAttr('checked').removeAttr('selected').parent().removeClass('active');
+}
+
+</script>
