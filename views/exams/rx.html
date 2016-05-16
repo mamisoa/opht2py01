@@ -5,7 +5,7 @@
   exam = worklistid.exam2do_OBR4.exam_description
   timeslot = worklistid.worklist.requested_time_OBR6
   task = worklistid.worklist.message_unique_id_MSH10
-  status = worklistid.worklist.status_flag }}
+  status = XML(worklistid.worklist.status_flag) }}
 {{pass}}
 
 {{extend 'layout.html'}}
@@ -295,7 +295,7 @@
             <label>VA</label>
             <div class="input-group input-group-sm ">
               <span class="input-group-addon btn btn-sm btn-info counter_down_va_int">-</span>
-              <input type="text" class="form-control counter_va_int va_int" name="va_int" placeholder="VA" value="1.0">
+              <input type="text" class="form-control counter_va_int va_int" name="va_int" placeholder="VA" value="2">
               <span class="input-group-addon btn btn-sm btn-info counter_up_va_int">+</span>
             </div>
           </div> <!-- va int -->
@@ -521,7 +521,7 @@
             <label>VA</label>
             <div class="input-group input-group-sm ">
               <span class="input-group-addon btn btn-sm btn-info counter_down_va_int">-</span>
-              <input type="text" class="form-control counter_va_int va_int" name="va_int" placeholder="VA" value="1.0">
+              <input type="text" class="form-control counter_va_int va_int" name="va_int" placeholder="VA" value="2">
               <span class="input-group-addon btn btn-sm btn-info counter_up_va_int">+</span>
             </div>
           </div> <!-- va int -->
@@ -605,9 +605,11 @@
 
 <script type="text/javascript">
 
-var status_flag = '{{=status}}';
+// SETTINGS **********************************************
+var status_flag = {{=status}}, opto_far = {{=opto_far}},opto_int = {{=opto_int}},opto_close = {{=opto_close}};
 {{pass}}
-if (status_flag == '[&#x27;done&#x27;]') {
+
+if (status_flag == 'done') {
   $('.btn-done').attr('class','hidden');
 }
 
@@ -624,12 +626,17 @@ setCounter('#form_right','sph_int',0.25,-30,30,2,true);
 setCounter('#form_right','cyl_int',0.25,-11,11,2,true);
 setCounter('#form_right','axis_int',5,0,180,0,false);
 setCounter('#form_right','add_int',0.25,0,10,2,true);
-setCounter('#form_right','va_int',0.02,0,2,2,false);
+setCounter('#form_right','va_int',0.5,1,8,2,false);
 setCounter('#form_right','sph_close',0.25,-30,30,2,true);
 setCounter('#form_right','cyl_close',0.25,-11,11,2,true);
 setCounter('#form_right','axis_close',5,0,180,0,false);
-setCounter('#form_right','va_close',0.02,0,8,2,false);
+setCounter('#form_right','va_close',0.5,1,8,2,false);
 setCounter('#form_right','add_close',0.25,0,10,2,true);
+
+setSelect('.opto_far', opto_far, 'opto');
+setSelect('.opto_int', opto_int, 'opto');
+setSelect('.opto_close', opto_close, 'opto');
+
 
 $('#form_right input[name=rx_origin]').change(function(){
   if (($('#form_right input[name=rx_origin]').filter(':checked').val()=='glass') || ($('#form_right input[name=rx_origin]').filter(':checked').val()=='trial')) {
@@ -647,7 +654,7 @@ $('#form_right input[name=glass_type]').change(function(){
     $('#form_right .rx_close').hide();
   } else {
     $('#form_right .rx_inter, #form_right .rx_close').hide();
-  }
+  };
 });
 
 $('#form_left input[name=rx_origin]').change(function(){
@@ -666,7 +673,7 @@ $('#form_left input[name=glass_type]').change(function(){
     $('#form_left .rx_close').hide();
   } else {
     $('#form_left .rx_inter, #form_left .rx_close').hide();
-  }
+  };
 });
 
 $('#form_right input.add_close').on( 'input', function (){
@@ -705,6 +712,14 @@ $('#form_left input.add_int').on( 'input', function (){
   add = round2dec(add);
   $('#form_left input.sph_int').val(add);
 })
+
+// SETTINGS (END) **********************************************
+
+
+
+$('.btn-done').click(function() {
+  set_task_done('{{=id_worklist}}')
+});
 
 function set_task_done(id_worklist) {
   $.ajax({
@@ -779,6 +794,17 @@ function setCounter (id_count, count_class,step, min, max, precision,sign) {
     }
   });
 }
+
+function setSelect(id,rows,description) {
+  var items = rows.content;
+  html = [];
+  $.each(items, function(i){
+    html.push('<option value="'+items[i][description]+'">'+items[i][description]+'</option>');
+  });
+  $(id).html(html.join(''));
+//  $('.selectpicker').selectpicker('refresh');
+}
+
 
 function round2dec(num) {
   num = Math.round(num*100)/100;

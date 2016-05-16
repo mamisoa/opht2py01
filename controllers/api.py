@@ -281,3 +281,44 @@ def tono():
         else:
             raise HTTP(400)
     return locals()
+
+@request.restful()
+def rx():
+    response.view = 'generic.json'
+    def GET(**vars):
+        patient = db.auth_user.with_alias('patient')
+        creator = db.auth_user.with_alias('creator')
+        editor = db.auth_user.with_alias('editor')
+        db.rx.created_by.readable = db.rx.modified_by.readable = db.rx.created_on.readable = db.rx.modified_on.readable = db.rx.id_auth_user.readable = True
+        rows =  db((db.rx.id_auth_user==request.vars.id_auth_user)&(db.rx.id_worklist==request.vars.id_worklist)).select(db.rx.id,
+                        db.rx.id_auth_user, db.rx.id_worklist,
+                        db.rx.created_by,db.rx.created_on, db.rx.modified_by,db.rx.modified_on,
+                        db.rx.sph_far, db.rx.cyl_far, db.rx.axis_far,
+                        db.rx.sph_int, db.rx.cyl_int, db.rx.axis_int,
+                        db.rx.sph_close, db.rx.cyl_close, db.rx.axis_close, db.rx.note,
+                        patient.first_name, patient.last_name, creator.first_name, creator.last_name, editor.first_name, editor.last_name,
+                        left=[patient.on(patient.id==db.rx.id_auth_user),
+                        creator.on(creator.id==db.rx.created_by),
+                        editor.on(editor.id==db.rx.modified_by)
+                        ])
+        data = rows2json('content',rows)
+        return data
+    def DELETE(tablename,record_id):
+        if tablename=='rx':
+            db(db.rx.id == record_id).delete()
+            return 'Table: '+ tablename +' *** Deleted row id('+record_id+') *** \r\n'
+        else:
+            raise HTTP(400)
+    def PUT(tablename,record_id,**vars):
+        if tablename == 'rx':
+            db(db.rx._id==record_id).update(**vars)
+            return 'Table: '+ tablename +' *** Updated row id('+record_id+') ***  \r\n'
+        else:
+            raise HTTP(400)
+    def POST(tablename,**vars):
+        if tablename == 'rx':
+            ret = db.rx.validate_and_insert(**vars)
+            return 'Table: '+ tablename +' *** Added row id('+ str(ret.id) + ') *** ' + 'Error code : ' + str(ret.errors) + ' *** \r\n'
+        else:
+            raise HTTP(400)
+    return locals()
