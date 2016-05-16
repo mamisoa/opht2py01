@@ -653,7 +653,7 @@ $('#form_right input[name=rx_origin]').change(function(){
 $('#form_right input[name=glass_type]').change(function(){
   if (($('#form_right input[name=glass_type]').filter(':checked').val()=='bifocal') || ($('#form_right input[name=glass_type]').filter(':checked').val()=='progressive')) {
     $('#form_right .rx_inter, #form_right .rx_close').show();
-  } else if ($('#form_right input[name=glass_type]').filter(':checked').val()=='deg') {
+  } else if ($('#form_right input[name=glass_type]').filter(':checked').val()=='degressive') {
     $('#form_right .rx_inter').show();
     $('#form_right .rx_close').hide();
   } else {
@@ -672,7 +672,7 @@ $('#form_left input[name=rx_origin]').change(function(){
 $('#form_left input[name=glass_type]').change(function(){
   if (($('#form_left input[name=glass_type]').filter(':checked').val()=='bifocal') || ($('#form_left input[name=glass_type]').filter(':checked').val()=='progressive')) {
     $('#form_left .rx_inter, #form_left .rx_close').show();
-  } else if ($('#form_left input[name=glass_type]').filter(':checked').val()=='deg') {
+  } else if ($('#form_left input[name=glass_type]').filter(':checked').val()=='degressive') {
     $('#form_left .rx_inter').show();
     $('#form_left .rx_close').hide();
   } else {
