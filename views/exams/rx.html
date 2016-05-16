@@ -149,7 +149,9 @@
 <div class="container-fluid">
   <div class="row botheyes"> <!-- botheyes -->
     <div class="col-sm-6 righteye">
-      <div  class="well well-sm"><h3>Right Eye<small></small></h3></div>
+      <div class="row">
+        <div  class="well well-sm"><h3>Right Eye</h3></div><small><span class="alert_rx_right pull-right"</span></small>
+      </div>
       <form id="form_right" class="form">
         <div class="row"> <!-- hidden wl auth_user -->
           <div class="form-group  form-group-sm col-sm-6 hidden">
@@ -191,16 +193,16 @@
               <div class="input-group input-group-sm ">
                 <div class="btn-group glass_type_btn" data-toggle="buttons">
                   <label class="btn btn-sm btn-primary">
-                    <input type="radio" class="glass_type_mono" name="glass_type" autocomplete="off" value="mono">Mono
+                    <input type="radio" class="glass_type_mono" name="glass_type" autocomplete="off" value="monofocal">Mono
                   </label>
                   <label class="btn btn-sm btn-primary">
-                    <input type="radio" class="glass_type_pro" name="glass_type" autocomplete="off" value="prog">Prog
+                    <input type="radio" class="glass_type_pro" name="glass_type" autocomplete="off" value="progressive">Prog
                   </label>
                   <label class="btn btn-sm btn-primary">
-                    <input type="radio" class="glass_type_bif" name="glass_type" autocomplete="off" value="bif">Bif
+                    <input type="radio" class="glass_type_bif" name="glass_type" autocomplete="off" value="bifocal">Bif
                   </label>
                   <label class="btn btn-sm btn-primary">
-                    <input type="radio" class="glass_type_deg" name="glass_type" autocomplete="off" value="deg">Deg
+                    <input type="radio" class="glass_type_deg" name="glass_type" autocomplete="off" value="degressive">Deg
                   </label>
                   <div class="help-block with-errors">Required<span id="alert_glass_type" style="color:red;"></span></div>
                 </div>
@@ -375,7 +377,9 @@
       </form> <!--form right -->
     </div> <!-- righteye -->
     <div class="col-sm-6 lefteye">
-      <div  class="well well-sm"><h3>Left Eye<small></small></h3></div>
+      <div class="row">
+        <div  class="well well-sm"><h3>Left Eye</h3><small><span class="alert_rx_left pull-right"</span></small></div>
+      </div>
       <form id="form_left" class="form">
         <div class="row"> <!-- hidden wl auth_user -->
           <div class="form-group  form-group-sm col-sm-6 hidden">
@@ -417,16 +421,16 @@
               <div class="input-group input-group-sm ">
                 <div class="btn-group glass_type_btn" data-toggle="buttons">
                   <label class="btn btn-sm btn-primary">
-                    <input type="radio" class="glass_type_mono" name="glass_type" autocomplete="off" value="mono">Mono
+                    <input type="radio" class="glass_type_mono" name="glass_type" autocomplete="off" value="monofocal">Mono
                   </label>
                   <label class="btn btn-sm btn-primary">
-                    <input type="radio" class="glass_type_pro" name="glass_type" autocomplete="off" value="prog">Prog
+                    <input type="radio" class="glass_type_pro" name="glass_type" autocomplete="off" value="progressive">Prog
                   </label>
                   <label class="btn btn-sm btn-primary">
-                    <input type="radio" class="glass_type_bif" name="glass_type" autocomplete="off" value="bif">Bif
+                    <input type="radio" class="glass_type_bif" name="glass_type" autocomplete="off" value="bifocal">Bif
                   </label>
                   <label class="btn btn-sm btn-primary">
-                    <input type="radio" class="glass_type_deg" name="glass_type" autocomplete="off" value="deg">Deg
+                    <input type="radio" class="glass_type_deg" name="glass_type" autocomplete="off" value="degressive">Deg
                   </label>
                   <div class="help-block with-errors">Required<span id="alert_glass_type" style="color:red;"></span></div>
                 </div>
@@ -594,7 +598,7 @@
         <div class="row"> <!-- submit righteye -->
           <div class="col-sm-6 col-centered">
             <div class="form-group">
-              <button type="submit" class="form-control btn btn-primary submit btn-left">Submit Leftt Eye</button>
+              <button type="submit" class="form-control btn btn-primary submit btn-left">Submit Left Eye</button>
             </div>
           </div>
         </div>
@@ -647,7 +651,7 @@ $('#form_right input[name=rx_origin]').change(function(){
 });
 
 $('#form_right input[name=glass_type]').change(function(){
-  if (($('#form_right input[name=glass_type]').filter(':checked').val()=='bif') || ($('#form_right input[name=glass_type]').filter(':checked').val()=='prog')) {
+  if (($('#form_right input[name=glass_type]').filter(':checked').val()=='bifocal') || ($('#form_right input[name=glass_type]').filter(':checked').val()=='progressive')) {
     $('#form_right .rx_inter, #form_right .rx_close').show();
   } else if ($('#form_right input[name=glass_type]').filter(':checked').val()=='deg') {
     $('#form_right .rx_inter').show();
@@ -666,7 +670,7 @@ $('#form_left input[name=rx_origin]').change(function(){
 });
 
 $('#form_left input[name=glass_type]').change(function(){
-  if (($('#form_left input[name=glass_type]').filter(':checked').val()=='bif') || ($('#form_left input[name=glass_type]').filter(':checked').val()=='prog')) {
+  if (($('#form_left input[name=glass_type]').filter(':checked').val()=='bifocal') || ($('#form_left input[name=glass_type]').filter(':checked').val()=='progressive')) {
     $('#form_left .rx_inter, #form_left .rx_close').show();
   } else if ($('#form_left input[name=glass_type]').filter(':checked').val()=='deg') {
     $('#form_left .rx_inter').show();
@@ -695,11 +699,11 @@ setCounter('#form_left','sph_int',0.25,-30,30,2,true);
 setCounter('#form_left','cyl_int',0.25,-11,11,2,true);
 setCounter('#form_left','axis_int',5,0,180,0,false);
 setCounter('#form_left','add_int',0.25,0,10,2,true);
-setCounter('#form_left','va_int',0.02,0,2,2,false);
+setCounter('#form_left','va_int',0.5,1,8,2,false);
 setCounter('#form_left','sph_close',0.25,-30,30,2,true);
 setCounter('#form_left','cyl_close',0.25,-11,11,2,true);
 setCounter('#form_left','axis_close',5,0,180,0,false);
-setCounter('#form_left','va_close',0.02,0,8,2,false);
+setCounter('#form_left','va_close',0.5,1,8,2,false);
 setCounter('#form_left','add_close',0.25,0,10,2,true);
 
 $('#form_left input.add_close').on( 'input', function (){
@@ -715,11 +719,88 @@ $('#form_left input.add_int').on( 'input', function (){
 
 // SETTINGS (END) **********************************************
 
-
-
 $('.btn-done').click(function() {
   set_task_done('{{=id_worklist}}')
 });
+
+$('#form_right .submit').click(function(e){
+  var row = {};
+  $('#form_right input.id_auth_user').val({{=id_auth_user}});
+  $('#form_right input.id_worklist').val({{=id_worklist}});
+  e.preventDefault();
+  $('#form_right').find('input[name]').each(function () {
+    row[$(this).attr('name')] = $(this).val();
+  });
+  row['laterality']='right';
+  row['rx_origin'] = $('#form_right input:radio[name=rx_origin]').filter(':checked').val();
+  row['glass_type'] = $('#form_right input:radio[name=glass_type]').filter(':checked').val();
+  row['opto_far'] = $('#form_right select.opto_far').val();
+  row['opto_int'] = $('#form_right select.opto_int').val();
+  row['opto_close'] = $('#form_right select.opto_close').val();
+  delete row['add_int'];
+  delete row['add_close'];
+  if ((row['rx_origin']=='autorx')||(row['rx_origin']=='cyclo')||(row['rx_origin']=='dil')) {
+    row['glass_type'] = 'monofocal';
+    todelete = ['opto_int','va_int', 'sph_int', 'cyl_int', 'axis_int', 'opto_close','va_close' , 'sph_close','cyl_close', 'axis_close'];
+    for (items in todelete) {
+      delete row[todelete[items]];
+    };
+  } else {};
+  console.log(row);
+  post_rx_form(row,'POST','right');
+})
+
+$('#form_left .submit').click(function(e){
+  var row = {};
+  $('#form_left input.id_auth_user').val({{=id_auth_user}});
+  $('#form_left input.id_worklist').val({{=id_worklist}});
+  e.preventDefault();
+  $('#form_left').find('input[name]').each(function () {
+    row[$(this).attr('name')] = $(this).val();
+  });
+  row['laterality']='left';
+  row['rx_origin'] = $('#form_left input:radio[name=rx_origin]').filter(':checked').val();
+  row['glass_type'] = $('#form_left input:radio[name=glass_type]').filter(':checked').val();
+  row['opto_far'] = $('#form_left select.opto_far').val();
+  row['opto_int'] = $('#form_left select.opto_int').val();
+  row['opto_close'] = $('#form_left select.opto_close').val();
+  delete row['add_int'];
+  delete row['add_close'];
+  if ((row['rx_origin']=='autorx')||(row['rx_origin']=='cyclo')||(row['rx_origin']=='dil')) {
+    row['glass_type'] = 'monofocal';
+    todelete = ['va_int', 'sph_int', 'cyl_int', 'axis_int', 'va_close' , 'sph_close','cyl_close', 'axis_close'];
+    for (items in todelete) {
+      delete row[todelete[items]];
+    };
+  } else {};
+  console.log(row);
+  post_rx_form(row,'POST','left');
+})
+
+
+function post_rx_form(row,req,lat) {
+  var API_URL = (req == 'POST' ? '{{=URL('api','rx/rx', scheme=True, host=True)}}/' : '{{=URL('api','tono/tono', scheme=True, host=True)}}/'+ row.id);
+  var mode = (req == 'POST' ? 'add':'edit');
+  $.ajax({
+    url: API_URL,
+    type: req == 'POST' ? 'post':'put',
+    contentType: 'application/json',
+    data: JSON.stringify(row),
+    success: function (text) {
+      id = text.slice(text.indexOf('id(')+3,text.indexOf(') ***'));
+      if ( id == 'None') {
+        showAlert('Unable to '+mode+' refraction','danger','alert_rx_'+lat);
+      } else {
+//      $table_rx.bootstrapTable('refresh');
+      showAlert(titleCase(mode+'ed'),'success','alert_rx_'+lat);
+      };
+//      $modal_rx.modal('hide');
+    },
+    error: function () {
+        showAlert('Unable to '+mode+' refraction!','alert_rx_'+lat);
+      }
+    });
+}
 
 function set_task_done(id_worklist) {
   $.ajax({
@@ -805,7 +886,6 @@ function setSelect(id,rows,description) {
 //  $('.selectpicker').selectpicker('refresh');
 }
 
-
 function round2dec(num) {
   num = Math.round(num*100)/100;
   num = num.toFixed(2);
@@ -826,5 +906,17 @@ function resetForm($form) {
   $form.find('input:radio, input:checkbox')
      .removeAttr('checked').removeAttr('selected').parent().removeClass('active');
 }
+
+function showAlert(title, type, div) {
+  $('.'+div).attr('class', div+' alert alert-' + type || 'success')
+        .html('<i class="glyphicon glyphicon-check"></i> ' + title).show();
+  setTimeout(function () {
+      $('.'+div).hide();
+    }, 5000);
+}
+
+function titleCase(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1); }
+
 
 </script>
