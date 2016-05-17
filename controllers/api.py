@@ -293,6 +293,7 @@ def rx():
         rows =  db((db.rx.id_auth_user==request.vars.id_auth_user)&(db.rx.id_worklist==request.vars.id_worklist)).select(db.rx.id,
                         db.rx.id_auth_user, db.rx.id_worklist,
                         db.rx.created_by,db.rx.created_on, db.rx.modified_by,db.rx.modified_on,
+                        db.rx.glass_type, db.rx.rx_origin, db.rx.laterality,
                         db.rx.sph_far, db.rx.cyl_far, db.rx.axis_far,
                         db.rx.sph_int, db.rx.cyl_int, db.rx.axis_int,
                         db.rx.sph_close, db.rx.cyl_close, db.rx.axis_close, db.rx.note,

@@ -119,7 +119,7 @@
 
 {{end}}
 
-<div class="container-fluid">
+<div class="container-fluid"> <!--header/title -->
   <div class="row"> <!--header -->
     <div class="col-sm-4">
       <a href="{{=URL('default','home', scheme=True, host=True )}}" class="btn btn-info btn-back" role="button">Back</a>
@@ -145,11 +145,11 @@
       </div>
     </div>
   </div>
-</div>
-<div class="container-fluid">
+</div> <!--header/title -->
+<div class="container-fluid"> <!-- submit forms right/left -->
   <div class="row botheyes"> <!-- botheyes -->
     <div class="col-sm-6 righteye">
-      <div class="row">
+      <div class="row"> <!--form title -->
         <div  class="well well-sm"><h3>Right Eye</h3></div><small><span class="alert_rx_right pull-right"</span></small>
       </div>
       <form id="form_right" class="form">
@@ -260,7 +260,7 @@
             </div>
           </div> <!-- opto far -->
         </div> <!-- 2nd row -->
-        <div class="row rx_inter"> <!-- 4th row rx int -->
+        <div class="row rx_inter"> <!-- 3rd row rx int -->
           <div class="col-sm-2">
             <label>Add for int</label>
             <div class="input-group input-group-sm ">
@@ -308,8 +308,8 @@
               </select>
             </div>
           </div> <!-- opto int -->
-        </div> <!-- 4th row int-->
-        <div class="row rx_close"> <!-- 6th row close -->
+        </div> <!-- 3rd row int-->
+        <div class="row rx_close"> <!-- 4th row close -->
           <div class="col-sm-2">
             <label>Add for close</label>
             <div class="input-group input-group-sm ">
@@ -357,15 +357,15 @@
               </select>
             </div>
           </div> <!-- opto close -->
-        </div> <!-- 6th row close -->
-        <div class="row note"> <!-- 7th row note -->
+        </div> <!-- 4th row close -->
+        <div class="row note"> <!-- 5th row note -->
           <div class="col-sm-6 col-centered">
             <label>Note</label>
             <div class="input-group input-group-sm ">
               <span class="input-group-addon"></span>
               <input type="text" class="form-control" name="note" placeholder="Note">
             </div>
-          </div>
+          </div> <!-- 5th row note -->
         </div>
         <div class="row"> <!-- submit righteye -->
           <div class="col-sm-6 col-centered">
@@ -373,7 +373,7 @@
               <button type="submit" class="form-control btn btn-primary submit btn-right">Submit Right Eye</button>
             </div>
           </div>
-        </div>
+        </div> <!-- submit righteye -->
       </form> <!--form right -->
     </div> <!-- righteye -->
     <div class="col-sm-6 lefteye">
@@ -605,13 +605,321 @@
       </form> <!--form left -->
     </div> <!-- lefteye -->
   </div> <!--botheyes -->
-</div> <!-- container-fluid -->
+</div> <!-- container-fluid forms left/right -->
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="well well-sm recorded">
+        <h3>Refractions recorded for this task:</h3>
+      </div>
+      <div class="toolbar_rx">
+          <span class="alert_rx_listing"></span>
+      </div>
+      <table id="table_rx"
+          data-id-field="id"
+          data-show-refresh="true"
+          data-show-columns="true"
+          data-search="true"
+          data-toggle="table"
+          data-locale="en-US"
+          data-detail-view="true"
+          data-response-handler="responseHandler_rx"
+          data-query-params="queryParams"
+          data-row-style="rowStyle"
+          data-row-attributes="rowAttributes"
+          data-pagination="true"
+          data-toolbar=".toolbar_rx">
+        <thead>
+          <tr>
+            <th data-field="id" data-sortable="true">ID</th>
+            <th data-field="laterality" data-title="Eye:" data-sortable="true">Eye:</th>
+            <th data-field="rx_origin" data-title="Origin:" data-sortable="true">Origin:</th>
+            <th data-field="glass_type" data-title="Type:" data-sortable="true">Type:</th>
+            <th data-field="sph_int" data-title="va_far:" data-sortable="true">va_far:</th>
+            <th data-field="sph_far" data-title="sph_far:" data-sortable="true">Sph_far:</th>
+            <th data-field="cyl_far" data-title="cyl_far:" data-sortable="true">cyl_far:</th>
+            <th data-field="axis_far" data-title="axis_far:" data-sortable="true">axis_far:</th>
+            <th data-field="cyl_int" data-title="va_close:" data-sortable="true">cyl_int:</th>
+            <th data-field="sph_close" data-title="sph_close:" data-sortable="true">Sph_close:</th>
+            <th data-field="cyl_close" data-title="cyl_close:" data-sortable="true">cyl_close:</th>
+            <th data-field="axis_close" data-title="axis_close:" data-sortable="true">axis_close:</th>
+            <th data-field="note" data-title="note:" data-sortable="true">Note:</th>
+            <th data-field="action_rx"
+                data-align="center"
+                data-formatter="actionFormatter_rx"
+                data-events="actionEvents_rx">Action</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal" id="modal_rx" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+  <div class="modal-dialog modal-lg"> <!-- fade not working with modal-lg ?? -->
+    <div class="modal-content">
+      <form id="form_rx">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="">Edit refraction for <span class="patient">{{=patient}}</span></h4>
+        </div>
+        <div class="modal-body">
+          <div class="container-fluid">
+            <div class="row"> <!-- hidden wl auth_user -->
+              <div class="form-group  form-group-sm col-sm-4 hidden">
+                <label>Patient id:</label>
+                <input type="text" class="form-control id_auth_user" name="id_auth_user" value="">
+              </div>
+              <div class="form-group form-group-sm col-sm-4 hidden">
+                <label>Worklist ID:</label>
+                <input type="text" class="form-control id_worklist" name="id_worklist" value="">
+              </div>
+              <div class="form-group form-group-sm col-sm-4 hidden">
+                <label>rx ID:</label>
+                <input type="text" class="form-control id" name="id" value="">
+              </div>
+            </div> <!-- hidden wl auth_user -->
+            <div class="row laterality">
+              <div class="form-group col-sm-12">
+                <label>Laterality:<span style="color: red;" class="lat_req"></span></label>
+                <div class="input-group">
+                  <div class="btn-group laterality" data-toggle="buttons">
+                  <label class="btn btn-primary">
+                    <input type="radio" class="laterality_left" name="laterality" autocomplete="off" value="left">Left
+                  </label>
+                  <label class="btn btn-primary">
+                    <input type="radio" class="laterality_right" name="laterality" autocomplete="off" value="right">Right
+                  </label>
+                  <div class="help-block with-errors">Required<span id="alert_lat" style="color:red;"></span></div>
+                  </div>
+               </div>
+              </div>
+            </div>
+            <div class="row rx_origin"> <!-- 1st row glass autorx rx -->
+                <div class="row"> <!-- rx type -->
+                  <div class="form-group form-group-sm col-sm-6 rx_origin_btn"> <!-- lun/autorx/dil/cyclo -->
+                      <label>Origin:<span style="color: red;" class="rx_origin_req"></span></label>
+                      <div class="input-group input-group-sm ">
+                        <div class="btn-group rx_origin" data-toggle="buttons">
+                          <label class="btn btn-sm btn-primary">
+                            <input type="radio" class="rx_origin_autorx" name="rx_origin" autocomplete="off" value="autorx">AutoRx
+                          </label>
+                          <label class="btn btn-sm btn-primary">
+                            <input type="radio" class="rx_origin_glass" name="rx_origin" autocomplete="off" value="glass">Glasses
+                          </label>
+                          <label class="btn btn-sm btn-primary">
+                            <input type="radio" class="rx_origin_trial" name="rx_origin" autocomplete="off" value="trial">Trial
+                          </label>
+                          <label class="btn btn-sm btn-primary">
+                            <input type="radio" class="rx_origin_cyclo" name="rx_origin" autocomplete="off" value="cyclo">Cyclo
+                          </label>
+                          <label class="btn btn-sm btn-primary">
+                            <input type="radio" class="rx_origin_dil" name="rx_origin" autocomplete="off" value="dil">Dilatation
+                          </label>
+                          <div class="help-block with-errors">Required<span id="alert_rx_origin" style="color:red;"></span></div>
+                      </div>
+                    </div>
+                  </div> <!-- lun/autorx/dil/cyclo -->
+                  <div class="form-group form-group-sm col-sm-4 glass_type"> <!-- glass type -->
+                    <label>Type:<span style="color: red;" class="glass_type_req"></span></label>
+                    <div class="input-group input-group-sm ">
+                      <div class="btn-group glass_type_btn" data-toggle="buttons">
+                        <label class="btn btn-sm btn-primary">
+                          <input type="radio" class="glass_type_monofocal" name="glass_type" autocomplete="off" value="monofocal">Mono
+                        </label>
+                        <label class="btn btn-sm btn-primary">
+                          <input type="radio" class="glass_type_progressive" name="glass_type" autocomplete="off" value="progressive">Prog
+                        </label>
+                        <label class="btn btn-sm btn-primary">
+                          <input type="radio" class="glass_type_bifocal" name="glass_type" autocomplete="off" value="bifocal">Bif
+                        </label>
+                        <label class="btn btn-sm btn-primary">
+                          <input type="radio" class="glass_type_degressive" name="glass_type" autocomplete="off" value="degressive">Deg
+                        </label>
+                        <div class="help-block with-errors">Required<span id="alert_glass_type" style="color:red;"></span></div>
+                      </div>
+                   </div>
+                  </div> <!-- glass type -->
+                <div class="col-sm-2"> <!-- get from machines -->
+                  <label></label>
+                    <div class="input-group input-group-sm ">
+                      <button type="button" class="btn btn-sm btn-info machines" name="machines">Get</button>
+                    </div>
+                </div> <!-- get from machines -->
+              </div>  <!-- rx type -->
+            </div> <!-- 1st row -->
+            <div class="row rx_far"> <!-- 2nd row rx far -->
+              <div class="col-sm-2">
+                <label>FAR</label>
+              </div> <!--far -->
+              <div class="col-sm-2"> <!-- sph far -->
+                <label>Sph</label>
+                <div class="input-group input-group-sm">
+                  <span class="input-group-addon btn btn-info counter_down_sph_far">-</span>
+                  <input type="text" class="form-control counter_sph_far sph_far" name="sph_far" placeholder="SPH" value="+0.00">
+                  <span class="input-group-addon btn btn-info counter_up_sph_far">+</span>
+                </div>
+              </div> <!-- sph far -->
+              <div class="col-sm-2"> <!-- cyl far -->
+                <label>Cyl</label>
+                <div class="input-group input-group-sm ">
+                  <span class="input-group-addon btn btn-sm btn-info counter_down_cyl_far">-</span>
+                  <input type="text" class="form-control counter_cyl_far cyl_far" name="cyl_far" placeholder="CYL" value="+0.00">
+                  <span class="input-group-addon btn btn-sm btn-info counter_up_cyl_far">+</span>
+                </div>
+              </div> <!-- cyl far -->
+              <div class="col-sm-2"> <!-- axis far -->
+                <label>Axis</label>
+                <div class="input-group input-group-sm ">
+                  <span class="input-group-addon btn btn-sm btn-info counter_down_axis_far">-</span>
+                  <input type="text" class="form-control counter_axis_far axis_far" name="axis_far" placeholder="AXIS" value="180">
+                  <span class="input-group-addon btn btn-sm btn-info counter_up_axis_far">+</span>
+                </div>
+              </div> <!-- axis far -->
+              <div class="col-sm-2"> <!-- va far -->
+                <label>VA</label>
+                <div class="input-group input-group-sm ">
+                  <span class="input-group-addon btn btn-sm btn-info counter_down_va_far">-</span>
+                  <input type="text" class="form-control counter_va_far va_far" name="va_far" placeholder="VA" value="1.0">
+                  <span class="input-group-addon btn btn-sm btn-info counter_up_va_far">+</span>
+                </div>
+              </div> <!-- va far -->
+              <div class="col-sm-2"> <!-- opto far -->
+                <label>Opto:</label>
+                <div class="input-group input-group-sm ">
+                  <select class="form-control opto_far selectpicker" data-width="100px" name="opto_far">
+                  </select>
+                </div>
+              </div> <!-- opto far -->
+            </div> <!-- 2nd row -->
+            <div class="row rx_inter"> <!-- 3rd row rx int -->
+              <div class="col-sm-2">
+                <label>Add for int</label>
+                <div class="input-group input-group-sm ">
+                  <span class="input-group-addon btn btn-sm btn-info counter_down_add_int">-</span>
+                  <input type="text" class="form-control counter_add_int add_int" name="add_int" placeholder="add_int" value="+0.00">
+                  <span class="input-group-addon btn btn-sm btn-info counter_up_add_int">+</span>
+                </div>
+              </div> <!--int -->
+              <div class="col-sm-2"> <!-- sph int -->
+                <label>Sph</label>
+                <div class="input-group input-group-sm ">
+                  <span class="input-group-addon btn btn-sm btn-info counter_down_sph_int">-</span>
+                  <input type="text" class="form-control counter_sph_int sph_int" name="sph_int" placeholder="SPH" value="+0.00">
+                  <span class="input-group-addon btn btn-sm btn-info counter_up_sph_int">+</span>
+                </div>
+              </div> <!-- sph int -->
+              <div class="col-sm-2"> <!-- cyl int -->
+                <label>Cyl</label>
+                <div class="input-group input-group-sm ">
+                  <span class="input-group-addon btn btn-sm btn-info counter_down_cyl_int">-</span>
+                  <input type="text" class="form-control counter_cyl_int cyl_int" name="cyl_int" placeholder="CYL" value="+0.00">
+                  <span class="input-group-addon btn btn-sm btn-info counter_up_cyl_int">+</span>
+                </div>
+              </div> <!-- cyl int -->
+              <div class="col-sm-2"> <!-- axis int -->
+                <label>Axis</label>
+                <div class="input-group input-group-sm ">
+                  <span class="input-group-addon btn btn-sm btn-info counter_down_axis_int">-</span>
+                  <input type="text" class="form-control counter_axis_int axis_int" name="axis_int" placeholder="AXIS" value="180">
+                  <span class="input-group-addon btn btn-sm btn-info counter_up_axis_int">+</span>
+                </div>
+              </div> <!-- axis int -->
+              <div class="col-sm-2"> <!-- va int -->
+                <label>VA</label>
+                <div class="input-group input-group-sm ">
+                  <span class="input-group-addon btn btn-sm btn-info counter_down_va_int">-</span>
+                  <input type="text" class="form-control counter_va_int va_int" name="va_int" placeholder="VA" value="2">
+                  <span class="input-group-addon btn btn-sm btn-info counter_up_va_int">+</span>
+                </div>
+              </div> <!-- va int -->
+              <div class="col-sm-2"> <!-- opto int -->
+                <label>Opto:</label>
+                <div class="input-group input-group-sm ">
+                  <select class="form-control opto_int selectpicker" data-width="100px" name="opto_int">
+                  </select>
+                </div>
+              </div> <!-- opto int -->
+            </div> <!-- 3rd row int-->
+            <div class="row rx_close"> <!-- 4th row close -->
+              <div class="col-sm-2">
+                <label>Add for close</label>
+                <div class="input-group input-group-sm ">
+                  <span class="input-group-addon btn btn-sm btn-info counter_down_add_close">-</span>
+                  <input type="text" class="form-control counter_add_close add_close" name="add_close" placeholder="add_close" value="+0.00">
+                  <span class="input-group-addon btn btn-sm btn-info counter_up_add_close">+</span>
+                </div>
+              </div> <!--close -->
+              <div class="col-sm-2"> <!-- sph close -->
+                <label>Sph</label>
+                <div class="input-group input-group-sm ">
+                  <span class="input-group-addon btn btn-sm btn-info counter_down_sph_close">-</span>
+                  <input type="text" class="form-control counter_sph_close sph_close" name="sph_close" placeholder="SPH" value="+0.00">
+                  <span class="input-group-addon btn btn-sm btn-info counter_up_sph_close">+</span>
+                </div>
+              </div> <!-- sph close -->
+              <div class="col-sm-2"> <!-- cyl close -->
+                <label>Cyl</label>
+                <div class="input-group input-group-sm ">
+                  <span class="input-group-addon btn btn-sm btn-info counter_down_cyl_close">-</span>
+                  <input type="text" class="form-control counter_cyl_close cyl_close" name="cyl_close" placeholder="CYL" value="+0.00">
+                  <span class="input-group-addon btn btn-sm btn-info counter_up_cyl_close">+</span>
+                </div>
+              </div> <!-- cyl close -->
+              <div class="col-sm-2"> <!-- axis close -->
+                <label>Axis</label>
+                <div class="input-group input-group-sm ">
+                  <span class="input-group-addon btn btn-sm btn-info counter_down_axis_close">-</span>
+                  <input type="text" class="form-control counter_axis_close axis_close" name="axis_close" placeholder="AXIS" value="180">
+                  <span class="input-group-addon btn btn-sm btn-info counter_up_axis_close">+</span>
+                </div>
+              </div> <!-- axis close -->
+              <div class="col-sm-2"> <!-- va close -->
+                <label>VA</label>
+                <div class="input-group input-group-sm ">
+                  <span class="input-group-addon btn btn-info counter_down_va_close">-</span>
+                  <input type="text" class="form-control counter_va_close va_close" name="va_close" placeholder="VA" value="2">
+                  <span class="input-group-addon btn btn-sm btn-info counter_up_va_close">+</span>
+                </div>
+              </div> <!-- va close -->
+              <div class="col-sm-2"> <!-- opto close -->
+                <label>Opto:</label>
+                <div class="input-group input-group-sm ">
+                  <select class="form-control opto_close selectpicker" data-width="100px" name="opto_close">
+                  </select>
+                </div>
+              </div> <!-- opto close -->
+            </div> <!-- 4th row close -->
+            <div class="row note"> <!-- 5th row note -->
+              <div class="col-sm-6 col-centered">
+                <label>Note</label>
+                <div class="input-group input-group-sm ">
+                  <span class="input-group-addon"></span>
+                  <input type="text" class="form-control note" name="note" placeholder="Note">
+                </div>
+              </div>
+            </div> <!-- 5th row note -->
+          </div>
+        </div> <!-- modal body -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary submit">Submit</button>
+        </div> <!--modal footer -->
+      </div> <!--modal-content -->
+    </form>
+  </div> <!-- modal dialog -->
+</div> <!--modal -->
 
 <script type="text/javascript">
 
 // SETTINGS **********************************************
 var status_flag = {{=status}}, opto_far = {{=opto_far}},opto_int = {{=opto_int}},opto_close = {{=opto_close}};
 {{pass}}
+
+var $table_rx = $('#table_rx').bootstrapTable({
+      url:'{{=URL('api','rx', scheme=True, host=True)}}?id_worklist={{=id_worklist}}&id_auth_user={{=id_auth_user}}'});
 
 if (status_flag == 'done') {
   $('.btn-done').attr('class','hidden');
@@ -717,90 +1025,187 @@ $('#form_left input.add_int').on( 'input', function (){
   $('#form_left input.sph_int').val(add);
 })
 
+setCounter('#form_rx','sph_far',0.25,-30,30,2,true);
+setCounter('#form_rx','cyl_far',0.25,-11,11,2,true);
+setCounter('#form_rx','axis_far',5,0,180,0,false);
+setCounter('#form_rx','va_far',0.02,0,2,2,false);
+setCounter('#form_rx','sph_int',0.25,-30,30,2,true);
+setCounter('#form_rx','cyl_int',0.25,-11,11,2,true);
+setCounter('#form_rx','axis_int',5,0,180,0,false);
+setCounter('#form_rx','add_int',0.25,0,10,2,true);
+setCounter('#form_rx','va_int',0.5,1,8,2,false);
+setCounter('#form_rx','sph_close',0.25,-30,30,2,true);
+setCounter('#form_rx','cyl_close',0.25,-11,11,2,true);
+setCounter('#form_rx','axis_close',5,0,180,0,false);
+setCounter('#form_rx','va_close',0.5,1,8,2,false);
+setCounter('#form_rx','add_close',0.25,0,10,2,true);
+
 // SETTINGS (END) **********************************************
+
+$(function() {
+  var $modal_rx = $('#modal_rx').modal({show: false});
+
+        $('#form_right .submit').click(function(e){
+          var row = {};
+          $('#form_right input.id_auth_user').val({{=id_auth_user}});
+          $('#form_right input.id_worklist').val({{=id_worklist}});
+          e.preventDefault();
+          $('#form_right').find('input[name]').each(function () {
+            row[$(this).attr('name')] = $(this).val();
+          });
+          row['laterality']='right';
+          row['rx_origin'] = $('#form_right input:radio[name=rx_origin]').filter(':checked').val();
+          row['glass_type'] = $('#form_right input:radio[name=glass_type]').filter(':checked').val();
+          row['opto_far'] = $('#form_right select.opto_far').val();
+          row['opto_int'] = $('#form_right select.opto_int').val();
+          row['opto_close'] = $('#form_right select.opto_close').val();
+          delete row['add_int'];
+          delete row['add_close'];
+          if ((row['rx_origin']=='autorx')||(row['rx_origin']=='cyclo')||(row['rx_origin']=='dil')) {
+            row['glass_type'] = 'monofocal';
+            todelete = ['opto_int','va_int', 'sph_int', 'cyl_int', 'axis_int', 'opto_close','va_close' , 'sph_close','cyl_close', 'axis_close'];
+            for (items in todelete) {
+              delete row[todelete[items]];
+            };
+          } else {};
+          console.log(row);
+          post_rx_form(row,'POST','right');
+        })
+
+        $('#form_left .submit').click(function(e){
+          var row = {};
+          $('#form_left input.id_auth_user').val({{=id_auth_user}});
+          $('#form_left input.id_worklist').val({{=id_worklist}});
+          e.preventDefault();
+          $('#form_left').find('input[name]').each(function () {
+            row[$(this).attr('name')] = $(this).val();
+          });
+          row['laterality']='left';
+          row['rx_origin'] = $('#form_left input:radio[name=rx_origin]').filter(':checked').val();
+          row['glass_type'] = $('#form_left input:radio[name=glass_type]').filter(':checked').val();
+          row['opto_far'] = $('#form_left select.opto_far').val();
+          row['opto_int'] = $('#form_left select.opto_int').val();
+          row['opto_close'] = $('#form_left select.opto_close').val();
+          delete row['add_int'];
+          delete row['add_close'];
+          if ((row['rx_origin']=='autorx')||(row['rx_origin']=='cyclo')||(row['rx_origin']=='dil')) {
+            row['glass_type'] = 'monofocal';
+            todelete = ['va_int', 'sph_int', 'cyl_int', 'axis_int', 'va_close' , 'sph_close','cyl_close', 'axis_close'];
+            for (items in todelete) {
+              delete row[todelete[items]];
+            };
+          } else {};
+          console.log(row);
+          post_rx_form(row,'POST','left');
+        })
+
+        $('#form_rx .submit').click(function(e){
+          var row = {};
+          e.preventDefault();
+          $('#form_rx').find('input[name]').each(function () {
+            row[$(this).attr('name')] = $(this).val();
+          });
+          row['laterality']= $('#form_rx input:radio[name=laterality]').filter(':checked').val();
+          row['rx_origin']= $('#form_rx input:radio[name=rx_origin]').filter(':checked').val();
+          row['glass_type']= $('#form_rx input:radio[name=glass_type]').filter(':checked').val();
+          row['opto_far'] = $('#form_rx select.opto_far').val();
+          row['opto_int'] = $('#form_rx select.opto_int').val();
+          row['opto_close'] = $('#form_rx select.opto_close').val();
+          delete row['add_int'];
+          delete row['add_close'];
+          if ((row['rx_origin']=='autorx')||(row['rx_origin']=='cyclo')||(row['rx_origin']=='dil')) {
+            row['glass_type'] = 'monofocal';
+            todelete = ['va_int', 'sph_int', 'cyl_int', 'axis_int', 'opto_int', 'opto_close', 'va_close' , 'sph_close','cyl_close', 'axis_close'];
+            for (items in todelete) {
+              delete row[todelete[items]];
+            };
+          } else {};
+          console.log(row);
+          post_rx_form(row,'PUT','listing');
+        })
+
+        function post_rx_form(row,req,lat) {
+          var API_URL = (req == 'POST' ? '{{=URL('api','rx/rx', scheme=True, host=True)}}/' : '{{=URL('api','rx/rx', scheme=True, host=True)}}/'+ row.id);
+          var mode = (req == 'POST' ? 'add':'edit');
+          $.ajax({
+            url: API_URL,
+            type: req == 'POST' ? 'post':'put',
+            contentType: 'application/json',
+            data: JSON.stringify(row),
+            success: function (text) {
+              id = text.slice(text.indexOf('id(')+3,text.indexOf(') ***'));
+              if ( id == 'None') {
+                showAlert('Unable to '+mode+' refraction','danger','alert_rx_'+lat);
+              } else {
+              $table_rx.bootstrapTable('refresh');
+              showAlert(titleCase(mode+'ed'),'success','alert_rx_'+lat);
+              };
+              $modal_rx.modal('hide');
+            },
+            error: function () {
+                showAlert('Unable to '+mode+' refraction!','alert_rx_'+lat);
+              }
+            });
+        }
+
+}); // function ready
 
 $('.btn-done').click(function() {
   set_task_done('{{=id_worklist}}')
 });
 
-$('#form_right .submit').click(function(e){
-  var row = {};
-  $('#form_right input.id_auth_user').val({{=id_auth_user}});
-  $('#form_right input.id_worklist').val({{=id_worklist}});
-  e.preventDefault();
-  $('#form_right').find('input[name]').each(function () {
-    row[$(this).attr('name')] = $(this).val();
-  });
-  row['laterality']='right';
-  row['rx_origin'] = $('#form_right input:radio[name=rx_origin]').filter(':checked').val();
-  row['glass_type'] = $('#form_right input:radio[name=glass_type]').filter(':checked').val();
-  row['opto_far'] = $('#form_right select.opto_far').val();
-  row['opto_int'] = $('#form_right select.opto_int').val();
-  row['opto_close'] = $('#form_right select.opto_close').val();
-  delete row['add_int'];
-  delete row['add_close'];
-  if ((row['rx_origin']=='autorx')||(row['rx_origin']=='cyclo')||(row['rx_origin']=='dil')) {
-    row['glass_type'] = 'monofocal';
-    todelete = ['opto_int','va_int', 'sph_int', 'cyl_int', 'axis_int', 'opto_close','va_close' , 'sph_close','cyl_close', 'axis_close'];
-    for (items in todelete) {
-      delete row[todelete[items]];
-    };
-  } else {};
-  console.log(row);
-  post_rx_form(row,'POST','right');
-})
-
-$('#form_left .submit').click(function(e){
-  var row = {};
-  $('#form_left input.id_auth_user').val({{=id_auth_user}});
-  $('#form_left input.id_worklist').val({{=id_worklist}});
-  e.preventDefault();
-  $('#form_left').find('input[name]').each(function () {
-    row[$(this).attr('name')] = $(this).val();
-  });
-  row['laterality']='left';
-  row['rx_origin'] = $('#form_left input:radio[name=rx_origin]').filter(':checked').val();
-  row['glass_type'] = $('#form_left input:radio[name=glass_type]').filter(':checked').val();
-  row['opto_far'] = $('#form_left select.opto_far').val();
-  row['opto_int'] = $('#form_left select.opto_int').val();
-  row['opto_close'] = $('#form_left select.opto_close').val();
-  delete row['add_int'];
-  delete row['add_close'];
-  if ((row['rx_origin']=='autorx')||(row['rx_origin']=='cyclo')||(row['rx_origin']=='dil')) {
-    row['glass_type'] = 'monofocal';
-    todelete = ['va_int', 'sph_int', 'cyl_int', 'axis_int', 'va_close' , 'sph_close','cyl_close', 'axis_close'];
-    for (items in todelete) {
-      delete row[todelete[items]];
-    };
-  } else {};
-  console.log(row);
-  post_rx_form(row,'POST','left');
-})
-
-
-function post_rx_form(row,req,lat) {
-  var API_URL = (req == 'POST' ? '{{=URL('api','rx/rx', scheme=True, host=True)}}/' : '{{=URL('api','tono/tono', scheme=True, host=True)}}/'+ row.id);
-  var mode = (req == 'POST' ? 'add':'edit');
-  $.ajax({
-    url: API_URL,
-    type: req == 'POST' ? 'post':'put',
-    contentType: 'application/json',
-    data: JSON.stringify(row),
-    success: function (text) {
-      id = text.slice(text.indexOf('id(')+3,text.indexOf(') ***'));
-      if ( id == 'None') {
-        showAlert('Unable to '+mode+' refraction','danger','alert_rx_'+lat);
-      } else {
-//      $table_rx.bootstrapTable('refresh');
-      showAlert(titleCase(mode+'ed'),'success','alert_rx_'+lat);
-      };
-//      $modal_rx.modal('hide');
+window.actionEvents_rx = {
+  'click .update': function (e,value,row) {
+    resetForm($('#form_rx'));
+    $('#form_rx input.id').val(row.id);
+    $('#form_rx input.id_auth_user').val(row.id_auth_user);
+    $('#form_rx input.id_worklist').val(row.id_worklist);
+    $('#form_rx input.va_far').val(row.sph_far);
+    $('#form_rx input.sph_far').val(row.sph_far);
+    $('#form_rx input.cyl_far').val(row.cyl_far);
+    $('#form_rx input.axis_far').val(row.axis_far);
+    $('#form_rx input.va_int').val(row.sph_int);
+    $('#form_rx input.sph_int').val(row.sph_int);
+    $('#form_rx input.cyl_int').val(row.cyl_int);
+    $('#form_rx input.axis_int').val(row.axis_int);
+    $('#form_rx input.va_close').val(row.sph_close);
+    $('#form_rx input.sph_close').val(row.sph_close);
+    $('#form_rx input.cyl_close').val(row.cyl_close);
+    $('#form_rx input.axis_close').val(row.axis_close);
+    $('#form_rx input.note').val(row.note);
+    $('#form_rx input.laterality_'+row.laterality).prop('checked',true).parent().addClass('active');
+    $('#form_rx input.glass_type_'+row.glass_type).prop('checked',true).parent().addClass('active');
+    $('#form_rx input.rx_origin_'+row.rx_origin).prop('checked',true).parent().addClass('active');
+    if ((row.glass_type == 'progressive')||(row.glass_type == 'bifocal')){
+      $('#form_rx input.monofocal, #form_rx input.autorx, #form_rx input.dil, #form_rx input.cyclo').prop('disabled', false).parent().removeAttr('disabled');
+      $('#form_rx .rx_inter, #form_rx .rx_close').show();
+    } else if (row.glass_type == 'degressive'){
+      $('#form_rx input.monofocal, #form_rx input.autorx, #form_rx input.dil, #form_rx input.cyclo').prop('disabled', false).parent().removeAttr('disabled');
+      $('#form_rx .rx_inter').show();
+      $('#form_rx .rx_close').hide();
+    } else {
+      $('#form_rx input.progressive, #form_rx input.bifocal, #form_rx input.degressive, #form_rx input.trial, #form_rx input.trial').prop('disabled', false).parent().removeAttr('disabled');
+      $('#form_rx .rx_inter, #form_rx .rx_close').hide();
+    }
+    $('#modal_rx').modal('show');
     },
-    error: function () {
-        showAlert('Unable to '+mode+' refraction!','alert_rx_'+lat);
+  'click .remove': function (e, value, row) {
+      if (confirm('Are you sure to delete this refraction?')) {
+          $.ajax({
+              url: '{{=URL('api','rx/rx', scheme=True, host=True)}}/'+ row.id,
+              type: 'delete',
+              success: function () {
+                  $table_rx.bootstrapTable('refresh');
+                  showAlert('Delete refraction successful!', 'success', 'alert_rx_listing');
+              },
+              error: function () {
+                  showAlert('Delete refraction error!', 'danger', 'alert_rx_listing');
+              }
+          })
       }
-    });
+  }
 }
+
 
 function set_task_done(id_worklist) {
   $.ajax({
@@ -829,6 +1234,55 @@ function set_task_done(id_worklist) {
     }
   });
 }
+
+// table_rx ***************************
+
+function responseHandler_rx(res) {
+  rx = res.content;
+  display = [];
+  $.each(rx, function(i) {
+    display.push({'id': rx[i].rx.id,
+     'patient': rx[i].patient.first_name+' '+rx[i].patient.last_name,
+     'id_auth_user': rx[i].rx.id_auth_user,
+     'id_worklist': rx[i].rx.id_worklist,
+     'id_auth_user': rx[i].rx.id_auth_user,
+     'rx_origin': rx[i].rx.rx_origin,
+     'glass_type': rx[i].rx.glass_type,
+     'va_far': rx[i].rx.va_far,
+     'sph_far': rx[i].rx.sph_far,
+     'cyl_far': rx[i].rx.cyl_far,
+     'axis_far': rx[i].rx.axis_far,
+     'va_int': rx[i].rx.va_int,
+     'sph_int': rx[i].rx.sph_int,
+     'cyl_int': rx[i].rx.cyl_int,
+     'axis_int': rx[i].rx.axis_int,
+     'va_close': rx[i].rx.va_close,
+     'sph_close': rx[i].rx.sph_close,
+     'cyl_close': rx[i].rx.cyl_close,
+     'axis_close': rx[i].rx.axis_close,
+     'note': rx[i].rx.note,
+     'created_by': rx[i].creator.first_name+' '+rx[i].creator.last_name,
+     'created_on': rx[i].rx.created_on,
+     'modified_by': rx[i].editor.first_name+' '+rx[i].editor.last_name,
+     'modified_on': rx[i].rx.modified_on,
+     'laterality': rx[i].rx.laterality
+    });
+  });
+  return display;
+}
+
+function queryParams(params) {
+    return {};
+}
+
+function actionFormatter_rx(value) {
+    return [
+        '<a class="update" href="javascript:" title="Edit"><i class="glyphicon glyphicon-pencil"></i></a>  ',
+        '<a class="remove" href="javascript:" title="Delete"><i class="glyphicon glyphicon-remove-circle"></i></a>'
+    ].join('');
+}
+
+// table_rx ****** END **********
 
 function setCounter (id_count, count_class,step, min, max, precision,sign) {
   $(id_count+' .btn.counter_down_'+count_class).click(function() {
