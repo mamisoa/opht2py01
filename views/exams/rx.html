@@ -607,7 +607,7 @@
   </div> <!--botheyes -->
 </div> <!-- container-fluid forms left/right -->
 
-<div class="container-fluid">
+<div class="container-fluid"> <!-- table_rx -->
   <div class="row">
     <div class="col-md-12">
       <div class="well well-sm recorded">
@@ -636,11 +636,11 @@
             <th data-field="laterality" data-title="Eye:" data-sortable="true">Eye:</th>
             <th data-field="rx_origin" data-title="Origin:" data-sortable="true">Origin:</th>
             <th data-field="glass_type" data-title="Type:" data-sortable="true">Type:</th>
-            <th data-field="sph_int" data-title="va_far:" data-sortable="true">va_far:</th>
+            <th data-field="va_far" data-title="va_far:" data-sortable="true">va_far:</th>
             <th data-field="sph_far" data-title="sph_far:" data-sortable="true">Sph_far:</th>
             <th data-field="cyl_far" data-title="cyl_far:" data-sortable="true">cyl_far:</th>
             <th data-field="axis_far" data-title="axis_far:" data-sortable="true">axis_far:</th>
-            <th data-field="cyl_int" data-title="va_close:" data-sortable="true">cyl_int:</th>
+            <th data-field="va_close" data-title="va_close:" data-sortable="true">va_close:</th>
             <th data-field="sph_close" data-title="sph_close:" data-sortable="true">Sph_close:</th>
             <th data-field="cyl_close" data-title="cyl_close:" data-sortable="true">cyl_close:</th>
             <th data-field="axis_close" data-title="axis_close:" data-sortable="true">axis_close:</th>
@@ -655,7 +655,6 @@
     </div>
   </div>
 </div>
-
 
 <div class="modal" id="modal_rx" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
   <div class="modal-dialog modal-lg"> <!-- fade not working with modal-lg ?? -->
@@ -927,7 +926,6 @@ if (status_flag == 'done') {
 
 $('input.rx_origin_autorx').prop('checked',true).parent().addClass('active');
 $('.glass_type, .rx_inter, .rx_close').hide()
-
 $('input.glass_type_mono').prop('checked',true).parent().addClass('active');
 
 setCounter('#form_right','sph_far',0.25,-30,30,2,true);
@@ -949,56 +947,6 @@ setSelect('.opto_far', opto_far, 'opto');
 setSelect('.opto_int', opto_int, 'opto');
 setSelect('.opto_close', opto_close, 'opto');
 
-
-$('#form_right input[name=rx_origin]').change(function(){
-  if (($('#form_right input[name=rx_origin]').filter(':checked').val()=='glass') || ($('#form_right input[name=rx_origin]').filter(':checked').val()=='trial')) {
-    $('#form_right .glass_type').show();
-  } else {
-    $('#form_right .glass_type, #form_right .rx_inter, #form_right .rx_close').hide();
-  };
-});
-
-$('#form_right input[name=glass_type]').change(function(){
-  if (($('#form_right input[name=glass_type]').filter(':checked').val()=='bifocal') || ($('#form_right input[name=glass_type]').filter(':checked').val()=='progressive')) {
-    $('#form_right .rx_inter, #form_right .rx_close').show();
-  } else if ($('#form_right input[name=glass_type]').filter(':checked').val()=='degressive') {
-    $('#form_right .rx_inter').show();
-    $('#form_right .rx_close').hide();
-  } else {
-    $('#form_right .rx_inter, #form_right .rx_close').hide();
-  };
-});
-
-$('#form_left input[name=rx_origin]').change(function(){
-  if (($('#form_left input[name=rx_origin]').filter(':checked').val()=='glass') || ($('#form_left input[name=rx_origin]').filter(':checked').val()=='trial')) {
-    $('#form_left .glass_type').show();
-  } else {
-    $('#form_left .glass_type, #form_left .rx_inter, #form_left .rx_close').hide();
-  };
-});
-
-$('#form_left input[name=glass_type]').change(function(){
-  if (($('#form_left input[name=glass_type]').filter(':checked').val()=='bifocal') || ($('#form_left input[name=glass_type]').filter(':checked').val()=='progressive')) {
-    $('#form_left .rx_inter, #form_left .rx_close').show();
-  } else if ($('#form_left input[name=glass_type]').filter(':checked').val()=='degressive') {
-    $('#form_left .rx_inter').show();
-    $('#form_left .rx_close').hide();
-  } else {
-    $('#form_left .rx_inter, #form_left .rx_close').hide();
-  };
-});
-
-$('#form_right input.add_close').on( 'input', function (){
-  add = parseFloat($('#form_right input.sph_far').val())+parseFloat($('#form_right input.add_close').val());
-  add = round2dec(add);
-  $('#form_right input.sph_close').val(add);
-})
-$('#form_right input.add_int').on( 'input', function (){
-  add = parseFloat($('#form_right input.sph_far').val())+parseFloat($('#form_right input.add_int').val());
-  add = round2dec(add);
-  $('#form_right input.sph_int').val(add);
-})
-
 setCounter('#form_left','sph_far',0.25,-30,30,2,true);
 setCounter('#form_left','cyl_far',0.25,-11,11,2,true);
 setCounter('#form_left','axis_far',5,0,180,0,false);
@@ -1014,17 +962,6 @@ setCounter('#form_left','axis_close',5,0,180,0,false);
 setCounter('#form_left','va_close',0.5,1,8,2,false);
 setCounter('#form_left','add_close',0.25,0,10,2,true);
 
-$('#form_left input.add_close').on( 'input', function (){
-  add = parseFloat($('#form_left input.sph_far').val())+parseFloat($('#form_left input.add_close').val());
-  add = round2dec(add);
-  $('#form_left input.sph_close').val(add);
-})
-$('#form_left input.add_int').on( 'input', function (){
-  add = parseFloat($('#form_left input.sph_far').val())+parseFloat($('#form_left input.add_int').val());
-  add = round2dec(add);
-  $('#form_left input.sph_int').val(add);
-})
-
 setCounter('#form_rx','sph_far',0.25,-30,30,2,true);
 setCounter('#form_rx','cyl_far',0.25,-11,11,2,true);
 setCounter('#form_rx','axis_far',5,0,180,0,false);
@@ -1039,6 +976,52 @@ setCounter('#form_rx','cyl_close',0.25,-11,11,2,true);
 setCounter('#form_rx','axis_close',5,0,180,0,false);
 setCounter('#form_rx','va_close',0.5,1,8,2,false);
 setCounter('#form_rx','add_close',0.25,0,10,2,true);
+
+checkOrigin('#form_right');
+checkOrigin('#form_left');
+checkOrigin('#form_rx');
+
+checkGlass('#form_right');
+checkGlass('#form_left');
+checkGlass('#form_rx');
+
+addition('#form_right','close');
+addition('#form_right','int');
+
+addition('#form_left','close');
+addition('#form_left','int');
+
+function checkOrigin(id) {
+  $(id+' input[name=rx_origin]').change(function(){
+    if (($(id+' input[name=rx_origin]').filter(':checked').val()=='glass') || ($(id+' input[name=rx_origin]').filter(':checked').val()=='trial')) {
+      $(id+' .glass_type').show();
+    } else {
+      $(id+' .glass_type, '+id+' .rx_inter,'+id+' .rx_close').hide();
+    };
+  });
+}
+
+function checkGlass(id) {
+  $(id+' input[name=glass_type]').change(function(){
+    if (($(id+' input[name=glass_type]').filter(':checked').val()=='bifocal') || ($(id+' input[name=glass_type]').filter(':checked').val()=='progressive')) {
+      $(id+' .rx_inter,'+id+' .rx_close').show();
+    } else if ($(id+' input[name=glass_type]').filter(':checked').val()=='degressive') {
+      $(id+' .rx_inter').show();
+      $(id+' .rx_close').hide();
+    } else {
+      $(id+' .rx_inter,'+id+' .rx_close').hide();
+    };
+  });
+}
+
+function addition(id,distance){
+  $(id+' input.add_'+distance).on( 'input', function (){
+    add = parseFloat($(id+' input.sph_far').val())+parseFloat($(id+' input.add_'+distance).val());
+    add = round2dec(add);
+    $(id+' input.sph_'+distance).val(add);
+    $(id+' input.cyl_'+distance).val($(id+' input.cyl_far').val());
+  })
+}
 
 // SETTINGS (END) **********************************************
 
@@ -1061,13 +1044,18 @@ $(function() {
           row['opto_close'] = $('#form_right select.opto_close').val();
           delete row['add_int'];
           delete row['add_close'];
-          if ((row['rx_origin']=='autorx')||(row['rx_origin']=='cyclo')||(row['rx_origin']=='dil')) {
+          if ((row['rx_origin']=='autorx')||(row['rx_origin']=='cyclo')||(row['rx_origin']=='dil')||(row['glass_type']=='monofocal')) {
             row['glass_type'] = 'monofocal';
-            todelete = ['opto_int','va_int', 'sph_int', 'cyl_int', 'axis_int', 'opto_close','va_close' , 'sph_close','cyl_close', 'axis_close'];
+            todelete = ['va_int', 'sph_int', 'cyl_int', 'axis_int', 'va_close' , 'sph_close','cyl_close', 'axis_close', 'opto_int', 'opto_close'];
             for (items in todelete) {
               delete row[todelete[items]];
             };
-          } else {};
+          } else if (row['glass_type']=='degressive') {
+            todelete = ['va_close' , 'sph_close','cyl_close', 'axis_close', 'opto_close'];
+            for (items in todelete) {
+              delete row[todelete[items]];
+            };
+          };
           console.log(row);
           post_rx_form(row,'POST','right');
         })
@@ -1088,13 +1076,18 @@ $(function() {
           row['opto_close'] = $('#form_left select.opto_close').val();
           delete row['add_int'];
           delete row['add_close'];
-          if ((row['rx_origin']=='autorx')||(row['rx_origin']=='cyclo')||(row['rx_origin']=='dil')) {
+          if ((row['rx_origin']=='autorx')||(row['rx_origin']=='cyclo')||(row['rx_origin']=='dil')||(row['glass_type']=='monofocal')) {
             row['glass_type'] = 'monofocal';
-            todelete = ['va_int', 'sph_int', 'cyl_int', 'axis_int', 'va_close' , 'sph_close','cyl_close', 'axis_close'];
+            todelete = ['va_int', 'sph_int', 'cyl_int', 'axis_int', 'va_close' , 'sph_close','cyl_close', 'axis_close', 'opto_int', 'opto_close'];
             for (items in todelete) {
               delete row[todelete[items]];
             };
-          } else {};
+          } else if (row['glass_type']=='degressive') {
+            todelete = ['va_close' , 'sph_close','cyl_close', 'axis_close', 'opto_close'];
+            for (items in todelete) {
+              delete row[todelete[items]];
+            };
+          };
           console.log(row);
           post_rx_form(row,'POST','left');
         })
@@ -1113,13 +1106,18 @@ $(function() {
           row['opto_close'] = $('#form_rx select.opto_close').val();
           delete row['add_int'];
           delete row['add_close'];
-          if ((row['rx_origin']=='autorx')||(row['rx_origin']=='cyclo')||(row['rx_origin']=='dil')) {
+          if ((row['rx_origin']=='autorx')||(row['rx_origin']=='cyclo')||(row['rx_origin']=='dil')||(row['glass_type']=='monofocal')) {
             row['glass_type'] = 'monofocal';
-            todelete = ['va_int', 'sph_int', 'cyl_int', 'axis_int', 'opto_int', 'opto_close', 'va_close' , 'sph_close','cyl_close', 'axis_close'];
+            todelete = ['va_int', 'sph_int', 'cyl_int', 'axis_int', 'va_close' , 'sph_close','cyl_close', 'axis_close', 'opto_int', 'opto_close'];
             for (items in todelete) {
               delete row[todelete[items]];
             };
-          } else {};
+          } else if (row['glass_type']=='degressive') {
+            todelete = ['va_close' , 'sph_close','cyl_close', 'axis_close', 'opto_close'];
+            for (items in todelete) {
+              delete row[todelete[items]];
+            };
+          };
           console.log(row);
           post_rx_form(row,'PUT','listing');
         })
@@ -1141,6 +1139,9 @@ $(function() {
               showAlert(titleCase(mode+'ed'),'success','alert_rx_'+lat);
               };
               $modal_rx.modal('hide');
+              resetForm('#form_right');
+              resetForm('#form_left');
+              resetForm('#form_rx');
             },
             error: function () {
                 showAlert('Unable to '+mode+' refraction!','alert_rx_'+lat);
@@ -1156,22 +1157,37 @@ $('.btn-done').click(function() {
 
 window.actionEvents_rx = {
   'click .update': function (e,value,row) {
-    resetForm($('#form_rx'));
+    resetForm('#form_rx');
     $('#form_rx input.id').val(row.id);
     $('#form_rx input.id_auth_user').val(row.id_auth_user);
     $('#form_rx input.id_worklist').val(row.id_worklist);
-    $('#form_rx input.va_far').val(row.sph_far);
-    $('#form_rx input.sph_far').val(row.sph_far);
-    $('#form_rx input.cyl_far').val(row.cyl_far);
+    $('#form_rx input.va_far').val(row.va_far);
+    $('#form_rx input.sph_far').val(round2dec(row.sph_far));
+    $('#form_rx input.cyl_far').val(round2dec(row.cyl_far));
     $('#form_rx input.axis_far').val(row.axis_far);
-    $('#form_rx input.va_int').val(row.sph_int);
-    $('#form_rx input.sph_int').val(row.sph_int);
-    $('#form_rx input.cyl_int').val(row.cyl_int);
+    $('#form_rx input.va_int').val(row.va_int);
+    $('#form_rx input.sph_int').val(round2dec(row.sph_int));
+    $('#form_rx input.cyl_int').val(round2dec(row.cyl_int));
     $('#form_rx input.axis_int').val(row.axis_int);
-    $('#form_rx input.va_close').val(row.sph_close);
-    $('#form_rx input.sph_close').val(row.sph_close);
-    $('#form_rx input.cyl_close').val(row.cyl_close);
+    $('#form_rx input.va_close').val(row.va_close);
+    $('#form_rx input.sph_close').val(round2dec(row.sph_close));
+    $('#form_rx input.cyl_close').val(round2dec(row.cyl_close));
     $('#form_rx input.axis_close').val(row.axis_close);
+    test_add_int = parseFloat(row.sph_int)-parseFloat(row.sph_far);
+    test_add_close = parseFloat(row.sph_close)-parseFloat(row.sph_far);
+    if ($.isNumeric(test_add_close) == false) {
+      $('#form_rx input.add_close').val('0.00');
+    } else {
+      $('#form_rx input.add_close').val(round2dec(test_add_close));
+    }
+    if ($.isNumeric(test_add_int) == false) {
+      $('#form_rx input.add_int').val('0.00');
+    } else {
+      $('#form_rx input.add_int').val(round2dec(test_add_int));
+    }
+    $('#form_rx select.opto_far').val(row.opto_far);
+    $('#form_rx select.opto_int').val(row.opto_int);
+    $('#form_rx select.opto_close').val(row.opto_close);
     $('#form_rx input.note').val(row.note);
     $('#form_rx input.laterality_'+row.laterality).prop('checked',true).parent().addClass('active');
     $('#form_rx input.glass_type_'+row.glass_type).prop('checked',true).parent().addClass('active');
@@ -1205,7 +1221,6 @@ window.actionEvents_rx = {
       }
   }
 }
-
 
 function set_task_done(id_worklist) {
   $.ajax({
@@ -1260,6 +1275,9 @@ function responseHandler_rx(res) {
      'sph_close': rx[i].rx.sph_close,
      'cyl_close': rx[i].rx.cyl_close,
      'axis_close': rx[i].rx.axis_close,
+     'opto_far': rx[i].rx.opto_far,
+     'opto_int': rx[i].rx.opto_int,
+     'opto_close': rx[i].rx.opto_close,
      'note': rx[i].rx.note,
      'created_by': rx[i].creator.first_name+' '+rx[i].creator.last_name,
      'created_on': rx[i].rx.created_on,
@@ -1296,15 +1314,23 @@ function setCounter (id_count, count_class,step, min, max, precision,sign) {
     if (count_class == 'add_close') {
       add = set + parseFloat($(id_count+' input.sph_far').val());
       $(id_count+' input.sph_close').val(round2dec(add));
+      $(id_count+' input.cyl_close').val($(id_count+' input.cyl_far').val());
     } else if (count_class == 'add_int') {
       add = set + parseFloat($(id_count+' input.sph_far').val());
       $(id_count+' input.sph_int').val(round2dec(add));
+      $(id_count+' input.cyl_int').val($(id_count+' input.cyl_far').val());
     } else if (count_class == 'sph_far') {
       add_int = set + parseFloat($(id_count+' input.add_int').val());
       $(id_count+' input.sph_int').val(round2dec(add_int));
       add_close = set + parseFloat($(id_count+' input.add_close').val());
       $(id_count+' input.sph_close').val(round2dec(add_close));
-    }
+    } else if (count_class == 'cyl_far') {
+      $(id_count+' input.cyl_int').val($(id_count+' input.cyl_far').val());
+      $(id_count+' input.cyl_close').val($(id_count+' input.cyl_far').val());
+    } else if (count_class == 'axis_far') {
+      $(id_count+' input.axis_int').val($(id_count+' input.axis_far').val());
+      $(id_count+' input.axis_close').val($(id_count+' input.axis_far').val());
+    };
   });
 
   $(id_count+' .btn.counter_up_'+count_class).click(function() {
@@ -1318,15 +1344,23 @@ function setCounter (id_count, count_class,step, min, max, precision,sign) {
     if (count_class == 'add_close') {
       add = set + parseFloat($(id_count+' input.sph_far').val());
       $(id_count+' input.sph_close').val(round2dec(add));
+      $(id_count+' input.cyl_close').val($(id_count+' input.cyl_far').val());
     } else if (count_class == 'add_int') {
       add = set + parseFloat($(id_count+' input.sph_far').val());
       $(id_count+' input.sph_int').val(round2dec(add));
+      $(id_count+' input.cyl_int').val($(id_count+' input.cyl_far').val());
     } else if (count_class == 'sph_far') {
       add_int = set + parseFloat($(id_count+' input.add_int').val());
       $(id_count+' input.sph_int').val(round2dec(add_int));
       add_close = set + parseFloat($(id_count+' input.add_close').val());
       $(id_count+' input.sph_close').val(round2dec(add_close));
-    }
+    } else if (count_class == 'cyl_far') {
+      $(id_count+' input.cyl_int').val($(id_count+' input.cyl_far').val());
+      $(id_count+' input.cyl_close').val($(id_count+' input.cyl_far').val());
+    } else if (count_class == 'axis_far') {
+      $(id_count+' input.axis_int').val($(id_count+' input.axis_far').val());
+      $(id_count+' input.axis_close').val($(id_count+' input.axis_far').val());
+    };
   });
 }
 
@@ -1355,10 +1389,26 @@ function showAlert(title, type, div) {
     }, 5000);
 }
 
-function resetForm($form) {
-  $form.find('input:text, input:password, input:file, select, textarea').val('');
-  $form.find('input:radio, input:checkbox')
+function resetForm(form) {
+  $(form).find('input:text, input:password, input:file, select, textarea').val('');
+  $(form).find('input:radio, input:checkbox')
      .removeAttr('checked').removeAttr('selected').parent().removeClass('active');
+  default_input = { 'va_far': '1.0', 'sph_far': '0.00', 'cyl_far': '0.00', 'axis_far': '180',
+              'va_int': '1.0', 'sph_int': '0.00', 'cyl_int': '0.00', 'axis_int': '180',
+              'va_close': '1.0', 'sph_close': '0.00', 'cyl_close': '0.00', 'axis_close': '180',
+              'add_int': '0.00', 'add_close': '0.00', 'note': ''
+            };
+  default_select = { 'opto_far':'letters', 'opto_int':'parinaud', 'opto_close':'parinaud' };
+  default_radio = { 'rx_origin': 'autorx', 'glass_type': 'monofocal'}
+  $.each(default_input, function(key,value){
+    $(form+' input.'+key).val(value);
+  });
+  $.each(default_select, function(key,value){
+    $(form+' select.'+key).val(value);
+  });
+  $.each(default_radio, function(key,value){
+    $(form+' input.'+key+'_'+value).prop('checked',true).parent().addClass('active');
+  });
 }
 
 function showAlert(title, type, div) {
