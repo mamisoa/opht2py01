@@ -87,8 +87,9 @@
 
 <script type="text/javascript">
 
-get_exams({{=id_auth_user}});
 var rows = [];
+get_exams({{=id_auth_user}});
+
 
 function get_exams(id) {
   var API_URL = '{{=URL('api','consult', scheme=True, host=True)}}?id_auth_user='+id;
@@ -100,6 +101,11 @@ function get_exams(id) {
     success: function (data) {
       console.log(data);
       rows = data;
+      for row in rows {
+        for tono in rows[row] {
+
+        }
+      }
       },
     error: function () {
       console.log('error getting exams');
