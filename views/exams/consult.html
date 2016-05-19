@@ -101,11 +101,20 @@ function get_exams(id) {
     success: function (data) {
       console.log(data);
       rows = data;
-      for row in rows {
-        for tono in rows[row] {
-
-        }
-      }
+      for (i in rows) {
+        for (exams in rows[i]) { // rows[0] = {tono: Array[4]}
+          // console.log('rows['+i+']['+exams+']')
+          // console.log(rows[i][exams]);
+          for (x in rows[i][exams]) {
+            // console.log('rows['+i+']['+exams+']['+x+']');
+            // console.log(rows[i][exams][x]['rx']);
+            for (m in rows[i][exams][x]) {
+              console.log('rows['+i+']['+exams+']['+x+']'+'['+m+']');
+              console.log(rows[i][exams][x][m]);
+            }
+          }
+        };
+      };
       },
     error: function () {
       console.log('error getting exams');
