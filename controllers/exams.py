@@ -62,3 +62,8 @@ def rx():
     opto_int = XML(rows2json('content',db(db.optotype.distance == 'intermediate').select(db.optotype.opto)))
     opto_close = XML(rows2json('content',db(db.optotype.distance == 'close').select(db.optotype.opto)))
     return locals()
+
+def consult():
+    id_auth_user = request.vars.id_auth_user
+    id_worklist = request.vars.id_worklist
+    return locals()

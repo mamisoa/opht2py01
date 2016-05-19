@@ -1,0 +1,110 @@
+{{patientname = db(db.auth_user.id == id_auth_user).select(db.auth_user.first_name, db.auth_user.last_name, db.auth_user.dob_pid7).first()
+  patient = patientname.first_name + ' ' + patientname.last_name
+  dob = patientname.dob_pid7
+  worklistid = db(db.worklist.id == id_worklist).select(db.worklist.message_unique_id_MSH10, db.exam2do_OBR4.exam_description, db.worklist.requested_time_OBR6, db.worklist.status_flag, left=[db.exam2do_OBR4.on(db.exam2do_OBR4.id==db.worklist.exam2do_OBR4)]).first()
+  exam = worklistid.exam2do_OBR4.exam_description
+  timeslot = worklistid.worklist.requested_time_OBR6
+  task = worklistid.worklist.message_unique_id_MSH10
+  status = XML(worklistid.worklist.status_flag) }}
+{{pass}}
+
+{{extend 'layout.html'}}
+
+{{block head}}
+<!-- https://github.com/silviomoreto/bootstrap-select.git -->
+<!-- bootstrap-table -->
+<link rel="stylesheet" href="{{=URL('static','css/bootstrap-table.css')}}" />
+<script src="{{=URL('static','js/bootstrap-table/bootstrap-table.js')}}"></script>
+<script src="{{=URL('static','js/bootstrap-table/locales/bootstrap-table-fr-BE.min.js')}}"></script>
+<script src="{{=URL('static','js/bootstrap-select/js/bootstrap-select.min.js')}}"></script>
+<link rel="stylesheet" href="{{=URL('static','js/bootstrap-select/css/bootstrap-select.min.css')}}" />
+<style>
+  .btn-back {
+    margin: 10px;
+  }
+
+  .btn-done {
+    margin-top: 0px;
+    margin-left: 5px;
+    margin-bottom: 3px;
+  }
+
+  .task {
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
+
+  .col-centered {
+      float: none;
+      margin: 0 auto;
+  }
+
+  h3, h1 {
+    text-align: center;
+  }
+
+  .consult_content {
+    border:1px solid grey;
+  }
+</style>
+{{end}}
+
+<div class="container-fluid"> <!--header/title -->
+  <div class="row"> <!--header -->
+    <div class="col-sm-4">
+      <a href="{{=URL('default','home', scheme=True, host=True )}}" class="btn btn-info btn-back" role="button">Back</a>
+    </div>
+    <div class="col-sm-4 patient">
+        <h1>Patient <strong>{{=patient}}</strong> <small>{{=dob}}</small></h1>
+    </div>
+    <div class="col-sm-4">
+      <div class="pull-right task">
+        <span class="timeslot well">
+          <span>Task planned for <em>{{=timeslot}}</em></span>
+        </span>
+        <span class="btn-done">
+          <button type="button" class="btn-info btn"><span class="icon-done"></span><span class="text-done">Set to done</span></button>
+        </span>
+      </div> <!--task -->
+    </div>
+  </div> <!--header -->
+  <div class="row"> <!-- title -->
+    <div class="col-sm-12">
+      <div class="well well-sm">
+        <h3>{{=exam.upper()}}</h3>
+      </div>
+    </div>
+  </div>
+</div> <!--header/title -->
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12 consult_content">
+      test
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+
+get_exams({{=id_auth_user}});
+var rows = [];
+
+function get_exams(id) {
+  var API_URL = '{{=URL('api','consult', scheme=True, host=True)}}?id_auth_user='+id;
+  $.ajax({
+    url: API_URL,
+    type: 'GET',
+    dataType: 'json',
+    contentType: 'application/json',
+    success: function (data) {
+      console.log(data);
+      rows = data;
+      },
+    error: function () {
+      console.log('error getting exams');
+      }
+  });
+  }
+
+</script>

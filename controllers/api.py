@@ -324,3 +324,55 @@ def rx():
         else:
             raise HTTP(400)
     return locals()
+
+@request.restful()
+def consult():
+    response.view = 'generic.json'
+    def GET(**vars):
+        patient = db.auth_user.with_alias('patient')
+        creator = db.auth_user.with_alias('creator')
+        editor = db.auth_user.with_alias('editor')
+        db.tono.created_by.readable = db.tono.modified_by.readable = db.tono.created_on.readable = db.tono.modified_on.readable = db.tono.id_auth_user.readable = True
+        db.rx.created_by.readable = db.rx.modified_by.readable = db.rx.created_on.readable = db.rx.modified_on.readable = db.rx.id_auth_user.readable = True
+        db.topography.created_by.readable = db.topography.modified_by.readable = db.topography.created_on.readable = db.topography.modified_on.readable = db.topography.id_auth_user.readable = True
+        rows_tono = db(db.tono.id_auth_user == request.vars.id_auth_user).select(db.tono.tonometry, db.tono.pachymetry, db.tono.techno, db.tono.laterality,
+            creator.first_name, creator.last_name, db.tono.created_on,
+            patient.first_name, patient.last_name,
+            left=[patient.on(patient.id==db.tono.id_auth_user),
+            creator.on(creator.id==db.tono.created_by)
+            ])
+        rows_topo = db(db.topography.id_auth_user == request.vars.id_auth_user).select(db.topography.k1, db.topography.axis1, db.topography.k2, db.topography.axis2, db.topography.laterality,
+            creator.first_name, creator.last_name, db.topography.created_on,
+            patient.first_name, patient.last_name,
+            left=[patient.on(patient.id==db.topography.id_auth_user),
+            creator.on(creator.id==db.topography.created_by)
+            ])
+        rows_rx = db(db.rx.id_auth_user == request.vars.id_auth_user).select(db.rx.va_far, db.rx.sph_far, db.rx.cyl_far, db.rx.axis_far,
+            db.rx.va_close, db.rx.sph_close, db.rx.cyl_close, db.rx.axis_close,
+            db.rx.rx_origin, db.rx.glass_type,
+            creator.first_name, creator.last_name, db.rx.created_on,
+            patient.first_name, patient.last_name,
+            left=[patient.on(patient.id==db.rx.id_auth_user),
+            creator.on(creator.id==db.rx.created_by)
+            ])
+        data = '['+rows2json('tono',rows_tono)+','+rows2json('topo',rows_topo)+','+rows2json('rx',rows_rx)+']'
+        return data
+    def DELETE(tablename,record_id):
+        if tablename=='consult':
+            db(db.consult.id == record_id).delete()
+            return 'Table: '+ tablename +' *** Deleted row id('+record_id+') *** \r\n'
+        else:
+            raise HTTP(400)
+    def PUT(tablename,record_id,**vars):
+        if tablename == 'consult':
+            db(db.consult._id==record_id).update(**vars)
+            return 'Table: '+ tablename +' *** Updated row id('+record_id+') ***  \r\n'
+        else:
+            raise HTTP(400)
+    def POST(tablename,**vars):
+        if tablename == 'consult':
+            ret = db.consult.validate_and_insert(**vars)
+            return 'Table: '+ tablename +' *** Added row id('+ str(ret.id) + ') *** ' + 'Error code : ' + str(ret.errors) + ' *** \r\n'
+        else:
+            raise HTTP(400)
+    return locals()
