@@ -57,6 +57,40 @@
   color: orange;
 }
 
+.left_mes {
+  text-align: right;
+}
+
+.left_mes, .right_mes, #objective {
+  border: 1px solid grey;
+}
+
+.badge-rx, .badge-tono, .badge-kerato {
+ margin-right: 3px;
+ margin-left: 3px;
+}
+
+.badge-rx, .badge-kerato {
+  background-color: #2f2d8e;
+}
+
+.badge-kerato {
+  color: #2f2d8e;
+  border: 1px solid #2f2d8e;
+  background-color: transparent;
+}
+
+.badge-air {
+  background-color: rgb(117, 195, 203);
+}
+
+.badge-apla {
+  background-color: #2e09a8;
+}
+
+.label-as-badge {
+    border-radius: 1em;
+}
 
 </style>
 {{end}}
@@ -89,17 +123,22 @@
   </div>
 </div> <!--header/title -->
 
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-md-12 consult_content">
+<div class="container">
+  <div class="row" id="objective">
+    <div class="col-md-6 left_mes">
     </div>
-  </div>
+    <div class="col-md-6 right_mes">
+    </div>
 </div>
 
 <script type="text/javascript">
 
 var rows = [];
 get_exams({{=id_auth_user}});
+
+$(function() {
+  $("body").tooltip({ selector: '[data-toggle=tooltip]' });
+}); // get ready function
 
 function get_exams(id) {
   var API_URL = '{{=URL('api','consult', scheme=True, host=True)}}?id_auth_user='+id;
@@ -119,17 +158,23 @@ function get_exams(id) {
             console.log('rows['+i+']['+exams+']['+x+']');
             console.log(rows[i][exams][x]);
             if (exams == 'tono') {
-              lat = (rows[i][exams][x]['tono']['laterality'][0] == 'right'? 'righteye':'lefteye');
+              side = rows[i][exams][x]['tono']['laterality'][0];
+              lat = (side == 'right'? 'right':'left');
+              contralat = (side == 'right'? 'left':'right');
               console.log(lat);
-              $('.consult_content').append('<div class="'+lat+'">TIO('+rows[i][exams][x]['tono']['techno'][0]+')'+rows[i][exams][x]['tono']['tonometry']+'mmHg @'+rows[i][exams][x]['tono']['created_on']+'</div>');
+              $('#objective .'+lat+'_mes').append('<div class="'+'"><span class="badge badge-tono pull-'+contralat+'">TIO</span><span class="badge badge-'+rows[i][exams][x]['tono']['techno'][0]+' pull-'+contralat+'">'+rows[i][exams][x]['tono']['techno'][0]+'</span>'+rows[i][exams][x]['tono']['tonometry']+'mmHg @'+rows[i][exams][x]['tono']['created_on']+'</div>');
             } else if (exams =='topo') {
-              lat = (rows[i][exams][x]['topography']['laterality'][0] == 'right'? 'righteye':'lefteye');
+              side = rows[i][exams][x]['topography']['laterality'][0];
+              lat = ( side == 'right'? 'right':'left');
+              contralat = (side == 'right'? 'left':'right');
               console.log(lat);
-              $('.consult_content').append('<div class="'+lat+'">K1='+rows[i][exams][x]['topography']['k1']+'mm@'+rows[i][exams][x]['topography']['axis1']+' K2='+rows[i][exams][x]['topography']['k2']+'mm@'+rows[i][exams][x]['topography']['axis2']+' @'+rows[i][exams][x]['topography']['created_on']+'</div>');
+              $('#objective .'+lat+'_mes').append('<div data-toggle="tooltip" data-placement="'+side+'" title="'+rows[i][exams][x]['topography']['created_on']+'" class="'+'"><span class="badge badge-kerato pull-'+contralat+'">kerato</span> K1='+rows[i][exams][x]['topography']['k1']+'mm@'+rows[i][exams][x]['topography']['axis1']+' K2='+rows[i][exams][x]['topography']['k2']+'mm@'+rows[i][exams][x]['topography']['axis2']+'</div>');
             } else if (exams =='rx') {
-              lat = (rows[i][exams][x]['rx']['laterality'][0] == 'right'? 'righteye':'lefteye');
+              side = rows[i][exams][x]['rx']['laterality'][0];
+              lat = ( side == 'right'? 'right':'left');
+              contralat = (side == 'right'? 'left':'right');
               console.log(lat);
-              $('.consult_content').append('<div class="'+lat+'">Rx from <strong>'+rows[i][exams][x]['rx']['rx_origin'][0]+'</strong> '+round2dec(rows[i][exams][x]['rx']['sph_far'])+'('+round2dec(rows[i][exams][x]['rx']['cyl_far'])+' x'+rows[i][exams][x]['rx']['axis_far']+'°) @'+rows[i][exams][x]['rx']['created_on']+'</div>');
+              $('#objective .'+lat+'_mes').append('<div data-toggle="tooltip" data-placement="'+side+'" title="'+rows[i][exams][x]['rx']['created_on']+'" class="'+'"><span class="badge badge-rx pull-'+contralat+'">'+rows[i][exams][x]['rx']['rx_origin'][0]+'</span> '+round2dec(rows[i][exams][x]['rx']['sph_far'])+'('+round2dec(rows[i][exams][x]['rx']['cyl_far'])+' x'+rows[i][exams][x]['rx']['axis_far']+')</div>');
             };
             for (m in rows[i][exams][x]) {
             //console.log('rows['+i+']['+exams+']['+x+']'+'['+m+']');
