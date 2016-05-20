@@ -349,7 +349,7 @@ def consult():
             ])
         rows_rx = db(db.rx.id_auth_user == request.vars.id_auth_user).select(db.rx.va_far, db.rx.sph_far, db.rx.cyl_far, db.rx.axis_far,
             db.rx.va_close, db.rx.sph_close, db.rx.cyl_close, db.rx.axis_close,
-            db.rx.rx_origin, db.rx.glass_type,
+            db.rx.rx_origin, db.rx.glass_type, db.rx.laterality,
             creator.first_name, creator.last_name, db.rx.created_on,
             patient.first_name, patient.last_name,
             left=[patient.on(patient.id==db.rx.id_auth_user),
