@@ -327,28 +327,40 @@ def rx():
 
 @request.restful()
 def consult():
+    from datetime import datetime
     response.view = 'generic.json'
     def GET(**vars):
         patient = db.auth_user.with_alias('patient')
         creator = db.auth_user.with_alias('creator')
         editor = db.auth_user.with_alias('editor')
+        # dateFrom = datetime.strptime(request.vars.created_on, '%Y-%m-%d %H:%M:%S').replace(hour=0,minute=0,second=0)
+        # dateTo = (dateFrom.replace(hour=23,minute=59,second=59)).strftime('%Y-%m-%d %H:%M:%S')
+        # dateFrom = dateFrom.strftime('%Y-%m-%d %H:%M:%S')
+        dateFrom = datetime.strptime(request.vars.dateFrom,'%Y-%m-%d %H:%M:%S')
+        dateTo =  datetime.strptime(request.vars.dateTo,'%Y-%m-%d %H:%M:%S')
+        if dateFrom > dateTo:
+            raise HTTP(400)
+        else:
+            dateFrom = dateFrom.strftime('%Y-%m-%d %H:%M:%S')
+            dateTo = dateTo.strftime('%Y-%m-%d %H:%M:%S')
         db.tono.created_by.readable = db.tono.modified_by.readable = db.tono.created_on.readable = db.tono.modified_on.readable = db.tono.id_auth_user.readable = True
         db.rx.created_by.readable = db.rx.modified_by.readable = db.rx.created_on.readable = db.rx.modified_on.readable = db.rx.id_auth_user.readable = True
         db.topography.created_by.readable = db.topography.modified_by.readable = db.topography.created_on.readable = db.topography.modified_on.readable = db.topography.id_auth_user.readable = True
-        rows_tono = db(db.tono.id_auth_user == request.vars.id_auth_user).select(db.tono.tonometry, db.tono.pachymetry, db.tono.techno, db.tono.laterality,
+        rows_tono = db((db.tono.id_auth_user == request.vars.id_auth_user)&(db.tono.created_on > dateFrom)&(db.tono.created_on <= dateTo) ).select(db.tono.tonometry, db.tono.pachymetry, db.tono.techno, db.tono.laterality,
             creator.first_name, creator.last_name, db.tono.created_on,
             patient.first_name, patient.last_name,
             left=[patient.on(patient.id==db.tono.id_auth_user),
             creator.on(creator.id==db.tono.created_by)
             ])
-        rows_topo = db(db.topography.id_auth_user == request.vars.id_auth_user).select(db.topography.k1, db.topography.axis1, db.topography.k2, db.topography.axis2, db.topography.laterality,
+        rows_topo = db((db.topography.id_auth_user == request.vars.id_auth_user)&(db.topography.created_on > dateFrom)&(db.topography.created_on <= dateTo)).select(db.topography.k1, db.topography.axis1, db.topography.k2, db.topography.axis2, db.topography.laterality,
             creator.first_name, creator.last_name, db.topography.created_on,
             patient.first_name, patient.last_name,
             left=[patient.on(patient.id==db.topography.id_auth_user),
             creator.on(creator.id==db.topography.created_by)
             ])
-        rows_rx = db(db.rx.id_auth_user == request.vars.id_auth_user).select(db.rx.va_far, db.rx.sph_far, db.rx.cyl_far, db.rx.axis_far,
-            db.rx.va_close, db.rx.sph_close, db.rx.cyl_close, db.rx.axis_close,
+        rows_rx = db((db.rx.id_auth_user == request.vars.id_auth_user)&(db.rx.created_on > dateFrom)&(db.rx.created_on <= dateTo)).select(db.rx.va_far, db.rx.sph_far, db.rx.cyl_far, db.rx.axis_far, db.rx.opto_far,
+            db.rx.va_int, db.rx.sph_int, db.rx.cyl_int, db.rx.axis_int, db.rx.opto_int,
+            db.rx.va_close, db.rx.sph_close, db.rx.cyl_close, db.rx.axis_close, db.rx.opto_close,
             db.rx.rx_origin, db.rx.glass_type, db.rx.laterality,
             creator.first_name, creator.last_name, db.rx.created_on,
             patient.first_name, patient.last_name,
@@ -356,7 +368,7 @@ def consult():
             creator.on(creator.id==db.rx.created_by)
             ])
         data = '['+rows2json('tono',rows_tono)+','+rows2json('topo',rows_topo)+','+rows2json('rx',rows_rx)+']'
-        return data
+        return  data
     def DELETE(tablename,record_id):
         if tablename=='consult':
             db(db.consult.id == record_id).delete()

@@ -1,11 +1,20 @@
-{{patientname = db(db.auth_user.id == id_auth_user).select(db.auth_user.first_name, db.auth_user.last_name, db.auth_user.dob_pid7).first()
+{{ from datetime import datetime
+  patientname = db(db.auth_user.id == id_auth_user).select(db.auth_user.first_name, db.auth_user.last_name, db.auth_user.dob_pid7).first()
   patient = patientname.first_name + ' ' + patientname.last_name
   dob = patientname.dob_pid7
-  worklistid = db(db.worklist.id == id_worklist).select(db.worklist.message_unique_id_MSH10, db.exam2do_OBR4.exam_description, db.worklist.requested_time_OBR6, db.worklist.status_flag, left=[db.exam2do_OBR4.on(db.exam2do_OBR4.id==db.worklist.exam2do_OBR4)]).first()
+  worklistid = db(db.worklist.id == id_worklist).select(db.worklist.message_unique_id_MSH10, db.exam2do_OBR4.exam_description, db.worklist.requested_time_OBR6, db.worklist.status_flag, db.worklist.created_on,
+    left=[db.exam2do_OBR4.on(db.exam2do_OBR4.id==db.worklist.exam2do_OBR4)]).first()
   exam = worklistid.exam2do_OBR4.exam_description
   timeslot = worklistid.worklist.requested_time_OBR6
   task = worklistid.worklist.message_unique_id_MSH10
-  status = XML(worklistid.worklist.status_flag) }}
+  status = XML(worklistid.worklist.status_flag)
+  createdOn = worklistid.worklist.created_on
+  createdOnstr = createdOn.strftime('%Y-%m-%d %H:%M:%S')
+  dateConsult = createdOn.strftime('%Y-%m-%d')
+  dateFrom = createdOn.replace(hour=0,minute=0,second=0)
+  dateTo = (dateFrom.replace(hour=23,minute=59,second=59)).strftime('%Y-%m-%d %H:%M:%S')
+  dateFrom = dateFrom.strftime('%Y-%m-%d %H:%M:%S')
+ }}
 {{pass}}
 
 {{extend 'layout.html'}}
@@ -18,7 +27,11 @@
 <script src="{{=URL('static','js/bootstrap-table/locales/bootstrap-table-fr-BE.min.js')}}"></script>
 <script src="{{=URL('static','js/bootstrap-select/js/bootstrap-select.min.js')}}"></script>
 <link rel="stylesheet" href="{{=URL('static','js/bootstrap-select/css/bootstrap-select.min.css')}}" />
+<link rel="stylesheet" href="{{=URL('static','css/color_palette1.css')}}" />
+<!-- https://github.com/datejs/Datejs -->
+<script src="{{=URL('static','js/datejs/date.js')}}"></script>
 <style>
+
   .btn-back {
     margin: 10px;
   }
@@ -57,20 +70,33 @@
   color: orange;
 }
 
+.botheyes {
+  text-align: center;
+}
+
 .left_mes {
   text-align: right;
 }
 
-.left_mes, .right_mes, #objective {
-  border: 1px solid grey;
+.right_mes {
+  text-align: left;
 }
 
-.badge-rx, .badge-tono, .badge-kerato {
+.both_mes {
+  text-align: center;
+}
+
+
+#objective {
+   border: 1px solid grey;
+}
+
+.badge-rx, .badge-tono, .badge-kerato, .badge-air, .badge-apla {
  margin-right: 3px;
  margin-left: 3px;
 }
 
-.badge-rx, .badge-kerato {
+.badge-rx {
   background-color: #2f2d8e;
 }
 
@@ -117,31 +143,47 @@
   <div class="row"> <!-- title -->
     <div class="col-sm-12">
       <div class="well well-sm">
-        <h3>{{=exam.upper()}}</h3>
+        <h3>{{=exam.upper()}} from {{=dateConsult}}</h3>
       </div>
     </div>
   </div>
 </div> <!--header/title -->
 
-<div class="container">
+<div class="container" id="objective">
   <div class="row" id="objective">
-    <div class="col-md-6 left_mes">
+    <div class="col-md-4 left_mes">
+      <div class="well well-sm">
+        Right eye
+      </div>
     </div>
-    <div class="col-md-6 right_mes">
+    <div class="col-md-4 both_mes">
+      <div class="well well-sm">
+        Both eyes
+      </div>
     </div>
+    <div class="col-md-4 right_mes">
+      <div class="well well-sm">
+        Left eye
+      </div>
+    </div>
+</div>
+
+<div class="container">
+  <div class="row" id="test">
+  </div>
 </div>
 
 <script type="text/javascript">
 
 var rows = [];
-get_exams({{=id_auth_user}});
+get_exams({{=id_auth_user}},'{{=dateFrom}}','{{=dateTo}}');
 
 $(function() {
   $("body").tooltip({ selector: '[data-toggle=tooltip]' });
 }); // get ready function
 
-function get_exams(id) {
-  var API_URL = '{{=URL('api','consult', scheme=True, host=True)}}?id_auth_user='+id;
+function get_exams(id,dateFrom,dateTo) {
+  var API_URL = '{{=URL('api','consult', scheme=True, host=True)}}?id_auth_user='+id+'&dateFrom='+dateFrom+'&dateTo='+dateTo;
   $.ajax({
     url: API_URL,
     type: 'GET',
@@ -162,29 +204,77 @@ function get_exams(id) {
               lat = (side == 'right'? 'right':'left');
               contralat = (side == 'right'? 'left':'right');
               console.log(lat);
-              $('#objective .'+lat+'_mes').append('<div class="'+'"><span class="badge badge-tono pull-'+contralat+'">TIO</span><span class="badge badge-'+rows[i][exams][x]['tono']['techno'][0]+' pull-'+contralat+'">'+rows[i][exams][x]['tono']['techno'][0]+'</span>'+rows[i][exams][x]['tono']['tonometry']+'mmHg @'+rows[i][exams][x]['tono']['created_on']+'</div>');
+              tio = rows[i][exams][x]['tono']['tonometry']+'mmHg';
+              techno = rows[i][exams][x]['tono']['techno'][0];
+              createdOn = ' @ '+(Date.parse(rows[i][exams][x]['tono']['created_on'])).toString('HH:mm');
+              html =[];
+              $('#objective .'+lat+'_mes').append('<div class="'+'"><span class="badge badge-tono pull-'+contralat+'">TIO</span><span class="badge badge-'
+                 +techno+' pull-'+contralat+'">'+techno+'</span><strong>'+tio+'</strong>'+createdOn+'</div>');
             } else if (exams =='topo') {
               side = rows[i][exams][x]['topography']['laterality'][0];
               lat = ( side == 'right'? 'right':'left');
               contralat = (side == 'right'? 'left':'right');
               console.log(lat);
-              $('#objective .'+lat+'_mes').append('<div data-toggle="tooltip" data-placement="'+side+'" title="'+rows[i][exams][x]['topography']['created_on']+'" class="'+'"><span class="badge badge-kerato pull-'+contralat+'">kerato</span> K1='+rows[i][exams][x]['topography']['k1']+'mm@'+rows[i][exams][x]['topography']['axis1']+' K2='+rows[i][exams][x]['topography']['k2']+'mm@'+rows[i][exams][x]['topography']['axis2']+'</div>');
+              createdOn = rows[i][exams][x]['topography']['created_on'];
+              k1 = rows[i][exams][x]['topography']['k1']+'mm@';
+              k2 = rows[i][exams][x]['topography']['k2']+'mm@';
+              axis1 = rows[i][exams][x]['topography']['axis1']+'°';
+              axis2 = rows[i][exams][x]['topography']['axis2']+'°';
+              $('#objective .'+lat+'_mes').append('<div data-toggle="tooltip" data-placement="'+side+'" title="'+createdOn+'" class="'
+                 +'"><span class="badge badge-kerato pull-'+contralat+'">kerato</span> <strong>K1='+k1+axis1
+                  +' K2='+k2+axis2+'<strong></div>');
             } else if (exams =='rx') {
+              html = [];
               side = rows[i][exams][x]['rx']['laterality'][0];
               lat = ( side == 'right'? 'right':'left');
               contralat = (side == 'right'? 'left':'right');
               console.log(lat);
-              $('#objective .'+lat+'_mes').append('<div data-toggle="tooltip" data-placement="'+side+'" title="'+rows[i][exams][x]['rx']['created_on']+'" class="'+'"><span class="badge badge-rx pull-'+contralat+'">'+rows[i][exams][x]['rx']['rx_origin'][0]+'</span> '+round2dec(rows[i][exams][x]['rx']['sph_far'])+'('+round2dec(rows[i][exams][x]['rx']['cyl_far'])+' x'+rows[i][exams][x]['rx']['axis_far']+')</div>');
+              createdOn= rows[i][exams][x]['rx']['created_on'];
+              rx_origin = rows[i][exams][x]['rx']['rx_origin'][0];
+              glass_type = rows[i][exams][x]['rx']['glass_type'][0];
+              va_far = rows[i][exams][x]['rx']['va_far'];
+              opto_far = rows[i][exams][x]['rx']['opto_far'];
+              sph_far = round2dec(rows[i][exams][x]['rx']['sph_far']);
+              cyl_far = round2dec(rows[i][exams][x]['rx']['cyl_far']);
+              axis_far = rows[i][exams][x]['rx']['axis_far']+'°';
+              va_int = rows[i][exams][x]['rx']['va_int'];
+              opto_int = rows[i][exams][x]['rx']['opto_int'];
+              sph_int = round2dec(rows[i][exams][x]['rx']['sph_int']);
+              cyl_int = round2dec(rows[i][exams][x]['rx']['cyl_int']);
+              axis_int = rows[i][exams][x]['rx']['axis_int']+'°';
+              va_close = rows[i][exams][x]['rx']['va_close'];
+              opto_close = rows[i][exams][x]['rx']['opto_close'];
+              sph_close = round2dec(rows[i][exams][x]['rx']['sph_close']);
+              cyl_close = round2dec(rows[i][exams][x]['rx']['cyl_close']);
+              axis_close = rows[i][exams][x]['rx']['axis_close']+'°';
+              html.push('<div data-toggle="tooltip" data-placement="'+side+'" title="'+createdOn+'" class="">');
+              html.push('<div><span class="badge badge-rx pull-'+contralat+'">'+rx_origin+'</span> '+'VA(<strong>far</strong>,'+opto_far+')=<strong>'+va_far+'</strong> with <strong>'+sph_far+'('+cyl_far+' x'+axis_far+')</strong></div>');
+              if ((rx_origin == 'autorx')|(glass_type == 'monofocal')) {
+                html.push('</div>');
+                html.join('');
+                $('#objective .'+lat+'_mes').append(html);
+              } else if (glass_type == 'degressive') {
+                html.push('<div><span class="badge badge-rx pull-'+contralat+'">'+rx_origin+' '+glass_type+'</span> '+'VA(<strong>int</strong>,'+opto_int+')=<strong>'+va_int+'</strong> with <strong>'+sph_int+'('+cyl_int+' x'+axis_int+')</strong></div>');
+                html.push('</div>');
+                html.join('');
+                $('#objective .'+lat+'_mes').append(html);
+              } else {
+                html.push('<div><span class="badge badge-rx pull-'+contralat+'">'+rx_origin+' '+glass_type+'</span> '+'VA(<strong>int</strong>,'+opto_int+')=<strong>'+va_int+'</strong> with <strong>'+sph_int+'('+cyl_int+' x'+axis_int+')</strong></div>');
+                html.push('<div><span class="badge badge-rx pull-'+contralat+'">'+rx_origin+' '+glass_type+'</span> '+'VA(<strong>close</strong>,'+opto_close+')=<strong>'+va_close+'</strong> with <strong>'+sph_close+'('+cyl_close+' x'+axis_close+')</strong></div>');
+                html.push('</div>');
+                html.join('');
+                $('#objective .'+lat+'_mes').append(html);
+              }
             };
-            for (m in rows[i][exams][x]) {
+            // for (m in rows[i][exams][x]) {
             //console.log('rows['+i+']['+exams+']['+x+']'+'['+m+']');
             //console.log(rows[i][exams][x][m]);
             //$('.consult_content').append('<li>'+rows[i][exams][x][m]+'</li>');
-            }
-          }
+            // }
+          };
         };
       };
-      },
+    },
     error: function () {
       console.log('error getting exams');
       }
