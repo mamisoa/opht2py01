@@ -114,6 +114,12 @@
   background-color: #2e09a8;
 }
 
+.rx_mes {
+  border: 1px dotted grey;
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
 .label-as-badge {
     border-radius: 1em;
 }
@@ -174,11 +180,13 @@
 </div>
 
 <script type="text/javascript">
-
+console.log('hello');
 var rows = [];
 get_exams({{=id_auth_user}},'{{=dateFrom}}','{{=dateTo}}');
 
 $(function() {
+  console.log('hello');
+
   $("body").tooltip({ selector: '[data-toggle=tooltip]' });
 }); // get ready function
 
@@ -247,22 +255,34 @@ function get_exams(id,dateFrom,dateTo) {
               sph_close = round2dec(rows[i][exams][x]['rx']['sph_close']);
               cyl_close = round2dec(rows[i][exams][x]['rx']['cyl_close']);
               axis_close = rows[i][exams][x]['rx']['axis_close']+'°';
-              html.push('<div data-toggle="tooltip" data-placement="'+side+'" title="'+createdOn+'" class="">');
-              html.push('<div><span class="badge badge-rx pull-'+contralat+'">'+rx_origin+'</span> '+'VA(<strong>far</strong>,'+opto_far+')=<strong>'+va_far+'</strong> with <strong>'+sph_far+'('+cyl_far+' x'+axis_far+')</strong></div>');
-              if ((rx_origin == 'autorx')|(glass_type == 'monofocal')) {
+              html.push('<div data-toggle="tooltip" data-placement="'+side+'" title="'+createdOn+'" class="rx_mes">');
+              if ((rx_origin == 'autorx')|(rx_origin == 'dil')|(rx_origin == 'cyclo')) {
+                html.push('<div><span class="badge badge-rx pull-'+contralat+'">'+rx_origin+'</span></div>');
+                html.push('<div>VA(<strong>far</strong>,'+opto_far+')=<strong>'+va_far+'</strong> with <strong>'+sph_far+'('+cyl_far+' x'+axis_far+')</strong></div>')
                 html.push('</div>');
-                html.join('');
+                html=html.join('');
+                console.log(html);
+                $('#objective .'+lat+'_mes').append(html);
+              } else if (glass_type == 'monofocal') {
+                html.push('<div><span class="badge badge-rx pull-'+contralat+'">'+rx_origin+' '+glass_type+'</span></div>');
+                html.push('<div>VA(<strong>far</strong>,'+opto_far+')=<strong>'+va_far+'</strong> with <strong>'+sph_far+'('+cyl_far+' x'+axis_far+')</strong></div>')
+                html.push('</div>');
+                html=html.join('');
                 $('#objective .'+lat+'_mes').append(html);
               } else if (glass_type == 'degressive') {
-                html.push('<div><span class="badge badge-rx pull-'+contralat+'">'+rx_origin+' '+glass_type+'</span> '+'VA(<strong>int</strong>,'+opto_int+')=<strong>'+va_int+'</strong> with <strong>'+sph_int+'('+cyl_int+' x'+axis_int+')</strong></div>');
+                html.push('<div><span class="badge badge-rx pull-'+contralat+'">'+rx_origin+' '+glass_type+'</span></div>');
+                html.push('<div>VA(<strong>far</strong>,'+opto_far+')=<strong>'+va_far+'</strong> with <strong>'+sph_far+'('+cyl_far+' x'+axis_far+')</strong></div>')
+                html.push('<div>VA(<strong>int</strong>,'+opto_int+')=<strong>'+va_int+'</strong> with <strong>'+sph_int+'('+cyl_int+' x'+axis_int+')</strong></div>');
                 html.push('</div>');
-                html.join('');
+                html=html.join('');
                 $('#objective .'+lat+'_mes').append(html);
               } else {
-                html.push('<div><span class="badge badge-rx pull-'+contralat+'">'+rx_origin+' '+glass_type+'</span> '+'VA(<strong>int</strong>,'+opto_int+')=<strong>'+va_int+'</strong> with <strong>'+sph_int+'('+cyl_int+' x'+axis_int+')</strong></div>');
-                html.push('<div><span class="badge badge-rx pull-'+contralat+'">'+rx_origin+' '+glass_type+'</span> '+'VA(<strong>close</strong>,'+opto_close+')=<strong>'+va_close+'</strong> with <strong>'+sph_close+'('+cyl_close+' x'+axis_close+')</strong></div>');
+                html.push('<div><span class="badge badge-rx ">'+rx_origin+' '+glass_type+'</span></div>');
+                html.push('<div>VA(<strong>far</strong>,'+opto_far+')=<strong>'+va_far+'</strong> with <strong>'+sph_far+'('+cyl_far+' x'+axis_far+')</strong></div>')
+                html.push('<div>VA(<strong>int</strong>,'+opto_int+')=<strong>'+va_int+'</strong> with <strong>'+sph_int+'('+cyl_int+' x'+axis_int+')</strong></div>');
+                html.push('<div>VA(<strong>close</strong>,'+opto_close+')=<strong>'+va_close+'</strong> with <strong>'+sph_close+'('+cyl_close+' x'+axis_close+')</strong></div>');
                 html.push('</div>');
-                html.join('');
+                html=html.join('');
                 $('#objective .'+lat+'_mes').append(html);
               }
             };
