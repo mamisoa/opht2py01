@@ -928,6 +928,10 @@ $('input.rx_origin_autorx').prop('checked',true).parent().addClass('active');
 $('.glass_type, .rx_inter, .rx_close').hide()
 $('input.glass_type_mono').prop('checked',true).parent().addClass('active');
 
+$('select.opto_far').val('letters');
+$('select.opto_int').val('parinaud');
+$('select.opto_far').val('parinaud');
+
 setCounter('#form_right','sph_far',0.25,-30,30,2,true);
 setCounter('#form_right','cyl_far',0.25,-11,11,2,true);
 setCounter('#form_right','axis_far',5,0,180,0,false);
