@@ -91,6 +91,9 @@
    border: 1px solid grey;
 }
 
+#objective table, #objective table th  {
+  text-align: center;
+}
 .badge-rx, .badge-tono, .badge-kerato, .badge-air, .badge-apla {
  margin-right: 3px;
  margin-left: 3px;
@@ -155,11 +158,11 @@
   </div>
 </div> <!--header/title -->
 
-<div class="container-fluid" id="objective">
+<div class="container" id="objective">
   <div class="row" id="objective">
     <div class="col-md-4 left_mes">
       <div class="well well-sm">
-        Right eye
+        Left eye
       </div>
     </div>
     <div class="col-md-4 both_mes">
@@ -169,7 +172,7 @@
     </div>
     <div class="col-md-4 right_mes">
       <div class="well well-sm">
-        Left eye
+        Right eye
       </div>
     </div>
 </div>
@@ -180,13 +183,10 @@
 </div>
 
 <script type="text/javascript">
-console.log('hello');
 var rows = [];
 get_exams({{=id_auth_user}},'{{=dateFrom}}','{{=dateTo}}');
 
 $(function() {
-  console.log('hello');
-
   $("body").tooltip({ selector: '[data-toggle=tooltip]' });
 }); // get ready function
 
@@ -207,31 +207,7 @@ function get_exams(id,dateFrom,dateTo) {
           for (x in rows[i][exams]) {
             console.log('rows['+i+']['+exams+']['+x+']');
             console.log(rows[i][exams][x]);
-            if (exams == 'tono') {
-              side = rows[i][exams][x]['tono']['laterality'][0];
-              lat = (side == 'right'? 'right':'left');
-              contralat = (side == 'right'? 'left':'right');
-              console.log(lat);
-              tio = rows[i][exams][x]['tono']['tonometry']+'mmHg';
-              techno = rows[i][exams][x]['tono']['techno'][0];
-              createdOn = ' @ '+(Date.parse(rows[i][exams][x]['tono']['created_on'])).toString('HH:mm');
-              html =[];
-              $('#objective .'+lat+'_mes').append('<div class="'+'"><span class="badge badge-tono pull-'+contralat+'">TIO</span><span class="badge badge-'
-                 +techno+' pull-'+contralat+'">'+techno+'</span><strong>'+tio+'</strong>'+createdOn+'</div>');
-            } else if (exams =='topo') {
-              side = rows[i][exams][x]['topography']['laterality'][0];
-              lat = ( side == 'right'? 'right':'left');
-              contralat = (side == 'right'? 'left':'right');
-              console.log(lat);
-              createdOn = rows[i][exams][x]['topography']['created_on'];
-              k1 = rows[i][exams][x]['topography']['k1']+'mm@';
-              k2 = rows[i][exams][x]['topography']['k2']+'mm@';
-              axis1 = rows[i][exams][x]['topography']['axis1']+'°';
-              axis2 = rows[i][exams][x]['topography']['axis2']+'°';
-              $('#objective .'+lat+'_mes').append('<div data-toggle="tooltip" data-placement="'+side+'" title="'+createdOn+'" class="'
-                 +'"><span class="badge badge-kerato pull-'+contralat+'">kerato</span> <strong>K1='+k1+axis1
-                  +' K2='+k2+axis2+'<strong></div>');
-            } else if (exams =='rx') {
+            if (exams == 'rx') {
               html = [];
               side = rows[i][exams][x]['rx']['laterality'][0];
               lat = ( side == 'right'? 'right':'left');
@@ -278,13 +254,39 @@ function get_exams(id,dateFrom,dateTo) {
                 $('#objective .'+lat+'_mes').append(html);
               } else {
                 html.push('<div><span class="badge badge-rx ">'+rx_origin+' '+glass_type+'</span></div>');
-                html.push('<div>VA(<strong>far</strong>,'+opto_far+')=<strong>'+va_far+'</strong> with <strong>'+sph_far+'('+cyl_far+' x'+axis_far+')</strong></div>')
-                html.push('<div>VA(<strong>int</strong>,'+opto_int+')=<strong>'+va_int+'</strong> with <strong>'+sph_int+'('+cyl_int+' x'+axis_int+')</strong></div>');
-                html.push('<div>VA(<strong>close</strong>,'+opto_close+')=<strong>'+va_close+'</strong> with <strong>'+sph_close+'('+cyl_close+' x'+axis_close+')</strong></div>');
+                html.push('<table class="table table-condensed table-striped table-responsive"><thead><tr><th>Dist</th>')
+                html.push('<th>VA</th><th>sph</th><th>cyl</th><th>axis</th><th>opto</th></tr></thead>')
+                html.push('<tbody><tr><td>Far</td><td>'+va_far+'</td><td>'+sph_far+'</td><td>'+cyl_far+'</td><td>'+axis_far+'</td><td>'+opto_far+'</td></tr>')
+                html.push('<tr><td>Int</td><td>'+va_int+'</td><td>'+sph_int+'</td><td>'+cyl_int+'</td><td>'+axis_int+'</td><td>'+opto_int+'</td></tr>')
+                html.push('<tr><td>Close</td><td>'+va_close+'</td><td>'+sph_close+'</td><td>'+cyl_close+'</td><td>'+axis_close+'</td><td>'+opto_close+'</td></tr></tbody></table>')
                 html.push('</div>');
                 html=html.join('');
                 $('#objective .'+lat+'_mes').append(html);
-              }
+              };
+            } else if (exams =='topo') {
+              side = rows[i][exams][x]['topography']['laterality'][0];
+              lat = ( side == 'right'? 'right':'left');
+              contralat = (side == 'right'? 'left':'right');
+              console.log(lat);
+              createdOn = rows[i][exams][x]['topography']['created_on'];
+              k1 = rows[i][exams][x]['topography']['k1']+'mm@';
+              k2 = rows[i][exams][x]['topography']['k2']+'mm@';
+              axis1 = rows[i][exams][x]['topography']['axis1']+'°';
+              axis2 = rows[i][exams][x]['topography']['axis2']+'°';
+              $('#objective .'+lat+'_mes').append('<div data-toggle="tooltip" data-placement="'+side+'" title="'+createdOn+'" class="'
+                 +'"><span class="badge badge-kerato pull-'+contralat+'">kerato</span> <strong>K1='+k1+axis1
+                  +' K2='+k2+axis2+'<strong></div>');
+            } else if (exams =='tono') {
+              side = rows[i][exams][x]['tono']['laterality'][0];
+              lat = (side == 'right'? 'right':'left');
+              contralat = (side == 'right'? 'left':'right');
+              console.log(lat);
+              tio = rows[i][exams][x]['tono']['tonometry']+'mmHg';
+              techno = rows[i][exams][x]['tono']['techno'][0];
+              createdOn = ' @ '+(Date.parse(rows[i][exams][x]['tono']['created_on'])).toString('HH:mm');
+              html =[];
+              $('#objective .'+lat+'_mes').append('<div class="'+'"><span class="badge badge-tono pull-'+contralat+'">TIO</span><span class="badge badge-'
+               +techno+' pull-'+contralat+'">'+techno+'</span><strong>'+tio+'</strong>'+createdOn+'</div>');
             };
             // for (m in rows[i][exams][x]) {
             //console.log('rows['+i+']['+exams+']['+x+']'+'['+m+']');

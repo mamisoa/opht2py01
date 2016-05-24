@@ -928,9 +928,9 @@ $('input.rx_origin_autorx').prop('checked',true).parent().addClass('active');
 $('.glass_type, .rx_inter, .rx_close').hide()
 $('input.glass_type_mono').prop('checked',true).parent().addClass('active');
 
-$('select.opto_far').val('letters');
-$('select.opto_int').val('parinaud');
-$('select.opto_far').val('parinaud');
+$('select.opto_far').val('Letters');
+$('select.opto_int').val('Parinaud');
+$('select.opto_far').val('Parinaud');
 
 setCounter('#form_right','sph_far',0.25,-30,30,2,true);
 setCounter('#form_right','cyl_far',0.25,-11,11,2,true);
@@ -1402,7 +1402,7 @@ function resetForm(form) {
               'va_close': '1.0', 'sph_close': '0.00', 'cyl_close': '0.00', 'axis_close': '180',
               'add_int': '0.00', 'add_close': '0.00', 'note': ''
             };
-  default_select = { 'opto_far':'letters', 'opto_int':'parinaud', 'opto_close':'parinaud' };
+  default_select = { 'opto_far':'Letters', 'opto_int':'Parinaud', 'opto_close':'Parinaud' };
   default_radio = { 'rx_origin': 'autorx', 'glass_type': 'monofocal'}
   $.each(default_input, function(key,value){
     $(form+' input.'+key).val(value);

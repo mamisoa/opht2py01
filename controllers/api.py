@@ -367,7 +367,7 @@ def consult():
             left=[patient.on(patient.id==db.rx.id_auth_user),
             creator.on(creator.id==db.rx.created_by)
             ])
-        data = '['+rows2json('tono',rows_tono)+','+rows2json('topo',rows_topo)+','+rows2json('rx',rows_rx)+']'
+        data = '['+rows2json('rx',rows_rx)+','+rows2json('topo',rows_topo)+','+rows2json('tono',rows_tono)+']'
         return  data
     def DELETE(tablename,record_id):
         if tablename=='consult':
