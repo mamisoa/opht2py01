@@ -75,11 +75,11 @@
 }
 
 .left_mes {
-  text-align: right;
+  text-align: left;
 }
 
 .right_mes {
-  text-align: left;
+  text-align: right;
 }
 
 .both_mes {
@@ -158,26 +158,27 @@
   </div>
 </div> <!--header/title -->
 
-<div class="container" id="objective">
+<div class="container-fluid" id="objective">
   <div class="row" id="objective">
-    <div class="col-md-4 left_mes">
-      <div class="well well-sm">
-        Left eye
-      </div>
-    </div>
-    <div class="col-md-4 both_mes">
-      <div class="well well-sm">
-        Both eyes
-      </div>
-    </div>
     <div class="col-md-4 right_mes">
       <div class="well well-sm">
         Right eye
       </div>
     </div>
+    <div class="col-md-4 both_mes">
+      <div class="well well-sm">
+        Both eyes
+        <div class="drop"></div>
+      </div>
+    </div>
+    <div class="col-md-4 left_mes">
+      <div class="well well-sm">
+        Left eye
+      </div>
+    </div>
 </div>
 
-<div class="container">
+<div class="container-fluid">
   <div class="row" id="test">
   </div>
 </div>
@@ -231,29 +232,30 @@ function get_exams(id,dateFrom,dateTo) {
               sph_close = round2dec(rows[i][exams][x]['rx']['sph_close']);
               cyl_close = round2dec(rows[i][exams][x]['rx']['cyl_close']);
               axis_close = rows[i][exams][x]['rx']['axis_close']+'°';
-              html.push('<div data-toggle="tooltip" data-placement="'+side+'" title="'+createdOn+'" class="rx_mes">');
+              se_far = round2dec(rows[i][exams][x]['rx']['sph_far']+rows[i][exams][x]['rx']['cyl_far']/2);
+              html.push('<div data-toggle="tooltip" data-placement="'+contralat+'" title="'+createdOn+'" class="rx_mes">');
               if ((rx_origin == 'autorx')|(rx_origin == 'dil')|(rx_origin == 'cyclo')) {
-                html.push('<div><span class="badge badge-rx pull-'+contralat+'">'+rx_origin+'</span></div>');
-                html.push('<div>VA(<strong>far</strong>,'+opto_far+')=<strong>'+va_far+'</strong> with <strong>'+sph_far+'('+cyl_far+' x'+axis_far+')</strong></div>')
+                html.push('<div><span class="badge badge-rx pull-'+lat+'">'+rx_origin+'</span></div>');
+                html.push('<div>VA(<strong>far</strong>,'+opto_far+')=<strong>'+va_far+'</strong> / <strong>'+sph_far+'('+cyl_far+' x'+axis_far+')</strong> / SE=<strong>'+se_far+'</strong></div>')
                 html.push('</div>');
                 html=html.join('');
                 console.log(html);
                 $('#objective .'+lat+'_mes').append(html);
               } else if (glass_type == 'monofocal') {
-                html.push('<div><span class="badge badge-rx pull-'+contralat+'">'+rx_origin+' '+glass_type+'</span></div>');
+                html.push('<div><span class="badge badge-rx pull-'+lat+'">'+rx_origin+' '+glass_type+'</span></strong> SE=<strong>'+se_far+'</strong></div>');
                 html.push('<div>VA(<strong>far</strong>,'+opto_far+')=<strong>'+va_far+'</strong> with <strong>'+sph_far+'('+cyl_far+' x'+axis_far+')</strong></div>')
                 html.push('</div>');
                 html=html.join('');
                 $('#objective .'+lat+'_mes').append(html);
               } else if (glass_type == 'degressive') {
-                html.push('<div><span class="badge badge-rx pull-'+contralat+'">'+rx_origin+' '+glass_type+'</span></div>');
-                html.push('<div>VA(<strong>far</strong>,'+opto_far+')=<strong>'+va_far+'</strong> with <strong>'+sph_far+'('+cyl_far+' x'+axis_far+')</strong></div>')
-                html.push('<div>VA(<strong>int</strong>,'+opto_int+')=<strong>'+va_int+'</strong> with <strong>'+sph_int+'('+cyl_int+' x'+axis_int+')</strong></div>');
+                html.push('<div><span class="badge badge-rx pull-'+lat+'">'+rx_origin+' '+glass_type+'</span></div>');
+                html.push('<div>VA(<strong>far</strong>,'+opto_int+')=<strong>'+va_int+'</strong> with <strong>'+sph_int+'('+cyl_int+' x'+axis_int+')</strong></div>')
+                html.push('<div>VA(<strong>int</strong>,'+opto_close+')=<strong>'+va_close+'</strong> with <strong>'+sph_close+'('+cyl_close+' x'+axis_close+')</strong></div>');
                 html.push('</div>');
                 html=html.join('');
                 $('#objective .'+lat+'_mes').append(html);
               } else {
-                html.push('<div><span class="badge badge-rx ">'+rx_origin+' '+glass_type+'</span></div>');
+                html.push('<div><span class="badge badge-rx pull-'+lat+'">'+rx_origin+' '+glass_type+'</span></strong> SE=<strong>'+se_far+'</strong></div>');
                 html.push('<table class="table table-condensed table-striped table-responsive"><thead><tr><th>Dist</th>')
                 html.push('<th>VA</th><th>sph</th><th>cyl</th><th>axis</th><th>opto</th></tr></thead>')
                 html.push('<tbody><tr><td>Far</td><td>'+va_far+'</td><td>'+sph_far+'</td><td>'+cyl_far+'</td><td>'+axis_far+'</td><td>'+opto_far+'</td></tr>')
@@ -273,8 +275,8 @@ function get_exams(id,dateFrom,dateTo) {
               k2 = rows[i][exams][x]['topography']['k2']+'mm@';
               axis1 = rows[i][exams][x]['topography']['axis1']+'°';
               axis2 = rows[i][exams][x]['topography']['axis2']+'°';
-              $('#objective .'+lat+'_mes').append('<div data-toggle="tooltip" data-placement="'+side+'" title="'+createdOn+'" class="'
-                 +'"><span class="badge badge-kerato pull-'+contralat+'">kerato</span> <strong>K1='+k1+axis1
+              $('#objective .'+lat+'_mes').append('<div data-toggle="tooltip" data-placement="'+contralat+'" title="'+createdOn+'" class="'
+                 +'"><span class="badge badge-kerato pull-'+lat+'">kerato</span> <strong>K1='+k1+axis1
                   +' K2='+k2+axis2+'<strong></div>');
             } else if (exams =='tono') {
               side = rows[i][exams][x]['tono']['laterality'][0];
@@ -285,8 +287,8 @@ function get_exams(id,dateFrom,dateTo) {
               techno = rows[i][exams][x]['tono']['techno'][0];
               createdOn = ' @ '+(Date.parse(rows[i][exams][x]['tono']['created_on'])).toString('HH:mm');
               html =[];
-              $('#objective .'+lat+'_mes').append('<div class="'+'"><span class="badge badge-tono pull-'+contralat+'">TIO</span><span class="badge badge-'
-               +techno+' pull-'+contralat+'">'+techno+'</span><strong>'+tio+'</strong>'+createdOn+'</div>');
+              $('#objective .'+lat+'_mes').append('<div class="'+'"><span class="badge badge-tono pull-'+lat+'">TIO</span><span class="badge badge-'
+               +techno+' pull-'+lat+'">'+techno+'</span><strong>'+tio+'</strong>'+createdOn+'</div>');
             };
             // for (m in rows[i][exams][x]) {
             //console.log('rows['+i+']['+exams+']['+x+']'+'['+m+']');
