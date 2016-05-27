@@ -66,3 +66,19 @@ db.define_table('rx',
 db.rx.rx_origin.requires = IS_IN_SET(('autorx','glass','trial','cyclo','dil'))
 db.rx.laterality.requires = IS_IN_SET(('right','left'))
 db.rx.glass_type.requires = IS_IN_SET(('monofocal','progressive','bifocal','degressive'))
+
+db.define_table('ant_biom',
+    Field('id_auth_user', 'reference auth_user', required=True),
+    Field('id_worklist', 'reference worklist'),
+    Field('laterality','list:string', required=True),
+    Field('cornea','string'),
+    Field('ant_chamb','string'),
+    Field('iris','string'),
+    Field('lens','string'),
+    Field('vitreous','string'),
+    Field('retina','string'),
+    Field('papil','string'),
+    Field('other','string'),
+    auth.signature)
+
+db.ant_biom.laterality.requires = IS_IN_SET(('right','left'))

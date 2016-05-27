@@ -31,7 +31,6 @@
 <!-- https://github.com/datejs/Datejs -->
 <script src="{{=URL('static','js/datejs/date.js')}}"></script>
 <style>
-
   .btn-back {
     margin: 10px;
   }
@@ -60,72 +59,59 @@
     border:1px solid grey;
   }
 
-.righteye {
-  text-align: right;
-  color: blue;
-}
+  .left_mes, .left_clinic {
+    text-align: left;
+  }
 
-.lefteye {
-  text-align: left;
-  color: orange;
-}
+  .right_mes, .right_clinic {
+    text-align: right;
+  }
 
-.botheyes {
-  text-align: center;
-}
+  .both_mes, .both_clinic {
+    text-align: center;
+  }
 
-.left_mes {
-  text-align: left;
-}
+  #objective, #clinical {
+     border: 1px solid grey;
+     margin-bottom: 5px;
+     text-align: center;
+  }
 
-.right_mes {
-  text-align: right;
-}
+  #objective table, #objective table th  {
+    text-align: center;
+  }
+  .badge-rx, .badge-tono, .badge-kerato, .badge-air, .badge-apla {
+   margin-right: 3px;
+   margin-left: 3px;
+  }
 
-.both_mes {
-  text-align: center;
-}
+  .badge-rx {
+    background-color: #2f2d8e;
+  }
 
+  .badge-kerato {
+    color: #2f2d8e;
+    border: 1px solid #2f2d8e;
+    background-color: transparent;
+  }
 
-#objective {
-   border: 1px solid grey;
-}
+  .badge-air {
+    background-color: rgb(117, 195, 203);
+  }
 
-#objective table, #objective table th  {
-  text-align: center;
-}
-.badge-rx, .badge-tono, .badge-kerato, .badge-air, .badge-apla {
- margin-right: 3px;
- margin-left: 3px;
-}
+  .badge-apla {
+    background-color: #2e09a8;
+  }
 
-.badge-rx {
-  background-color: #2f2d8e;
-}
+  .rx_mes {
+    border: 1px dotted grey;
+    margin-top: 2px;
+    margin-bottom: 2px;
+  }
 
-.badge-kerato {
-  color: #2f2d8e;
-  border: 1px solid #2f2d8e;
-  background-color: transparent;
-}
-
-.badge-air {
-  background-color: rgb(117, 195, 203);
-}
-
-.badge-apla {
-  background-color: #2e09a8;
-}
-
-.rx_mes {
-  border: 1px dotted grey;
-  margin-top: 2px;
-  margin-bottom: 2px;
-}
-
-.label-as-badge {
-    border-radius: 1em;
-}
+  .label-as-badge {
+      border-radius: 1em;
+  }
 
 </style>
 {{end}}
@@ -159,27 +145,140 @@
 </div> <!--header/title -->
 
 <div class="container-fluid" id="objective">
-  <div class="row" id="objective">
-    <div class="col-md-4 right_mes">
+  <div class="row">
+    <div class="col-md-8">
+      <div class="row"> <!-- row both mes -->
+        <div class="col-md-12 both_mes">
+          <div class="well well-sm">
+            Both eyes
+          </div>
+          <div class="drop">drop</div>
+        </div>
+      </div> <!-- row both mes -->
+      <div class="row"> <!-- row left right eye -->
+        <div class="col-md-6 right_mes"> <!-- right mes -->
+          <div class="well well-sm">
+            Right eye
+          </div>
+        </div> <!-- right mes -->
+        <div class="col-md-6 left_mes"> <!-- left mes -->
+          <div class="well well-sm">
+            Left eye
+          </div>
+        </div> <!-- left mes -->
+      </div> <!-- row left right eye -->
+    </div>
+    <div class="col-md-4 history">
       <div class="well well-sm">
-        Right eye
+        History
+      </div>
+    </div> <!-- row history -->
+  </div> <!-- row -->
+</div> <!-- container -->
+
+<div class="container-fluid" id="clinical">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="well well-sm">
+        Clinical exam
       </div>
     </div>
-    <div class="col-md-4 both_mes">
-      <div class="well well-sm">
-        Both eyes
-        <div class="drop"></div>
+  </div>
+  <div class="row">
+    <div class="col-md-8 both_clinic">
+      <div class="row">
+        <div class="col-md-6 right_clinic">
+          <div class="well well-sm">
+            Right eye
+            <div class="pull-left">
+              <button type="button" class="btn btn-info btn-xs ant-right">Anterior</button>
+              <button type="button" class="btn btn-warning btn-xs ant-right">Posterior</button>
+              <button type="button" class="btn btn-success btn-xs ant-right">Diag</button>
+              <button type="button" class="btn btn-danger btn-xs ant-right">Strategy</button>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 left_clinic">
+          <div class="well well-sm">
+            Left eye
+            <div class="pull-right">
+              <button type="button" class="btn btn-info btn-xs ant-left">Anterior</button>
+              <button type="button" class="btn btn-warning btn-xs ant-left">Posterior</button>
+              <button type="button" class="btn btn-success btn-xs ant-left">Diag</button>
+              <button type="button" class="btn btn-danger btn-xs ant-left">Strategy</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="col-md-4 left_mes">
-      <div class="well well-sm">
-        Left eye
+    <div class="col-md-4">
+      <div class="well well-sm action_clinic">
+        Prescriptions
       </div>
     </div>
+  </div>
 </div>
 
-<div class="container-fluid">
-  <div class="row" id="test">
+<div class="modal fade" id="modal_ant" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="form_ant">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="">Anterior biomicroscopy for {{=patient}}</h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group hidden">
+            <label>Task ID</label>
+            <input type="text" class="form-control id_worklist" name="id_worklist" value="">
+          </div>
+          <div class="form-group hidden">
+            <label>Patient ID</label>
+            <input type="text" class="form-control id_auth_user" name="id_auth_user" value="">
+          </div>
+          <div class="form-group hidden">
+            <label>Laterality</label>
+            <input type="text" class="form-control laterality" name="laterality" value="">
+          </div>
+          <div class="form-group">
+            <label>Cornea</label>
+            <input type="text" class="form-control cornea" name="cornea" value="">
+          </div>
+          <div class="form-group">
+            <label>Anterior chamber</label>
+            <input type="text" class="form-control ant_chamb" name="ant_chamb" value="">
+          </div>
+          <div class="form-group">
+            <label>Iris</label>
+            <input type="text" class="form-control iris" name="iris" value="">
+          </div>
+          <div class="form-group">
+            <label>Lens</label>
+            <input type="text" class="form-control lens" name="lens" value="">
+          </div>
+          <div class="form-group">
+            <label>Vitreous</label>
+            <input type="text" class="form-control vitreous" name="vitreous" value="">
+          </div>
+          <div class="form-group">
+            <label>Retina</label>
+            <input type="text" class="form-control retina" name="papil" value="">
+          </div>
+          <div class="form-group">
+            <label>Optic nerve</label>
+            <input type="text" class="form-control papil" name="papil" value="">
+          </div>
+          <div class="form-group">
+            <label>Other</label>
+            <input type="text" class="form-control other" name="other" value="">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary submit">Submit</button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 
@@ -189,7 +288,27 @@ get_exams({{=id_auth_user}},'{{=dateFrom}}','{{=dateTo}}');
 
 $(function() {
   $("body").tooltip({ selector: '[data-toggle=tooltip]' });
+  var $modal_ant = $('#modal_ant').modal({show: false});
+
+$('#clinical .right_clinic button.ant-right').click(function(e){
+  $('#modal_ant').modal('show');
+});
+
+$('#form_ant button.submit').click(function(e){
+  var row = {};
+  $('#form_ant input.id_auth_user').val({{=id_auth_user}});
+  $('#form_ant input.id_worklist').val({{=id_worklist}});
+  e.preventDefault();
+  $('#form_ant').find('input[name]').each(function () {
+    row[$(this).attr('name')] = $(this).val();
+  });
+  row['laterality']='right';
+  console.log(row);
+  // post_ant_form(row,'POST','right');
+});
+
 }); // get ready function
+
 
 function get_exams(id,dateFrom,dateTo) {
   var API_URL = '{{=URL('api','consult', scheme=True, host=True)}}?id_auth_user='+id+'&dateFrom='+dateFrom+'&dateTo='+dateTo;
@@ -239,7 +358,6 @@ function get_exams(id,dateFrom,dateTo) {
                 html.push('<div>VA(<strong>far</strong>,'+opto_far+')=<strong>'+va_far+'</strong> / <strong>'+sph_far+'('+cyl_far+' x'+axis_far+')</strong> / SE=<strong>'+se_far+'</strong></div>')
                 html.push('</div>');
                 html=html.join('');
-                console.log(html);
                 $('#objective .'+lat+'_mes').append(html);
               } else if (glass_type == 'monofocal') {
                 html.push('<div><span class="badge badge-rx pull-'+lat+'">'+rx_origin+' '+glass_type+'</span></strong> SE=<strong>'+se_far+'</strong></div>');
