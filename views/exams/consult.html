@@ -167,7 +167,7 @@
         </div> <!-- right mes -->
         <div class="col-md-6 left_mes"> <!-- left mes -->
           <div class="well well-sm">
-            Left eye
+            <span class="alert_ant_left"></span>Left eye
           </div>
         </div> <!-- left mes -->
       </div> <!-- row left right eye -->
@@ -203,22 +203,26 @@
             Right eye
             <div class="pull-left">
               <button type="button" class="btn btn-info btn-xs ant-right">Anterior</button>
-              <button type="button" class="btn btn-warning btn-xs ant-right">Posterior</button>
-              <button type="button" class="btn btn-success btn-xs ant-right">Diag</button>
-              <button type="button" class="btn btn-danger btn-xs ant-right">Strategy</button>
+              <button type="button" class="btn btn-warning btn-xs post-right">Posterior</button>
+              <button type="button" class="btn btn-success btn-xs diag-right">Diag</button>
+              <button type="button" class="btn btn-danger btn-xs strategy-right">Strategy</button>
+              <span class="alert_ant_right"></span>
             </div>
           </div>
+          <div class="right_obs"></div>
         </div>
         <div class="col-md-6 left_clinic">
           <div class="well well-sm">
             Left eye
             <div class="pull-right">
+              <span class="alert_ant_left"></span>
               <button type="button" class="btn btn-info btn-xs ant-left">Anterior</button>
-              <button type="button" class="btn btn-warning btn-xs ant-left">Posterior</button>
-              <button type="button" class="btn btn-success btn-xs ant-left">Diag</button>
-              <button type="button" class="btn btn-danger btn-xs ant-left">Strategy</button>
+              <button type="button" class="btn btn-warning btn-xs post-left">Posterior</button>
+              <button type="button" class="btn btn-success btn-xs diag-left">Diag</button>
+              <button type="button" class="btn btn-danger btn-xs strategy-left">Strategy</button>
             </div>
           </div>
+          <div class="left_obs"></div>
         </div>
       </div>
     </div>
@@ -268,12 +272,51 @@
             <input type="text" class="form-control lens" name="lens" value="">
           </div>
           <div class="form-group">
+            <label>Other</label>
+            <input type="text" class="form-control other" name="other" value="">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary submit">Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal_post" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="form_post">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="">Posterior biomicroscopy for {{=patient}}</h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group hidden">
+            <label>Task ID</label>
+            <input type="text" class="form-control id_worklist" name="id_worklist" value="">
+          </div>
+          <div class="form-group hidden">
+            <label>Patient ID</label>
+            <input type="text" class="form-control id_auth_user" name="id_auth_user" value="">
+          </div>
+          <div class="form-group hidden">
+            <label>Laterality</label>
+            <input type="text" class="form-control laterality" name="laterality" value="">
+          </div>
+          <div class="form-group">
             <label>Vitreous</label>
             <input type="text" class="form-control vitreous" name="vitreous" value="">
           </div>
           <div class="form-group">
+            <label>Macula</label>
+            <input type="text" class="form-control macula" name="macula" value="">
+          </div>
+          <div class="form-group">
             <label>Retina</label>
-            <input type="text" class="form-control retina" name="papil" value="">
+            <input type="text" class="form-control retina" name="retina" value="">
           </div>
           <div class="form-group">
             <label>Optic nerve</label>
@@ -293,36 +336,119 @@
   </div>
 </div>
 
+
 <script type="text/javascript">
 var rows = [];
 get_exams({{=id_auth_user}},'{{=dateFrom}}','{{=dateTo}}');
+resetForm('#form_ant');
+resetForm('#form_post');
+get_clinical({{=id_auth_user}},'{{=dateFrom}}','{{=dateTo}}');
+
 
 $(function() {
+
   $("body").tooltip({ selector: '[data-toggle=tooltip]' });
   var $modal_ant = $('#modal_ant').modal({show: false});
 
-$('#clinical .right_clinic button.ant-right').click(function(e){
-  $('#modal_ant').modal('show');
+// ********* anterior biom *******************
+  $('#clinical .right_clinic button.ant-right').click(function(e){
+    $('#form_ant input.laterality').val('right');
+    $('#modal_ant').modal('show');
+  });
+
+  $('#clinical .left_clinic button.ant-left').click(function(e){
+    $('#form_ant input.laterality').val('left');
+    $('#modal_ant').modal('show');
+  });
+
+  $('#form_ant button.submit').click(function(e){
+    var row = {};
+    $('#form_ant input.id_auth_user').val({{=id_auth_user}});
+    $('#form_ant input.id_worklist').val({{=id_worklist}});
+    e.preventDefault();
+    $('#form_ant').find('input[name]').each(function () {
+      row[$(this).attr('name')] = $(this).val();
+    });
+    console.log(row);
+    post_ant_form(row,'POST',$('#form_ant input.laterality').val());
+  });
+
+// ********* posterior biom *******************
+$('#clinical .right_clinic button.post-right').click(function(e){
+  $('#form_post input.laterality').val('right');
+  $('#modal_post').modal('show');
 });
 
-$('#form_ant button.submit').click(function(e){
+$('#clinical .left_clinic button.post-left').click(function(e){
+  $('#form_post input.laterality').val('left');
+  $('#modal_post').modal('show');
+});
+
+$('#form_post button.submit').click(function(e){
   var row = {};
-  $('#form_ant input.id_auth_user').val({{=id_auth_user}});
-  $('#form_ant input.id_worklist').val({{=id_worklist}});
+  $('#form_post input.id_auth_user').val({{=id_auth_user}});
+  $('#form_post input.id_worklist').val({{=id_worklist}});
   e.preventDefault();
-  $('#form_ant').find('input[name]').each(function () {
+  $('#form_post').find('input[name]').each(function () {
     row[$(this).attr('name')] = $(this).val();
   });
-  row['laterality']='right';
   console.log(row);
-  // post_ant_form(row,'POST','right');
+  post_post_form(row,'POST',$('#form_post input.laterality').val());
 });
-
-console.log($('#objective .left_mes').height());
 
 
 }); // get ready function
 
+
+function post_ant_form(row,req,lat) {
+  var API_URL = (req == 'POST' ? '{{=URL('api','anterior/ant_biom', scheme=True, host=True)}}/' : '{{=URL('api','anterior/ant_biom', scheme=True, host=True)}}/'+ row.id);
+  var mode = (req == 'POST' ? 'add':'edit');
+  $.ajax({
+    url: API_URL,
+    type: req == 'POST' ? 'post':'put',
+    contentType: 'application/json',
+    data: JSON.stringify(row),
+    success: function (text) {
+      id = text.slice(text.indexOf('id(')+3,text.indexOf(') ***'));
+      if ( id == 'None') {
+        showAlert('Unable to '+mode+' anterior biom','danger','alert_ant_'+lat);
+      } else {
+        showAlert(titleCase(mode+'ed'),'success','alert_ant_'+lat);
+      };
+      $('#modal_ant').modal('hide');
+      resetForm('#form_ant');
+      get_clinical({{=id_auth_user}},'{{=dateFrom}}','{{=dateTo}}');
+    },
+    error: function () {
+        showAlert('Unable to '+mode+' anterior biom!','alert_ant_'+lat);
+      }
+    });
+}
+
+function post_post_form(row,req,lat) {
+  var API_URL = (req == 'POST' ? '{{=URL('api','posterior/post_biom', scheme=True, host=True)}}/' : '{{=URL('api','posterior/post_biom', scheme=True, host=True)}}/'+ row.id);
+  var mode = (req == 'POST' ? 'add':'edit');
+  $.ajax({
+    url: API_URL,
+    type: req == 'POST' ? 'post':'put',
+    contentType: 'application/json',
+    data: JSON.stringify(row),
+    success: function (text) {
+      id = text.slice(text.indexOf('id(')+3,text.indexOf(') ***'));
+      if ( id == 'None') {
+        showAlert('Unable to '+mode+' posterior biom','danger','alert_ant_'+lat);
+      } else {
+        showAlert(titleCase(mode+'ed'),'success','alert_ant_'+lat);
+      };
+      $('#modal_post').modal('hide');
+      resetForm('#form_post');
+      get_clinical({{=id_auth_user}},'{{=dateFrom}}','{{=dateTo}}');
+    },
+    error: function () {
+        showAlert('Unable to '+mode+' posterior biom!','alert_ant_'+lat);
+      }
+    });
+}
 
 function get_exams(id,dateFrom,dateTo) {
   var API_URL = '{{=URL('api','consult', scheme=True, host=True)}}?id_auth_user='+id+'&dateFrom='+dateFrom+'&dateTo='+dateTo;
@@ -339,14 +465,13 @@ function get_exams(id,dateFrom,dateTo) {
           // console.log('rows['+i+']['+exams+']')
           // console.log(rows[i][exams]);
           for (x in rows[i][exams]) {
-            console.log('rows['+i+']['+exams+']['+x+']');
-            console.log(rows[i][exams][x]);
-            if (exams == 'rx') {
+            // console.log('rows['+i+']['+exams+']['+x+']');
+            // console.log(rows[i][exams][x]);
+            if (exams == 'rx') {     // rx **********************************
               html = [];
               side = rows[i][exams][x]['rx']['laterality'][0];
               lat = ( side == 'right'? 'right':'left');
               contralat = (side == 'right'? 'left':'right');
-              console.log(lat);
               createdOn= rows[i][exams][x]['rx']['created_on'];
               rx_origin = rows[i][exams][x]['rx']['rx_origin'][0];
               glass_type = rows[i][exams][x]['rx']['glass_type'][0];
@@ -397,11 +522,10 @@ function get_exams(id,dateFrom,dateTo) {
                 html=html.join('');
                 $('#objective .'+lat+'_mes').append(html);
               };
-            } else if (exams =='topo') {
+            } else if (exams =='topo') { // topo **********************************
               side = rows[i][exams][x]['topography']['laterality'][0];
               lat = ( side == 'right'? 'right':'left');
               contralat = (side == 'right'? 'left':'right');
-              console.log(lat);
               createdOn = rows[i][exams][x]['topography']['created_on'];
               k1 = rows[i][exams][x]['topography']['k1']+'mm@';
               k2 = rows[i][exams][x]['topography']['k2']+'mm@';
@@ -410,7 +534,7 @@ function get_exams(id,dateFrom,dateTo) {
               $('#objective .'+lat+'_mes').append('<div data-toggle="tooltip" data-placement="'+contralat+'" title="'+createdOn+'" class="'
                  +'"><span class="badge badge-kerato pull-'+lat+'">kerato</span> <strong>K1='+k1+axis1
                   +' K2='+k2+axis2+'<strong></div>');
-            } else if (exams =='tono') {
+            } else if (exams =='tono') {  // tono *********************************
               side = rows[i][exams][x]['tono']['laterality'][0];
               lat = (side == 'right'? 'right':'left');
               contralat = (side == 'right'? 'left':'right');
@@ -438,11 +562,183 @@ function get_exams(id,dateFrom,dateTo) {
   });
   }
 
+  function get_clinical(id,dateFrom,dateTo) {
+    var API_URL = '{{=URL('api','clinical', scheme=True, host=True)}}?id_auth_user='+id+'&dateFrom='+dateFrom+'&dateTo='+dateTo;
+    $.ajax({
+      url: API_URL,
+      type: 'GET',
+      dataType: 'json',
+      contentType: 'application/json',
+      success: function (data) {
+        console.log(data);
+        rows = data;
+        $('#clinical .right_obs , #clinical .left_obs').html('');
+        for (i in rows) {
+          for (clinical in rows[i]) {
+            for (x in rows[i][clinical]) {
+              console.log(clinical);
+              if (clinical == 'ant_biom') {     // ant_biom **********************************
+                html = [];
+                side = rows[i][clinical][x]['ant_biom']['laterality'][0];
+                lat = ( side == 'right'? 'right':'left');
+                contralat = (side == 'right'? 'left':'right');
+                id = rows[i][clinical][x]['ant_biom']['id'];
+                createdOn= rows[i][clinical][x]['ant_biom']['created_on'];
+                createdBy= rows[i][clinical][x]['creator']['first_name']+' '+rows[i][clinical][x]['creator']['last_name'];
+                cornea = rows[i][clinical][x]['ant_biom']['cornea'];
+                ant_chamb = rows[i][clinical][x]['ant_biom']['ant_chamb'];
+                iris = rows[i][clinical][x]['ant_biom']['iris'];
+                lens = rows[i][clinical][x]['ant_biom']['lens'];
+                other = rows[i][clinical][x]['ant_biom']['other'];
+                html.push('<div data-toggle="tooltip" data-placement="'+contralat+'" title="'+createdOn+' by '+createdBy+'" class="ant_chamb panel panel-info">');
+                html.push('<div class="panel-heading"><div class="pull-'+contralat+'"><span onclick="edit_ant_biom('+id+',\''+lat+'\');" class="glyphicon glyphicon-pencil"> <span onclick="delete_ant_biom('+id+',\''+lat+'\');" class="glyphicon glyphicon-remove"></span></div><div class="panel-title">Anterior biomicroscopy</div></div>');
+                html.push('<div class="panel-body">')
+                if (cornea != '') {
+                  html.push('<strong>cornea: </strong><span>'+cornea+'</span> ');
+                }
+                if (ant_chamb != '') {
+                  html.push('<strong>Anterior chamber: </strong><span>'+ant_chamb+'</span> ');
+                }
+                if (iris != '') {
+                  html.push('<strong>Iris: </strong><span>'+iris+'</span> ');
+                }
+                if (lens != '') {
+                  html.push('<strong>Lens:</strong><span>'+lens+'</span> ');
+                }
+                if (other != '') {
+                  html.push('<strong>Note: </strong><span>'+other+'</span> ');
+                }
+                html.push('</div></div>');
+                html=html.join('');
+                $('#clinical .'+lat+'_obs').append(html);
+              } else if (clinical =='post_biom') { // post_biom **********************************
+                html = [];
+                side = rows[i][clinical][x]['post_biom']['laterality'][0];
+                lat = ( side == 'right'? 'right':'left');
+                contralat = (side == 'right'? 'left':'right');
+                createdBy= rows[i][clinical][x]['creator']['first_name']+' '+rows[i][clinical][x]['creator']['last_name'];
+                createdOn= rows[i][clinical][x]['post_biom']['created_on'];
+                id = rows[i][clinical][x]['post_biom']['id'];
+                vitreous = rows[i][clinical][x]['post_biom']['vitreous'];
+                retina = rows[i][clinical][x]['post_biom']['retina'];
+                macula = rows[i][clinical][x]['post_biom']['macula'];
+                papil = rows[i][clinical][x]['post_biom']['papil'];
+                other = rows[i][clinical][x]['post_biom']['other'];
+                html.push('<div data-toggle="tooltip" data-placement="'+contralat+'" title="'+createdOn+' by '+createdBy+'" class="post_chamb panel panel-warning">');
+                html.push('<div class="panel-heading"><div class="pull-'+contralat+'"><span onclick="edit_post_biom('+id+',\''+lat+'\');" class="glyphicon glyphicon-pencil"> <span onclick="delete_post_biom('+id+',\''+lat+'\');" class="glyphicon glyphicon-remove"></span></div><div class="panel-title">Posterior biomicroscopy</div></div>');
+                html.push('<div class="panel-body">')
+                if (vitreous != '') {
+                  html.push('<strong>Vitreous: </strong><span>'+vitreous+'</span> ');
+                }
+                if (retina != '') {
+                  html.push('<strong>Retina: </strong><span>'+retina+'</span> ');
+                }
+                if (macula != '') {
+                  html.push('<strong>Macula: </strong><span>'+macula+'</span> ');
+                }
+                if (papil != '') {
+                  html.push('<strong>Papil:</strong><span>'+papil+'</span> ');
+                }
+                if (other != '') {
+                  html.push('<strong>Note: </strong><span>'+other+'</span> ');
+                }
+                html.push('</div></div>');
+                html=html.join('');
+                $('#clinical .'+lat+'_obs').append(html);
+              };
+              // for (m in rows[i][exams][x]) {
+              //console.log('rows['+i+']['+exams+']['+x+']'+'['+m+']');
+              //console.log(rows[i][exams][x][m]);
+              //$('.consult_content').append('<li>'+rows[i][exams][x][m]+'</li>');
+              // }
+            };
+          };
+        };
+        $('#lorem').height($('#objective .left_mes').height());
+      },
+      error: function () {
+        console.log('error getting exams');
+        }
+    });
+    }
+
+  function delete_ant_biom(id,lat) {
+    console.log(id);
+    var API_URL = '{{=URL('api','anterior', scheme=True, host=True)}}/ant_biom/'+id;
+    $.ajax({
+      url: API_URL,
+      type: 'delete',
+      success: function () {
+        showAlert('anterior biom deleted', 'success', 'alert_ant_'+lat );
+        get_clinical({{=id_auth_user}},'{{=dateFrom}}','{{=dateTo}}');
+      },
+      error: function () {
+          showAlert('Unable to delete anterior bimicroscopy!','alert_ant_'+lat);
+        }
+      });
+  }
+
+  function delete_post_biom(id,lat) {
+    console.log(id);
+    var API_URL = '{{=URL('api','posterior', scheme=True, host=True)}}/post_biom/'+id;
+    $.ajax({
+      url: API_URL,
+      type: 'delete',
+      success: function () {
+        showAlert('posterior biom deleted', 'success', 'alert_ant_'+lat );
+        get_clinical({{=id_auth_user}},'{{=dateFrom}}','{{=dateTo}}');
+      },
+      error: function () {
+          showAlert('Unable to delete anterior bimicroscopy!','alert_ant_'+lat);
+        }
+      });
+  }
+
+
+  function showAlert(title, type, panel) {
+    $('.'+panel).attr('class', panel+' badge alert-' + type || 'success')
+      .html('<i class="glyphicon glyphicon-check"></i> ' + title).show();
+    setTimeout(function () {
+      $('.'+panel).hide();
+    }, 5000);
+  }
+
+  function resetForm(form) {
+    $(form).find('input:text, input:password, input:file, select, textarea').val('');
+    $(form).find('input:radio, input:checkbox')
+       .removeAttr('checked').removeAttr('selected').parent().removeClass('active');
+    default_input = { 'cornea': 'clear', 'ant_chamb':'calm', 'iris': 'normal', 'lens':'clear', 'vitreous': 'calm and fluid',
+      'retina':'in place', 'macula': 'fovea normal', 'papil': 'colored and delimited', 'other':''
+              };
+    default_select = {};
+    default_radio = {};
+    $.each(default_input, function(key,value){
+      $(form+' input.'+key).val(value);
+    });
+    $.each(default_select, function(key,value){
+      $(form+' select.'+key).val(value);
+    });
+    $.each(default_radio, function(key,value){
+      $(form+' input.'+key+'_'+value).prop('checked',true).parent().addClass('active');
+    });
+  }
+
+  function titleCase(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1); }
+
   function round2dec(num) {
     num = Math.round(num*100)/100;
     num = num.toFixed(2);
     num >0? num='+'+num : {};
     return num;
   }
+
+  function test_null(key, value, ifnull) {
+    if ((value == null)|(value=='')) {
+      value = ifnull;
+      return value;
+    } else { return '<strong>'+key+': </strong>'+value; }
+  }
+
 
 </script>

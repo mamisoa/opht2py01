@@ -75,10 +75,20 @@ db.define_table('ant_biom',
     Field('ant_chamb','string'),
     Field('iris','string'),
     Field('lens','string'),
-    Field('vitreous','string'),
-    Field('retina','string'),
-    Field('papil','string'),
     Field('other','string'),
     auth.signature)
 
 db.ant_biom.laterality.requires = IS_IN_SET(('right','left'))
+
+db.define_table('post_biom',
+    Field('id_auth_user', 'reference auth_user', required=True),
+    Field('id_worklist', 'reference worklist'),
+    Field('laterality','list:string', required=True),
+    Field('vitreous','string'),
+    Field('retina','string'),
+    Field('macula','string'),
+    Field('papil','string'),
+    Field('other','string'),
+    auth.signature)
+
+db.post_biom.laterality.requires = IS_IN_SET(('right','left'))

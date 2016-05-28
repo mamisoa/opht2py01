@@ -369,22 +369,118 @@ def consult():
             ])
         data = '['+rows2json('rx',rows_rx)+','+rows2json('topo',rows_topo)+','+rows2json('tono',rows_tono)+']'
         return  data
+    return locals()
+
+@request.restful()
+def anterior():
+    response.view = 'generic.json'
+    def GET(**vars):
+        patient = db.auth_user.with_alias('patient')
+        creator = db.auth_user.with_alias('creator')
+        editor = db.auth_user.with_alias('editor')
+        db.ant_biom.created_by.readable = db.ant_biom.modified_by.readable = db.ant_biom.created_on.readable = db.ant_biom.modified_on.readable = db.ant_biom.id_auth_user.readable = True
+        rows =  db((db.ant_biom.id_auth_user==request.vars.id_auth_user)&(db.ant_biom.id_worklist==request.vars.id_worklist)).select(db.ant_biom.id,
+                        db.ant_biom.id_auth_user, db.ant_biom.id_worklist,
+                        db.ant_biom.laterality, db.ant_biom.cornea, db.ant_biom.ant_chamb, db.ant_biom.iris, db.ant_biom.lens,
+                        db.ant_biom.created_by,db.ant_biom.created_on, db.ant_biom.modified_by,db.ant_biom.modified_on,
+                        patient.first_name, patient.last_name, creator.first_name, creator.last_name, editor.first_name, editor.last_name,
+                        left=[patient.on(patient.id==db.ant_biom.id_auth_user),
+                        creator.on(creator.id==db.ant_biom.created_by),
+                        editor.on(editor.id==db.ant_biom.modified_by)
+                        ])
+        data = rows2json('content',rows)
+        return data
     def DELETE(tablename,record_id):
-        if tablename=='consult':
-            db(db.consult.id == record_id).delete()
+        if tablename=='ant_biom':
+            db(db.ant_biom.id == record_id).delete()
             return 'Table: '+ tablename +' *** Deleted row id('+record_id+') *** \r\n'
         else:
             raise HTTP(400)
     def PUT(tablename,record_id,**vars):
-        if tablename == 'consult':
-            db(db.consult._id==record_id).update(**vars)
+        if tablename == 'ant_biom':
+            db(db.ant_biom._id==record_id).update(**vars)
             return 'Table: '+ tablename +' *** Updated row id('+record_id+') ***  \r\n'
         else:
             raise HTTP(400)
     def POST(tablename,**vars):
-        if tablename == 'consult':
-            ret = db.consult.validate_and_insert(**vars)
+        if tablename == 'ant_biom':
+            ret = db.ant_biom.validate_and_insert(**vars)
             return 'Table: '+ tablename +' *** Added row id('+ str(ret.id) + ') *** ' + 'Error code : ' + str(ret.errors) + ' *** \r\n'
         else:
             raise HTTP(400)
+    return locals()
+
+@request.restful()
+def posterior():
+    response.view = 'generic.json'
+    def GET(**vars):
+        patient = db.auth_user.with_alias('patient')
+        creator = db.auth_user.with_alias('creator')
+        editor = db.auth_user.with_alias('editor')
+        db.post_biom.created_by.readable = db.post_biom.modified_by.readable = db.post_biom.created_on.readable = db.post_biom.modified_on.readable = db.post_biom.id_auth_user.readable = True
+        rows =  db((db.post_biom.id_auth_user==request.vars.id_auth_user)&(db.post_biom.id_worklist==request.vars.id_worklist)).select(db.post_biom.id,
+                        db.post_biom.id_auth_user, db.post_biom.id_worklist,
+                        db.post_biom.laterality, db.post_biom.vitreous, db.post_biom.retina, db.post_biom.papil, db.post_biom.other,
+                        db.post_biom.created_by,db.post_biom.created_on, db.post_biom.modified_by,db.post_biom.modified_on,
+                        patient.first_name, patient.last_name, creator.first_name, creator.last_name, editor.first_name, editor.last_name,
+                        left=[patient.on(patient.id==db.post_biom.id_auth_user),
+                        creator.on(creator.id==db.post_biom.created_by),
+                        editor.on(editor.id==db.post_biom.modified_by)
+                        ])
+        data = rows2json('content',rows)
+        return data
+    def DELETE(tablename,record_id):
+        if tablename=='post_biom':
+            db(db.post_biom.id == record_id).delete()
+            return 'Table: '+ tablename +' *** Deleted row id('+record_id+') *** \r\n'
+        else:
+            raise HTTP(400)
+    def PUT(tablename,record_id,**vars):
+        if tablename == 'post_biom':
+            db(db.post_biom._id==record_id).update(**vars)
+            return 'Table: '+ tablename +' *** Updated row id('+record_id+') ***  \r\n'
+        else:
+            raise HTTP(400)
+    def POST(tablename,**vars):
+        if tablename == 'post_biom':
+            ret = db.post_biom.validate_and_insert(**vars)
+            return 'Table: '+ tablename +' *** Added row id('+ str(ret.id) + ') *** ' + 'Error code : ' + str(ret.errors) + ' *** \r\n'
+        else:
+            raise HTTP(400)
+    return locals()
+
+@request.restful()
+def clinical():
+    from datetime import datetime
+    response.view = 'generic.json'
+    def GET(**vars):
+        patient = db.auth_user.with_alias('patient')
+        creator = db.auth_user.with_alias('creator')
+        editor = db.auth_user.with_alias('editor')
+        dateFrom = datetime.strptime(request.vars.dateFrom,'%Y-%m-%d %H:%M:%S')
+        dateTo =  datetime.strptime(request.vars.dateTo,'%Y-%m-%d %H:%M:%S')
+        if dateFrom > dateTo:
+            raise HTTP(400)
+        else:
+            dateFrom = dateFrom.strftime('%Y-%m-%d %H:%M:%S')
+            dateTo = dateTo.strftime('%Y-%m-%d %H:%M:%S')
+        db.ant_biom.created_by.readable = db.ant_biom.modified_by.readable = db.ant_biom.created_on.readable = db.ant_biom.modified_on.readable = db.ant_biom.id_auth_user.readable = True
+        db.post_biom.created_by.readable = db.post_biom.modified_by.readable = db.post_biom.created_on.readable = db.post_biom.modified_on.readable = db.post_biom.id_auth_user.readable = True
+        rows_ant_biom = db((db.ant_biom.id_auth_user == request.vars.id_auth_user)&(db.ant_biom.created_on > dateFrom)&(db.ant_biom.created_on <= dateTo) ).select(db.ant_biom.id,
+            db.ant_biom.cornea, db.ant_biom.ant_chamb,
+            db.ant_biom.iris, db.ant_biom.lens, db.ant_biom.other, db.ant_biom.laterality,
+            creator.first_name, creator.last_name, db.ant_biom.created_on,
+            patient.first_name, patient.last_name,
+            left=[patient.on(patient.id==db.ant_biom.id_auth_user),
+            creator.on(creator.id==db.ant_biom.created_by)
+            ])
+        rows_post_biom = db((db.post_biom.id_auth_user == request.vars.id_auth_user)&(db.post_biom.created_on > dateFrom)&(db.post_biom.created_on <= dateTo)).select(db.post_biom.id,
+            db.post_biom.vitreous, db.post_biom.retina, db.post_biom.macula, db.post_biom.papil, db.post_biom.other, db.post_biom.laterality,
+            creator.first_name, creator.last_name, db.post_biom.created_on,
+            patient.first_name, patient.last_name,
+            left=[patient.on(patient.id==db.post_biom.id_auth_user),
+            creator.on(creator.id==db.post_biom.created_by)
+            ])
+        data = '['+rows2json('ant_biom',rows_ant_biom)+','+rows2json('post_biom',rows_post_biom)+']'
+        return  data
     return locals()

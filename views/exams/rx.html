@@ -54,10 +54,10 @@
       margin: 0 auto;
   }
 
-.col-sm-2 {
-  padding-left: 5px;
-  padding-right: 5px;
-}
+  .col-sm-2 {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
 
   h3, h1 {
     text-align: center;
@@ -107,13 +107,13 @@
     margin-right: -10px;
   }
 
-#form_right .submit, #form_left .submit {
-  margin-top: 10px;
-}
+  #form_right .submit, #form_left .submit {
+    margin-top: 10px;
+  }
 
-.machines {
-  margin-top: 5px;
-}
+  .machines {
+    margin-top: 5px;
+  }
 
 </style>
 
@@ -1403,7 +1403,7 @@ function resetForm(form) {
               'add_int': '0.00', 'add_close': '0.00', 'note': ''
             };
   default_select = { 'opto_far':'Letters', 'opto_int':'Parinaud', 'opto_close':'Parinaud' };
-  default_radio = { 'rx_origin': 'autorx', 'glass_type': 'monofocal'}
+  default_radio = { 'rx_origin': 'autorx', 'glass_type': 'monofocal'};
   $.each(default_input, function(key,value){
     $(form+' input.'+key).val(value);
   });
