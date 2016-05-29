@@ -117,6 +117,11 @@
     overflow: auto;
   }
 
+#clinical .glyphicon {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
 </style>
 {{end}}
 
@@ -244,6 +249,10 @@
         </div>
         <div class="modal-body">
           <div class="form-group hidden">
+            <label>ID</label>
+            <input type="text" class="form-control id" name="id" value="">
+          </div>
+          <div class="form-group hidden">
             <label>Task ID</label>
             <input type="text" class="form-control id_worklist" name="id_worklist" value="">
           </div>
@@ -294,6 +303,10 @@
           <h4 class="modal-title" id="">Posterior biomicroscopy for {{=patient}}</h4>
         </div>
         <div class="modal-body">
+          <div class="form-group hidden">
+            <label>ID</label>
+            <input type="text" class="form-control id" name="id" value="">
+          </div>
           <div class="form-group hidden">
             <label>Task ID</label>
             <input type="text" class="form-control id_worklist" name="id_worklist" value="">
@@ -370,7 +383,11 @@ $(function() {
       row[$(this).attr('name')] = $(this).val();
     });
     console.log(row);
-    post_ant_form(row,'POST',$('#form_ant input.laterality').val());
+    if (row['id']=="") {
+      post_ant_form(row,'POST',$('#form_ant input.laterality').val());
+    } else {
+      post_ant_form(row,'PUT',$('#form_ant input.laterality').val());
+    }
   });
 
 // ********* posterior biom *******************
@@ -393,7 +410,11 @@ $('#form_post button.submit').click(function(e){
     row[$(this).attr('name')] = $(this).val();
   });
   console.log(row);
-  post_post_form(row,'POST',$('#form_post input.laterality').val());
+  if (row['id']=="") {
+    post_post_form(row,'POST',$('#form_post input.laterality').val());
+  } else {
+    post_post_form(row,'PUT',$('#form_post input.laterality').val());
+  }
 });
 
 
@@ -425,6 +446,17 @@ function post_ant_form(row,req,lat) {
     });
 }
 
+function edit_ant_biom(id,lat) {
+  row = { cornea: "", ant_chamb: "", iris: "", lens:"", other: "", laterality: lat, id: ""};
+  $('#ant_chamb_'+id).find('span[name]').each(function () {
+     row[$(this).attr('name')] = $(this).text();
+  });
+  row['id']=id;
+  console.log(row);
+  fill_form(row, '#modal_ant');
+  $('#modal_ant').modal('show');
+}
+
 function post_post_form(row,req,lat) {
   var API_URL = (req == 'POST' ? '{{=URL('api','posterior/post_biom', scheme=True, host=True)}}/' : '{{=URL('api','posterior/post_biom', scheme=True, host=True)}}/'+ row.id);
   var mode = (req == 'POST' ? 'add':'edit');
@@ -448,6 +480,17 @@ function post_post_form(row,req,lat) {
         showAlert('Unable to '+mode+' posterior biom!','alert_ant_'+lat);
       }
     });
+}
+
+function edit_post_biom(id,lat) {
+  row = { vitreous: "", macula: "", retina: "", papil:"", other: "", laterality: lat, id: ""};
+  $('#post_chamb_'+id).find('span[name]').each(function () {
+     row[$(this).attr('name')] = $(this).text();
+  });
+  row['id']=id;
+  console.log(row);
+  fill_form(row, '#modal_post');
+  $('#modal_post').modal('show');
 }
 
 function get_exams(id,dateFrom,dateTo) {
@@ -590,23 +633,23 @@ function get_exams(id,dateFrom,dateTo) {
                 iris = rows[i][clinical][x]['ant_biom']['iris'];
                 lens = rows[i][clinical][x]['ant_biom']['lens'];
                 other = rows[i][clinical][x]['ant_biom']['other'];
-                html.push('<div data-toggle="tooltip" data-placement="'+contralat+'" title="'+createdOn+' by '+createdBy+'" class="ant_chamb panel panel-info">');
-                html.push('<div class="panel-heading"><div class="pull-'+contralat+'"><span onclick="edit_ant_biom('+id+',\''+lat+'\');" class="glyphicon glyphicon-pencil"> <span onclick="delete_ant_biom('+id+',\''+lat+'\');" class="glyphicon glyphicon-remove"></span></div><div class="panel-title">Anterior biomicroscopy</div></div>');
+                html.push('<div data-toggle="tooltip" data-placement="'+contralat+'" title="'+createdOn+' by '+createdBy+'" id="ant_chamb_'+id+'" class="panel panel-info">');
+                html.push('<div class="panel-heading"><div class="pull-'+contralat+'"><span onclick="edit_ant_biom('+id+',\''+lat+'\');" class="glyphicon glyphicon-pencil"><span><span onclick="delete_ant_biom('+id+',\''+lat+'\');" class="glyphicon glyphicon-remove"></span></div><div class="panel-title">Anterior biomicroscopy</div></div>');
                 html.push('<div class="panel-body">')
                 if (cornea != '') {
-                  html.push('<strong>cornea: </strong><span>'+cornea+'</span> ');
+                  html.push('<strong>Cornea: </strong><span name="cornea">'+cornea+'</span> ');
                 }
                 if (ant_chamb != '') {
-                  html.push('<strong>Anterior chamber: </strong><span>'+ant_chamb+'</span> ');
+                  html.push('<strong>Anterior chamber: </strong><span name="ant_chamb">'+ant_chamb+'</span> ');
                 }
                 if (iris != '') {
-                  html.push('<strong>Iris: </strong><span>'+iris+'</span> ');
+                  html.push('<strong>Iris: </strong><span name="iris">'+iris+'</span> ');
                 }
                 if (lens != '') {
-                  html.push('<strong>Lens:</strong><span>'+lens+'</span> ');
+                  html.push('<strong>Lens: </strong><span name="lens">'+lens+'</span> ');
                 }
                 if (other != '') {
-                  html.push('<strong>Note: </strong><span>'+other+'</span> ');
+                  html.push('<strong>Note: </strong><span name="other">'+other+'</span> ');
                 }
                 html.push('</div></div>');
                 html=html.join('');
@@ -624,23 +667,23 @@ function get_exams(id,dateFrom,dateTo) {
                 macula = rows[i][clinical][x]['post_biom']['macula'];
                 papil = rows[i][clinical][x]['post_biom']['papil'];
                 other = rows[i][clinical][x]['post_biom']['other'];
-                html.push('<div data-toggle="tooltip" data-placement="'+contralat+'" title="'+createdOn+' by '+createdBy+'" class="post_chamb panel panel-warning">');
-                html.push('<div class="panel-heading"><div class="pull-'+contralat+'"><span onclick="edit_post_biom('+id+',\''+lat+'\');" class="glyphicon glyphicon-pencil"> <span onclick="delete_post_biom('+id+',\''+lat+'\');" class="glyphicon glyphicon-remove"></span></div><div class="panel-title">Posterior biomicroscopy</div></div>');
+                html.push('<div data-toggle="tooltip" data-placement="'+contralat+'" title="'+createdOn+' by '+createdBy+'" id="post_chamb_'+id+'" class="panel panel-warning">');
+                html.push('<div class="panel-heading"><div class="pull-'+contralat+'"><span onclick="edit_post_biom('+id+',\''+lat+'\');" class="glyphicon glyphicon-pencil"></span><span onclick="delete_post_biom('+id+',\''+lat+'\');" class="glyphicon glyphicon-remove"></span></div><div class="panel-title">Posterior biomicroscopy</div></div>');
                 html.push('<div class="panel-body">')
                 if (vitreous != '') {
-                  html.push('<strong>Vitreous: </strong><span>'+vitreous+'</span> ');
+                  html.push('<strong>Vitreous: </strong><span name="vitreous">'+vitreous+'</span> ');
                 }
                 if (retina != '') {
-                  html.push('<strong>Retina: </strong><span>'+retina+'</span> ');
+                  html.push('<strong>Retina: </strong><span name="retina">'+retina+'</span> ');
                 }
                 if (macula != '') {
-                  html.push('<strong>Macula: </strong><span>'+macula+'</span> ');
+                  html.push('<strong>Macula: </strong><span name="macula">'+macula+'</span> ');
                 }
                 if (papil != '') {
-                  html.push('<strong>Papil:</strong><span>'+papil+'</span> ');
+                  html.push('<strong>Papil: </strong><span name="papil">'+papil+'</span> ');
                 }
                 if (other != '') {
-                  html.push('<strong>Note: </strong><span>'+other+'</span> ');
+                  html.push('<strong>Note: </strong><span name="other">'+other+'</span> ');
                 }
                 html.push('</div></div>');
                 html=html.join('');
@@ -721,6 +764,12 @@ function get_exams(id,dateFrom,dateTo) {
     $.each(default_radio, function(key,value){
       $(form+' input.'+key+'_'+value).prop('checked',true).parent().addClass('active');
     });
+  }
+
+  function fill_form(key_val, form) {
+    for (key in key_val) {
+        $(form+' input[name="'+key+'"]').val(key_val[key]);
+    }
   }
 
   function titleCase(string) {
