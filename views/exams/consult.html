@@ -59,19 +59,19 @@
     border:1px solid grey;
   }
 
-  .left_mes, .left_clinic {
+  .left_mes, .left_clinic, .left_conclusion {
     text-align: left;
   }
 
-  .right_mes, .right_clinic {
+  .right_mes, .right_clinic , .right_conclusion {
     text-align: right;
   }
 
-  .both_mes, .both_clinic {
+  .both_mes, .both_clinic, .global_conclusion {
     text-align: center;
   }
 
-  #objective, #clinical {
+  #objective, #clinical, #conclusions {
      border: 1px solid grey;
      margin-bottom: 5px;
      text-align: center;
@@ -153,7 +153,7 @@
   </div>
 </div> <!--header/title -->
 
-<div class="container-fluid" id="objective">
+<div class="container-fluid" id="objective"> <!-- container objective -->
   <div class="row">
     <div class="col-md-8">
       <div class="row"> <!-- row both mes -->
@@ -192,51 +192,92 @@
   </div> <!-- row -->
 </div> <!-- container -->
 
-<div class="container-fluid" id="clinical">
-  <div class="row">
+<div class="container-fluid" id="clinical"> <!-- container clinical -->
+  <div class="row"> <!-- main title -->
     <div class="col-md-12">
       <div class="well well-sm">
         Clinical exam
       </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="col-md-8 both_clinic">
+  </div> <!-- main title -->
+  <div class="row"> <!-- main row -->
+    <div class="col-md-8 both_clinic"> <!-- both clinic -->
       <div class="row">
-        <div class="col-md-6 right_clinic">
+        <div class="col-md-6 right_clinic"> <!-- right clinic -->
           <div class="well well-sm">
             Right eye
             <div class="pull-left">
               <button type="button" class="btn btn-info btn-xs ant-right">Anterior</button>
               <button type="button" class="btn btn-warning btn-xs post-right">Posterior</button>
-              <button type="button" class="btn btn-success btn-xs diag-right">Diag</button>
-              <button type="button" class="btn btn-danger btn-xs strategy-right">Strategy</button>
               <span class="alert_ant_right"></span>
             </div>
           </div>
           <div class="right_obs"></div>
-        </div>
-        <div class="col-md-6 left_clinic">
+        </div> <!-- right clinic -->
+        <div class="col-md-6 left_clinic"> <!-- left clinic -->
           <div class="well well-sm">
             Left eye
             <div class="pull-right">
               <span class="alert_ant_left"></span>
               <button type="button" class="btn btn-info btn-xs ant-left">Anterior</button>
               <button type="button" class="btn btn-warning btn-xs post-left">Posterior</button>
-              <button type="button" class="btn btn-success btn-xs diag-left">Diag</button>
-              <button type="button" class="btn btn-danger btn-xs strategy-left">Strategy</button>
             </div>
           </div>
           <div class="left_obs"></div>
+        </div><!-- right clinic -->
+      </div>
+    </div> <!-- both clinic -->
+    <div class="col-md-4 action_clinic"> <!-- action clinic -->
+      <div class="well well-sm">
+        Actions
+      </div>
+
+    </div><!-- action clinic -->
+  </div> <!-- main row -->
+</div> <!-- container clinical -->
+
+<div class="container-fluid" id="conclusions">
+  <div class="row"> <!-- conclusions title -->
+    <div class="col-md-12">
+      <div class="well well-sm">
+        Conclusions
+      </div>
+    </div>
+  </div> <!-- conclusions title -->
+  <div class="row"> <!-- secondary row -->
+    <div class="col-md-4 right_conclusion"> <!-- right conclusions -->
+      <div class="well well-sm">
+        Right eye
+        <div class="pull-left">
+          <button type="button" class="btn btn-success btn-xs diag-right">Diag</button>
+          <button type="button" class="btn btn-danger btn-xs strategy-right">Strategy</button>
+          <span class="alert_conc_right"></span>
         </div>
       </div>
-    </div>
-    <div class="col-md-4">
-      <div class="well well-sm action_clinic">
-        Prescriptions
+      <div class="right_conclusion_content"></div>
+    </div> <!-- right conclusions -->
+    <div class="col-md-4 left_conclusion"> <!-- left conclusions-->
+      <div class="well well-sm">
+        Left eye
+        <div class="pull-right">
+          <button type="button" class="btn btn-success btn-xs diag-left">Diag</button>
+          <button type="button" class="btn btn-danger btn-xs strategy-left">Strategy</button>
+          <span class="alert_conc_left"></span>
+        </div>
       </div>
-    </div>
-  </div>
+      <div class="left_conclusion_content"></div>
+    </div> <!-- left conclusions -->
+    <div class="col-md-4 global_conclusion"> <!-- both conclusions -->
+      <div class="well well-sm">
+        Global
+        <div class="pull-right">
+          <button type="button" class="btn btn-success btn-xs diag-global">Diag</button>
+          <button type="button" class="btn btn-danger btn-xs strategy-global">Strategy</button>
+          <span class="alert_conc_global"></span>
+        </div>
+      </div>
+    </div> <!-- global conclusions -->
+  </div> <!-- secondary row -->
 </div>
 
 <div class="modal fade" id="modal_ant" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
@@ -504,18 +545,17 @@ function get_exams(id,dateFrom,dateTo) {
       console.log(data);
       rows = data;
       for (i in rows) {
-        for (exams in rows[i]) { // rows[0] = {tono: Array[4]}
-          // console.log('rows['+i+']['+exams+']')
-          // console.log(rows[i][exams]);
+        for (exams in rows[i]) {
           for (x in rows[i][exams]) {
             // console.log('rows['+i+']['+exams+']['+x+']');
             // console.log(rows[i][exams][x]);
-            if (exams == 'rx') {     // rx **********************************
+            if (exams == 'rx') {                     // rx **********************************
               html = [];
               side = rows[i][exams][x]['rx']['laterality'][0];
               lat = ( side == 'right'? 'right':'left');
               contralat = (side == 'right'? 'left':'right');
               createdOn= rows[i][exams][x]['rx']['created_on'];
+              createdBy= rows[i][exams][x]['creator']['first_name']+' '+rows[i][exams][x]['creator']['last_name'];
               rx_origin = rows[i][exams][x]['rx']['rx_origin'][0];
               glass_type = rows[i][exams][x]['rx']['glass_type'][0];
               va_far = rows[i][exams][x]['rx']['va_far'];
@@ -534,7 +574,7 @@ function get_exams(id,dateFrom,dateTo) {
               cyl_close = round2dec(rows[i][exams][x]['rx']['cyl_close']);
               axis_close = rows[i][exams][x]['rx']['axis_close']+'°';
               se_far = round2dec(rows[i][exams][x]['rx']['sph_far']+rows[i][exams][x]['rx']['cyl_far']/2);
-              html.push('<div data-toggle="tooltip" data-placement="'+contralat+'" title="'+createdOn+'" class="rx_mes">');
+              html.push('<div data-toggle="tooltip" data-placement="'+contralat+'" title="'+createdOn+' by '+createdBy+'" class="rx_mes">');
               if ((rx_origin == 'autorx')|(rx_origin == 'dil')|(rx_origin == 'cyclo')) {
                 html.push('<div><span class="badge badge-rx pull-'+lat+'">'+rx_origin+'</span></div>');
                 html.push('<div>VA(<strong>far</strong>,'+opto_far+')=<strong>'+va_far+'</strong> / <strong>'+sph_far+'('+cyl_far+' x'+axis_far+')</strong> / SE=<strong>'+se_far+'</strong></div>')
@@ -565,35 +605,33 @@ function get_exams(id,dateFrom,dateTo) {
                 html=html.join('');
                 $('#objective .'+lat+'_mes').append(html);
               };
-            } else if (exams =='topo') { // topo **********************************
+            } else if (exams =='topo') {                  // topo **********************************
               side = rows[i][exams][x]['topography']['laterality'][0];
               lat = ( side == 'right'? 'right':'left');
               contralat = (side == 'right'? 'left':'right');
               createdOn = rows[i][exams][x]['topography']['created_on'];
+              createdBy= rows[i][exams][x]['creator']['first_name']+' '+rows[i][exams][x]['creator']['last_name'];
               k1 = rows[i][exams][x]['topography']['k1']+'mm@';
               k2 = rows[i][exams][x]['topography']['k2']+'mm@';
               axis1 = rows[i][exams][x]['topography']['axis1']+'°';
               axis2 = rows[i][exams][x]['topography']['axis2']+'°';
-              $('#objective .'+lat+'_mes').append('<div data-toggle="tooltip" data-placement="'+contralat+'" title="'+createdOn+'" class="'
+              $('#objective .'+lat+'_mes').append('<div data-toggle="tooltip" data-placement="'+contralat+'" title="'+createdOn+' by '+createdBy+'" class="'
                  +'"><span class="badge badge-kerato pull-'+lat+'">kerato</span> <strong>K1='+k1+axis1
                   +' K2='+k2+axis2+'<strong></div>');
-            } else if (exams =='tono') {  // tono *********************************
+            } else if (exams =='tono') {               // tono *********************************
               side = rows[i][exams][x]['tono']['laterality'][0];
               lat = (side == 'right'? 'right':'left');
               contralat = (side == 'right'? 'left':'right');
               console.log(lat);
               tio = rows[i][exams][x]['tono']['tonometry']+'mmHg';
               techno = rows[i][exams][x]['tono']['techno'][0];
-              createdOn = ' @ '+(Date.parse(rows[i][exams][x]['tono']['created_on'])).toString('HH:mm');
+              createdOnTime = ' @ '+(Date.parse(rows[i][exams][x]['tono']['created_on'])).toString('HH:mm');
+              createdOn = rows[i][exams][x]['tono']['created_on'];
               html =[];
-              $('#objective .'+lat+'_mes').append('<div class="'+'"><span class="badge badge-tono pull-'+lat+'">TIO</span><span class="badge badge-'
-               +techno+' pull-'+lat+'">'+techno+'</span><strong>'+tio+'</strong>'+createdOn+'</div>');
+              $('#objective .'+lat+'_mes').append('<div data-toggle="tooltip" data-placement="'+contralat+'" title="'+createdOn+' by '+createdBy+'" class="'+
+              '"><span class="badge badge-tono pull-'+lat+'">TIO</span><span class="badge badge-'
+               +techno+' pull-'+lat+'">'+techno+'</span><strong>'+tio+'</strong>'+createdOnTime+'</div>');
             };
-            // for (m in rows[i][exams][x]) {
-            //console.log('rows['+i+']['+exams+']['+x+']'+'['+m+']');
-            //console.log(rows[i][exams][x][m]);
-            //$('.consult_content').append('<li>'+rows[i][exams][x][m]+'</li>');
-            // }
           };
         };
       };
