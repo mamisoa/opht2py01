@@ -484,3 +484,24 @@ def clinical():
         data = '['+rows2json('ant_biom',rows_ant_biom)+','+rows2json('post_biom',rows_post_biom)+']'
         return  data
     return locals()
+
+@request.restful()
+def icd10():
+    import libxml2
+    icd10_xml = libxml2.parseDoc(open('/home/www-data/web2py/applications'+URL('static','icd10/icdClaML2016ens.xml'),'r').read())
+    response.view = 'generic.json'
+    def GET(**vars):
+        search_str = request.vars.search
+        search_str_cap = search_str.capitalize()
+        xpath_req = '//Label[contains(text(),"'+search_str+'") or contains(text(),"'+search_str_cap+'")]/text()'
+        diags = icd10_xml.xpathEval(xpath_req)
+        concat = '{ "'+'diaglist'+'": ['
+        for diag in diags:
+            diag_str = '"'+str(XML(diag))+'"'
+            # diag_str = diag_str.replace('[','*')
+            # diag_str = diag_str.replace(']','*')
+            concat = concat + diag_str +","
+        concat = concat.strip(',')
+        concat = concat + ']}'
+        return concat
+    return locals()

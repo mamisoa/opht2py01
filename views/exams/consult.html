@@ -775,6 +775,22 @@ function get_exams(id,dateFrom,dateTo) {
       });
   }
 
+  function diag(search) {
+      var API_URL = '{{=URL('api','icd10', scheme=True, host=True)}}?search='+search;
+      $.ajax({
+        url: API_URL,
+        type: 'GET',
+        dataType: 'json',
+        contentType: 'application/json',
+        success: function (data) {
+          diag_list = data.diaglist;
+          console.log(diag_list);
+          },
+        error: function () {
+          alert('Address not found!');
+          }
+      });
+  }
 
   function showAlert(title, type, panel) {
     $('.'+panel).attr('class', panel+' badge alert-' + type || 'success')
