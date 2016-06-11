@@ -1,0 +1,1 @@
+//chapter/section/diag/(desc[contains(text(),'herp')] | desc[contains(text(),'Herp')])/(preceding-sibling::*|self::*|following-sibling::*)
