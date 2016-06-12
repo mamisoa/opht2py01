@@ -488,20 +488,21 @@ def clinical():
 @request.restful()
 def icd10():
     import libxml2
-    icd10_xml = libxml2.parseDoc(open('/home/www-data/web2py/applications'+URL('static','icd10/icdClaML2016ens.xml'),'r').read())
-    response.view = 'generic.json'
+    icd10_xml = libxml2.parseDoc(open('/home/www-data/web2py/applications'+URL('static','icd10/icd10cm/Tabular.xml'),'r').read())
+    response.view = 'generic.xml'
     def GET(**vars):
         search_str = request.vars.search
         search_str_cap = search_str.capitalize()
-        xpath_req = '//Label[contains(text(),"'+search_str+'") or contains(text(),"'+search_str_cap+'")]/text()'
+        # xpath_req = '//chapter/section/diag/desc[contains(text(),"'+search_str+'") or contains(text(),"'+search_str.capitalize()+'")]/../descendant::diag'
+        xpath_req = '//chapter/section/diag/desc[contains(text(),"'+search_str+'") or contains(text(),"'+search_str.capitalize()+'")]/../diag'
+        # xpath_req = '//chapter/section/diag/diag/desc[contains(text(),"'+search_str+'") or contains(text(),"'+search_str.capitalize()+'")]/../../diag'
         diags = icd10_xml.xpathEval(xpath_req)
-        concat = '{ "'+'diaglist'+'": ['
+        # concat = '{ "'+'diaglist'+'": ['
+        concat = '<?xml version="1.0" encoding="utf-8"?>\n<main>\n'
+        # concat = '\n<main>\n'
         for diag in diags:
-            diag_str = '"'+str(XML(diag))+'"'
-            # diag_str = diag_str.replace('[','*')
-            # diag_str = diag_str.replace(']','*')
-            concat = concat + diag_str +","
-        concat = concat.strip(',')
-        concat = concat + ']}'
+            diag_str = str(XML(diag))
+            concat = concat + diag_str + '\n'
+        concat = concat + '</main>'
         return concat
     return locals()

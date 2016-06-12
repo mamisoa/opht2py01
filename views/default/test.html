@@ -1,59 +1,156 @@
 {{extend 'layout.html'}}
 {{block head}}
-<!-- bootstrap-table -->
-<link rel="stylesheet" href="{{=URL('static','css/bootstrap-table.css')}}" />
-<script src="{{=URL('static','js/bootstrap-table.js')}}"></script>
-<script src="{{=URL('static','js/locale/bootstrap-table-fr-BE.min.js')}}"></script>
-<!-- bootstrap-table EDITABLE extention-->
-<link rel="stylesheet" href="{{=URL('static','css/bootstrap-table.css')}}" />
-<script src="{{=URL('static','js/extensions/editable/bootstrap-table-editable.js')}}"></script>
-<!-- bootstrap-table x-editable extention https://vitalets.github.io/x-editable/ -->
-<link rel="stylesheet" href="{{=URL('static','css/bootstrap-editable.css')}}" />
-<script src="{{=URL('static','js/bootstrap-editable.js')}}"></script>
 <style>
-       .update {
-           color: #333;
-       }
-       .remove {
-           color: red;
-       }
+  .inclusion {
+    background-color: Green;
+    color: white;
+    margin-left: 20px;
+  }
+  .exclusion1 {
+    background-color: Red;
+    color: white;
+    margin-left: 20px;
+  }
+  .exclusion2 {
+    background-color: Orange;
+    color: white;
+    margin-left: 20px;
+  }
+  .subdiag {
+    background-color: LightBlue;
+    color: black;
+    margin-left: 20px;
+  }
+  .specify {
+    background-color: Ivory;
+    color: black;
+    margin-left: 10px;
+  }
+
+  .code {
+    background-color: Crimson;
+    color: White;
+  }
+
+  ol {
+    list-style-type: decimal;
+  }
 </style>
 {{end}}
 
-<ul id="addresses_list">
-</ul>
+<div class="row">
+  <div class="container">
+    <div class="col-md-4">
+      <form id="diag" class="" action="index.html" onsubmit="return false;">
+        <div class="input-group">
+          <input type="text" class="form-control desc" placeholder="icd-10 description"></input>
+          <span class="input-group-btn"><button class="btn btn-primary submit" type="button">search</button></span>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="container">
+    <div class="col-md-4">
+      <div class="test">
+      </div>
+    </div>
+  </div>
+</div>
 
 
-{{=juser_addresses}}
 
 <script type="text/javascript">
 
-var user_a = {{=juser_addresses}};
+// var xmltest = '<?xml version="1.0" encoding="utf-8"?><diag><name>A60.00</name><desc>Herpesviral infection of urogenital system </desc><diag><name>002</name><desc>child</desc></diag></diag>',
+//  xmlDoc = $.parseXML(xmltest),
+//  $xml = $(xmlDoc),
+//  $result = $xml.find('desc');
+//  $result2 = $xml.children('diag').children('desc');
+// $('div.test').append('find("desc"): '+$result.text()+'<br/>');
+// $('div.test').append('children("desc"): '+$result2.text());
 
-$(function () {
-  li_address(user_a.addresses);
-});
+$('#diag .submit').click(function(e){
+  e.preventDefault();
+  search_str= $('#diag input.desc').val();
+  console.log(search_str);
+  get_diag(search_str);
+})
 
+function get_diag(search_str) {
+  var API_URL = '{{=URL('api','icd10.xml', scheme=True, host=True)}}?search='+search_str;
+  $.ajax({
+    url: API_URL,
+    type: 'GET',
+    dataType: 'xml',
+    contentType: 'application/xml',
+    success: function (data) {
+      html = ['<ol>'];
+      $(data).children('main').children('diag').children('desc').each(function() {
+        // console.log('desc: '+$(this).text());
+        html.push('<li>'+'<div>'+$(this).text()+' <span class="code">'+$(this).parent().children('name').text()+'</span></div>');
+        $inclusion = $(this).parent().children('inclusionTerm').children('note');
+        if ($inclusion.length > 0) {
+          html.push('<div class="inclusion">Inclusion<ul>');
+          $inclusion.each(function() {
+            // console.log($(this).text());
+            html.push('<li>'+$(this).text()+'</li>');
+          });
+          html.push('</ul></div>');
+        }
+        $exclusion1 = $(this).parent().children('excludes1').children('note');
+        if ($exclusion1.length > 0) {
+          html.push('<div class="exclusion1">Exclusion1<ul>');
+          $exclusion1.each(function() {
+            // console.log($(this).text());
+            html.push('<li>'+$(this).text()+'</li>');
+          });
+          html.push('</ul></div>');
+        }
+        $exclusion2 = $(this).parent().children('excludes2').children('note');
+        if ($exclusion2.length > 0) {
+          html.push('<div class="exclusion2">Exclusion2<ul>');
+          $exclusion2.each(function() {
+            // console.log($(this).text());
+            html.push('<li>'+$(this).text()+'</li>');
+          });
+          html.push('</ul></div>');
+        }
+        $subdiag = $(this).parent().children('diag').children('desc');
+        if ($subdiag.length > 0) {
+          html.push('<div class="subdiag">Subdiag<ul>');
+          $subdiag.each(function() {
+            // console.log($(this).text());
+            html.push('<li>'+$(this).text()+' <span class="code">'+$(this).parent().children('name').text()+'</span>');
+            $specify = $(this).parent().children('diag').children('desc');
+            if ($specify.length > 0) {
+              console.log($(this).text());
+              html.push('<div class="specify">Specify<ul>');
+              $specify.each(function() {
+                console.log($(this).text());
+                html.push('<li>'+$(this).text()+' <span class="code">'+$(this).parent().children('name').text()+'</span></li>');
+              });
+              html.push('</ul></div>');
+            }
+            html.push('</li>')
+          });
+          html.push('</ul></div>');
+        }
+        html.push('</li>');
+      });
+      html.push('</ol>');
+      $('div.test').html(html.join(''));
+    },
+    error: function () {
+      console.log('error getting exams');
+      }
+  });
+  }
 
-function li_address (row) {
-  var html = [];
-  $.each(row, function (key, value) {
-    html.push('<li class="list-group-item clearfix" data-toggle="tooltip" data-placement="top" id="li_"'+ key + '" title="'+ test_null(row[key]['modified_on'])+'">'); // tooltip
-    html.push('<span>'+test_null(row[key]['home_num_pid11_1'])+' </span><span>'+ test_null(row[key]['box_num_pid11_2']) +' </span><span>'+ test_null(row[key]['address1_pid11_3']) + ' '+ test_null(row[key]['address2_pid11_4']) +'</span></br>');
-    html.push('<span> '+ test_null(row[key]['zipcode_pid11_5']) + '</span><span> ' + test_null(row[key]['town_pid11_6']) + ' </span><span>' + test_null(row[key]['country_pid11_7'])+ '</span></li>');
-    });
-  $('#addresses_list').html(html.join(''));
-}
-
-function test_null(value) {
-  if (value == null) {
-    value = 'CHECKED';
-    return value;
-  } else { return value; }
-}
-
-function test (id) {
-  return id+' hello';
-}
+$(function() {
+    $("body").tooltip({ selector: '[data-toggle=tooltip]' });
+}); // document ready
 
 </script>

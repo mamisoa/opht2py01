@@ -131,24 +131,4 @@ def get_user_name(id):
 
 
 def test():
-    import datetime
-    try:
-        user_addresses = db(db.address.id_auth_user== request.args(0)).select(db.address.id,
-            db.address.home_num_pid11_1,db.address.box_num_pid11_2, db.address.address1_pid11_3, db.address.address2_pid11_4,
-            db.address.zipcode_pid11_5, db.address.town_pid11_6, db.address.country_pid11_7,db.address.address_rank,
-            db.address.created_by, db.address.modified_by, db.address.modified_on,
-            orderby=db.address.address_rank)
-    except ValueError: redirect(URL('home'))
-    for row in user_addresses:
-        try:
-            row.created_by = str(row.created_by)
-            row.created_by = represent_auth(row.created_by,0)
-        except ValueError:
-            row.created_by = 'hello'
-        try:
-            row.modified_by = str(row.modified_by)
-            row.modified_by = represent_auth(row.modified_by,0)
-        except ValueError:
-            row.modified_by = 'hello'
-    juser_addresses = XML(rows2json('addresses', user_addresses))
     return locals()
