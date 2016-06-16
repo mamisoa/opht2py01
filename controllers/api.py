@@ -494,15 +494,23 @@ def icd10():
         search_str = request.vars.search
         search_str_cap = search_str.capitalize()
         # xpath_req = '//chapter/section/diag/desc[contains(text(),"'+search_str+'") or contains(text(),"'+search_str.capitalize()+'")]/../descendant::diag'
-        xpath_req = '//chapter/section/diag/desc[contains(text(),"'+search_str+'") or contains(text(),"'+search_str.capitalize()+'")]/../diag'
-        # xpath_req = '//chapter/section/diag/diag/desc[contains(text(),"'+search_str+'") or contains(text(),"'+search_str.capitalize()+'")]/../../diag'
-        diags = icd10_xml.xpathEval(xpath_req)
-        # concat = '{ "'+'diaglist'+'": ['
-        concat = '<?xml version="1.0" encoding="utf-8"?>\n<main>\n'
-        # concat = '\n<main>\n'
-        for diag in diags:
-            diag_str = str(XML(diag))
-            concat = concat + diag_str + '\n'
-        concat = concat + '</main>'
-        return concat
+        xpath_req1 = '//chapter/section/diag/desc[contains(text(),"'+search_str+'") or contains(text(),"'+search_str.capitalize()+'")]/../diag'
+        xpath_req2 = '//chapter/section/diag/diag/desc[contains(text(),"'+search_str+'") or contains(text(),"'+search_str.capitalize()+'")]/../../diag'
+        xpath_req3 = '//chapter/section/diag/diag/diag/desc[contains(text(),"'+search_str+'") or contains(text(),"'+search_str.capitalize()+'")]/../../../diag'
+        diags1 = icd10_xml.xpathEval(xpath_req1)
+        diags2 = icd10_xml.xpathEval(xpath_req2)
+        diags3 = icd10_xml.xpathEval(xpath_req3)
+        concat = ['<?xml version="1.0" encoding="utf-8"?>\n<main>\n']
+        for diag1 in diags1:
+            diag1_str = str(XML(diag1))
+            # concat.append(diag1_str + '\n')
+        for diag2 in diags2:
+            diag2_str = str(XML(diag2))
+            # concat.append(diag2_str + '\n')
+        for diag3 in diags3:
+            diag3_str = str(XML(diag3))
+            concat.append(diag3_str + '\n')
+        concat.append('</main>')
+        unique = list(set([x for x in concat if concat.count(x) > 1]))
+        return ''.join(concat)
     return locals()

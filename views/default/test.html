@@ -6,16 +6,37 @@
     color: white;
     margin-left: 20px;
   }
-  .exclusion1 {
+
+  .badge {
+    margin-left: 2px;
+  }
+  .badge-inclusions {
+    background-color: Green;
+    color: White;
+  }
+
+  .exclusions1 {
     background-color: Red;
     color: white;
     margin-left: 20px;
   }
-  .exclusion2 {
+
+  .badge-exclusions1 {
+    background-color: Red;
+    color: White;
+  }
+
+  .exclusions2 {
     background-color: Orange;
     color: white;
     margin-left: 20px;
   }
+
+  .badge-exclusions2 {
+    background-color: Orange;
+    color: White;
+  }
+
   .subdiag {
     background-color: LightBlue;
     color: black;
@@ -90,8 +111,25 @@ function get_diag(search_str) {
       html = ['<ol>'];
       $(data).children('main').children('diag').children('desc').each(function() {
         // console.log('desc: '+$(this).text());
-        html.push('<li>'+'<div>'+$(this).text()+' <span class="code">'+$(this).parent().children('name').text()+'</span></div>');
+        html.push('<li>'+'<div class="main_diag">'+$(this).text()+' <span class="code">'+$(this).parent().children('name').text()+'</span></div>');
+        $subdiag = $(this).parent().children('diag').children('desc');
+        if ($subdiag.length > 0) {
+          html.push('<span class="badge badge-subdiag">Subdiag</span>');
+        }
         $inclusion = $(this).parent().children('inclusionTerm').children('note');
+        if ($inclusion.length >0) {
+          html.push('<span class="badge badge-inclusions">Inclusions</span>');
+        }
+        $exclusions1 = $(this).parent().children('excludes1').children('note');
+        if ($exclusions1.length >0) {
+          html.push('<span class="badge badge-exclusions1">Exclusions 1</span>');
+        }
+        $exclusions2 = $(this).parent().children('excludes2').children('note');
+        if ($exclusions2.length >0) {
+          html.push('<span class="badge badge-exclusions2">Exclusions 2</span>');
+        }
+        html.push('<div class="main_diag_content">')
+        // $inclusion = $(this).parent().children('inclusionTerm').children('note');
         if ($inclusion.length > 0) {
           html.push('<div class="inclusion">Inclusion<ul>');
           $inclusion.each(function() {
@@ -100,48 +138,64 @@ function get_diag(search_str) {
           });
           html.push('</ul></div>');
         }
-        $exclusion1 = $(this).parent().children('excludes1').children('note');
-        if ($exclusion1.length > 0) {
-          html.push('<div class="exclusion1">Exclusion1<ul>');
-          $exclusion1.each(function() {
+        // $exclusions1 = $(this).parent().children('excludes1').children('note');
+        if ($exclusions1.length > 0) {
+          html.push('<div class="exclusions1">exclusions1<ul>');
+          $exclusions1.each(function() {
             // console.log($(this).text());
             html.push('<li>'+$(this).text()+'</li>');
           });
           html.push('</ul></div>');
         }
-        $exclusion2 = $(this).parent().children('excludes2').children('note');
-        if ($exclusion2.length > 0) {
-          html.push('<div class="exclusion2">Exclusion2<ul>');
-          $exclusion2.each(function() {
+        // $exclusions2 = $(this).parent().children('excludes2').children('note');
+        if ($exclusions2.length > 0) {
+          html.push('<div class="exclusions2">exclusions2<ul>');
+          $exclusions2.each(function() {
             // console.log($(this).text());
             html.push('<li>'+$(this).text()+'</li>');
           });
           html.push('</ul></div>');
         }
-        $subdiag = $(this).parent().children('diag').children('desc');
+        // $subdiag = $(this).parent().children('diag').children('desc');
         if ($subdiag.length > 0) {
-          html.push('<div class="subdiag">Subdiag<ul>');
+          // html.push('<button class="btn_subdiag">Subdiag</button><div class="subdiag"><ul>');
+          html.push('<div class="subdiag"><ul>');
           $subdiag.each(function() {
             // console.log($(this).text());
             html.push('<li>'+$(this).text()+' <span class="code">'+$(this).parent().children('name').text()+'</span>');
             $specify = $(this).parent().children('diag').children('desc');
             if ($specify.length > 0) {
               console.log($(this).text());
-              html.push('<div class="specify">Specify<ul>');
+              html.push('<span class="badge badge-specify">Specify</span><div class="specify"><ul>');
               $specify.each(function() {
                 console.log($(this).text());
                 html.push('<li>'+$(this).text()+' <span class="code">'+$(this).parent().children('name').text()+'</span></li>');
               });
-              html.push('</ul></div>');
+              html.push('</ul></div>'); // div specify
             }
-            html.push('</li>')
+            html.push('</li>') // li subdiag
           });
-          html.push('</ul></div>');
+          html.push('</ul></div>'); // div subdiag
         }
-        html.push('</li>');
+        html.push('</li></div>'); // div main_diag_content
       });
       html.push('</ol>');
       $('div.test').html(html.join(''));
+      // $('div.subdiag').hide();
+      $('div.specify').hide();
+      $('div.subdiag > ul > li').click(function(){
+        $(this).children('div.specify').toggle();
+         return false;
+      });
+      //$('div.main_diag_content button').click(function(){
+      //   $(this).parent().children('ul').toggle();
+      //   return false;
+      //});
+      $('div.main_diag_content').hide();
+      $('div.main_diag').click(function(){
+        $(this).parent().children('div.main_diag_content').toggle();
+        return false;
+      });
     },
     error: function () {
       console.log('error getting exams');
