@@ -496,7 +496,8 @@ def icd10():
         # xpath_req = '//chapter/section/diag/desc[contains(text(),"'+search_str+'") or contains(text(),"'+search_str.capitalize()+'")]/../descendant::diag'
         xpath_req1 = '//chapter/section/diag/desc[contains(text(),"'+search_str+'") or contains(text(),"'+search_str.capitalize()+'")]/../diag'
         xpath_req2 = '//chapter/section/diag/diag/desc[contains(text(),"'+search_str+'") or contains(text(),"'+search_str.capitalize()+'")]/../../diag'
-        xpath_req3 = '//chapter/section/diag/diag/diag/desc[contains(text(),"'+search_str+'") or contains(text(),"'+search_str.capitalize()+'")]/../../../diag'
+        # xpath_req3 = '//chapter/section/diag/diag/diag/desc[contains(text(),"'+search_str+'") or contains(text(),"'+search_str.capitalize()+'")]/../../../diag'
+        xpath_req3 = '/ICD10CM.tabular/chapter/section/diag/diag[contains(.,"'+search_str+'") or contains(.,"'+search_str.capitalize()+'")]/..'
         diags1 = icd10_xml.xpathEval(xpath_req1)
         diags2 = icd10_xml.xpathEval(xpath_req2)
         diags3 = icd10_xml.xpathEval(xpath_req3)
