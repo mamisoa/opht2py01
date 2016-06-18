@@ -493,8 +493,8 @@ def icd10():
     def GET(**vars):
         search_str = request.vars.search
         search_str_cap = search_str.capitalize()
-        # xpath_req = '//chapter/section/diag/desc[contains(text(),"'+search_str+'") or contains(text(),"'+search_str.capitalize()+'")]/../descendant::diag'
-        xpath_req1 = '//chapter/section/diag/desc[contains(text(),"'+search_str+'") or contains(text(),"'+search_str.capitalize()+'")]/../diag'
+        xpath_req1 = '/ICD10CM.tabular/chapter/section/diag[contains(.,"'+search_str+'") or contains(.,"'+search_str.capitalize()+'")]'
+        # xpath_req1 = '//chapter/section/diag/desc[contains(text(),"'+search_str+'") or contains(text(),"'+search_str.capitalize()+'")]/../diag'
         xpath_req2 = '//chapter/section/diag/diag/desc[contains(text(),"'+search_str+'") or contains(text(),"'+search_str.capitalize()+'")]/../../diag'
         # xpath_req3 = '//chapter/section/diag/diag/diag/desc[contains(text(),"'+search_str+'") or contains(text(),"'+search_str.capitalize()+'")]/../../../diag'
         xpath_req3 = '/ICD10CM.tabular/chapter/section/diag/diag[contains(.,"'+search_str+'") or contains(.,"'+search_str.capitalize()+'")]/..'
@@ -504,13 +504,13 @@ def icd10():
         concat = ['<?xml version="1.0" encoding="utf-8"?>\n<main>\n']
         for diag1 in diags1:
             diag1_str = str(XML(diag1))
-            # concat.append(diag1_str + '\n')
+            concat.append(diag1_str + '\n')
         for diag2 in diags2:
             diag2_str = str(XML(diag2))
             # concat.append(diag2_str + '\n')
         for diag3 in diags3:
             diag3_str = str(XML(diag3))
-            concat.append(diag3_str + '\n')
+            # concat.append(diag3_str + '\n')
         concat.append('</main>')
         unique = list(set([x for x in concat if concat.count(x) > 1]))
         return ''.join(concat)
