@@ -14,6 +14,15 @@
     color: White;
   }
 
+  .addCode {
+    background-color: Blue;
+    color: white;
+  }
+
+  .badge-addCode {
+    background-color: Blue;
+    color: White;
+  }
   .exclusions1 {
     background-color: Red;
     color: white;
@@ -58,7 +67,7 @@
 
 <div class="row">
   <div class="container">
-    <div class="col-md-4">
+    <div class="col-md-6">
       <form id="diag" class="" action="index.html" onsubmit="return false;">
         <div class="input-group">
           <input type="text" class="form-control desc" placeholder="icd-10 description"></input>
@@ -71,8 +80,19 @@
 
 <div class="row">
   <div class="container">
-    <div class="col-md-4">
+    <div class="col-md-6">
       <div class="test">
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">ICD-10 Codes</h3>
+        </div>
+        <div id="tabular" class="panel-body">
+        </div>
+        <div class="panel-footer">
+        </div>
       </div>
     </div>
   </div>
@@ -81,14 +101,6 @@
 
 
 <script type="text/javascript">
-
-// var xmltest = '<?xml version="1.0" encoding="utf-8"?><diag><name>A60.00</name><desc>Herpesviral infection of urogenital system </desc><diag><name>002</name><desc>child</desc></diag></diag>',
-//  xmlDoc = $.parseXML(xmltest),
-//  $xml = $(xmlDoc),
-//  $result = $xml.find('desc');
-//  $result2 = $xml.children('diag').children('desc');
-// $('div.test').append('find("desc"): '+$result.text()+'<br/>');
-// $('div.test').append('children("desc"): '+$result2.text());
 
 $('#diag .submit').click(function(e){
   e.preventDefault();
@@ -113,6 +125,10 @@ function get_diag(search_str) {
         if ($subdiag.length > 0) {
           html.push('<span class="badge badge-subdiag">Subdiag</span>');
         }
+        $addCode = $(this).parent().children('useAdditionalCode').children('note');
+        if ($addCode.length >0) {
+          html.push('<span class="badge badge-addCode">Code+</span>');
+        }
         $inclusion = $(this).parent().children('inclusionTerm').children('note');
         if ($inclusion.length >0) {
           html.push('<span class="badge badge-inclusions">Inclusions</span>');
@@ -126,16 +142,20 @@ function get_diag(search_str) {
           html.push('<span class="badge badge-exclusions2">Exclusions 2</span>');
         }
         html.push('<div class="main_diag_content">')
-        // $inclusion = $(this).parent().children('inclusionTerm').children('note');
-        if ($inclusion.length > 0) {
-          html.push('<div class="inclusion">Inclusion<ul>');
-          $inclusion.each(function() {
-            // console.log($(this).text());
+        if ($addCode.length > 0) {
+          html.push('<div class="addCode">Use additionnal code<ul>');
+          $addCode.each(function() {
             html.push('<li>'+$(this).text()+'</li>');
           });
           html.push('</ul></div>');
         }
-        // $exclusions1 = $(this).parent().children('excludes1').children('note');
+        if ($inclusion.length > 0) {
+          html.push('<div class="inclusion">Inclusion<ul>');
+          $inclusion.each(function() {
+            html.push('<li>'+$(this).text()+'</li>');
+          });
+          html.push('</ul></div>');
+        }
         if ($exclusions1.length > 0) {
           html.push('<div class="exclusions1">exclusions1<ul>');
           $exclusions1.each(function() {
@@ -144,7 +164,6 @@ function get_diag(search_str) {
           });
           html.push('</ul></div>');
         }
-        // $exclusions2 = $(this).parent().children('excludes2').children('note');
         if ($exclusions2.length > 0) {
           html.push('<div class="exclusions2">exclusions2<ul>');
           $exclusions2.each(function() {
@@ -153,7 +172,6 @@ function get_diag(search_str) {
           });
           html.push('</ul></div>');
         }
-        // $subdiag = $(this).parent().children('diag').children('desc');
         if ($subdiag.length > 0) {
           html.push('<div class="subdiag"><ul>');
           $subdiag.each(function() {
@@ -215,7 +233,7 @@ function get_diag(search_str) {
         html.push('</li></div>'); // div main_diag_content
       });
       html.push('</ol>');
-      $('div.test').html(html.join(''));
+      $('div#tabular').html(html.join(''));
       $('div.specify').hide();
       $('div.subdiag div.exclusions1').hide();
       $('div.subdiag div.exclusions2').hide();
