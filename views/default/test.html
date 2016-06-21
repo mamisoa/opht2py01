@@ -16,12 +16,22 @@
 
   .addCode {
     background-color: Blue;
-    color: white;
+    color: White;
   }
 
   .badge-addCode {
     background-color: Blue;
-    color: White;
+    color: Grey;
+  }
+
+  .codeFirst {
+    background-color: Aquamarine;
+    color: Grey;
+  }
+
+  .badge-codeFirst {
+    background-color: Aquamarine;
+    color: Grey;
   }
   .exclusions1 {
     background-color: Red;
@@ -41,6 +51,16 @@
   .badge-exclusions2 {
     background-color: Orange;
     color: White;
+  }
+
+  .sevenChrNote , .sevenChrDef {
+    background-color: Beige;
+    color: Grey;
+  }
+
+  .badge-sevenChrNote {
+    background-color: Beige;
+    color: Grey;
   }
 
   .subdiag {
@@ -124,6 +144,10 @@ function get_diag(search_str) {
         if ($subdiag.length > 0) {
           html.push('<span class="badge badge-subdiag">Subdiag</span>');
         }
+        $codeFirst = $(this).parent().children('codeFirst').children('note');
+        if ($codeFirst.length >0) {
+          html.push('<span class="badge badge-codeFirst">Code1st</span>');
+        }
         $addCode = $(this).parent().children('useAdditionalCode').children('note');
         if ($addCode.length >0) {
           html.push('<span class="badge badge-addCode">Code+</span>');
@@ -140,7 +164,19 @@ function get_diag(search_str) {
         if ($exclusions2.length >0) {
           html.push('<span class="badge badge-exclusions2">X2</span>');
         }
+        $sevenChrNote = $(this).parent().children('sevenChrNote').children('note');
+        $sevenChrDef = $(this).parent().children('sevenChrDef').children('extension');
+        if ($sevenChrNote.length >0) {
+          html.push('<span class="badge badge-sevenChrNote">7th</span>');
+        }
         html.push('<div class="main_diag_content">')
+        if ($codeFirst.length > 0) {
+          html.push('<div class="codeFirst">Code first<ul>');
+          $codeFirst.each(function() {
+            html.push('<li>'+$(this).text()+'</li>');
+          });
+          html.push('</ul></div>');
+        }
         if ($addCode.length > 0) {
           html.push('<div class="addCode">Use additionnal code<ul>');
           $addCode.each(function() {
@@ -169,12 +205,30 @@ function get_diag(search_str) {
           });
           html.push('</ul></div>');
         }
+        if ($sevenChrNote.length > 0) {
+          html.push('<div class="sevenChrNote">Use 7th char<ul>');
+          $sevenChrNote.each(function() {
+            html.push('<li>'+$(this).text()+'</li>');
+          });
+          html.push('</ul></div>');
+        }
+        if ($sevenChrDef.length > 0) {
+          html.push('<div class="sevenChrDef"><ul>');
+          $sevenChrDef.each(function() {
+            html.push('<li><span class="code" code7="'+$(this).attr('char')+'">'+$(this).attr('char')+'</span> :<strong>'+$(this).text()+'</strong></li>');
+          });
+          html.push('</ul></div>');
+        }
         if ($subdiag.length > 0) {
           html.push('<div class="subdiag"><ul>');
           $subdiag.each(function() {
             html.push('<li>'+$(this).text()+' <span class="code">'+$(this).parent().children('name').text()+'</span>');
             $specify = $(this).parent().children('diag').children('desc');
             $addCode_sub = $(this).parent().children('useAdditionalCode').children('note');
+            $codeFirst_sub = $(this).parent().children('codeFirst').children('note');
+            if ($codeFirst_sub.length >0) {
+              html.push('<span class="badge badge-codeFirst">Code1st</span>');
+            }
             if ($addCode_sub.length >0) {
               html.push('<span class="badge badge-addCode">Code+</span>');
             }
@@ -192,6 +246,18 @@ function get_diag(search_str) {
             $inclusion_sub= $(this).parent().children('inclusionTerm').children('note');
             if ($inclusion_sub.length > 0) {
               html.push('<span class="badge badge-inclusions">Inc</span>');
+            }
+            $sevenChrNote_sub = $(this).parent().children('sevenChrNote').children('note');
+            $sevenChrDef_sub = $(this).parent().children('sevenChrDef').children('extension');
+            if ($sevenChrNote_sub.length >0) {
+              html.push('<span class="badge badge-sevenChrNote">7th</span>');
+            }
+            if ($codeFirst_sub.length > 0) {
+              html.push('<div class="codeFirst">Code first<ul>');
+              $codeFirst_sub.each(function() {
+                html.push('<li>'+$(this).text()+'</li>');
+              });
+              html.push('</ul></div>');
             }
             if ($addCode_sub.length > 0) {
               html.push('<div class="addCode">Use additionnal code<ul>');
@@ -221,12 +287,30 @@ function get_diag(search_str) {
               });
               html.push('</ul></div>'); // div inclusion_sub
             }
+            if ($sevenChrNote_sub.length > 0) {
+              html.push('<div class="sevenChrNote">Use 7th char<ul>');
+              $sevenChrNote_sub.each(function() {
+                html.push('<li>'+$(this).text()+'</li>');
+              });
+              html.push('</ul></div>');
+            }
+            if ($sevenChrDef_sub.length > 0) {
+              html.push('<div class="sevenChrDef"><ul>');
+              $sevenChrDef_sub.each(function() {
+                html.push('<li><span class="code" code7="'+$(this).attr('char')+'">'+$(this).attr('char')+'</span> :<strong>'+$(this).text()+'</strong></li>');
+              });
+              html.push('</ul></div>');
+            }
             if ($specify.length > 0) {
               html.push('<div class="specify"><ul>');
               $specify.each(function() {
                 html.push('<li>'+$(this).text()+' <span class="code">'+$(this).parent().children('name').text()+'</span>');
                 $specify2 = $(this).parent().children('diag').children('desc');
                 $addCode_sub2 = $(this).parent().children('useAdditionalCode').children('note');
+                $codeFirst_sub2 = $(this).parent().children('codeFirst').children('note');
+                if ($codeFirst_sub2.length >0) {
+                  html.push('<span class="badge badge-codeFirst">Code1st</span>');
+                }
                 if ($addCode_sub2.length >0) {
                   html.push('<span class="badge badge-addCode">Code+</span>');
                 }
@@ -244,6 +328,18 @@ function get_diag(search_str) {
                 $inclusion_sub2= $(this).parent().children('inclusionTerm').children('note');
                 if ($inclusion_sub2.length > 0) {
                   html.push('<span class="badge badge-inclusions">Inc</span>');
+                }
+                $sevenChrNote_sub2 = $(this).parent().children('sevenChrNote').children('note');
+                $sevenChrDef_sub2 = $(this).parent().children('sevenChrDef').children('extension');
+                if ($sevenChrNote_sub2.length >0) {
+                  html.push('<span class="badge badge-sevenChrNote">7th</span>');
+                }
+                if ($codeFirst_sub2.length > 0) {
+                  html.push('<div class="codeFirst">Code first<ul>');
+                  $codeFirst_sub.each(function() {
+                    html.push('<li>'+$(this).text()+'</li>');
+                  });
+                  html.push('</ul></div>');
                 }
                 if ($addCode_sub2.length > 0) {
                   html.push('<div class="addCode">Use additionnal code<ul>');
@@ -273,10 +369,28 @@ function get_diag(search_str) {
                   });
                   html.push('</ul></div>'); // div inclusion_sub2
                 }
+                if ($sevenChrNote_sub2.length > 0) {
+                  html.push('<div class="sevenChrNote">Use 7th char<ul>');
+                  $sevenChrNote_sub2.each(function() {
+                    html.push('<li>'+$(this).text()+'</li>');
+                  });
+                  html.push('</ul></div>');
+                }
+                if ($sevenChrDef_sub2.length > 0) {
+                  html.push('<div class="sevenChrDef"><ul>');
+                  $sevenChrDef_sub2.each(function() {
+                    html.push('<li><span class="code" code7="'+$(this).attr('char')+'">'+$(this).attr('char')+'</span> :<strong>'+$(this).text()+'</strong></li>');
+                  });
+                  html.push('</ul></div>');
+                }
                 if ($specify2.length > 0) {
                   html.push('<div class="specify2"><ul>');
                   $specify2.each(function() {
                     html.push('<li>'+$(this).text()+' <span class="code">'+$(this).parent().children('name').text()+'</span>');
+                    $codeFirst_sub3 = $(this).parent().children('codeFirst').children('note');
+                    if ($codeFirst_sub3.length >0) {
+                      html.push('<span class="badge badge-codeFirst">Code1st</span>');
+                    }
                     $addCode_sub3 = $(this).parent().children('useAdditionalCode').children('note');
                     if ($addCode_sub3.length >0) {
                       html.push('<span class="badge badge-addCode">Code+</span>');
@@ -292,6 +406,18 @@ function get_diag(search_str) {
                     $inclusion_sub3= $(this).parent().children('inclusionTerm').children('note');
                     if ($inclusion_sub3.length > 0) {
                       html.push('<span class="badge badge-inclusions">Inc</span>');
+                    }
+                    $sevenChrNote_sub3 = $(this).parent().children('sevenChrNote').children('note');
+                    $sevenChrDef_sub3 = $(this).parent().children('sevenChrDef').children('extension');
+                    if ($sevenChrNote_sub3.length >0) {
+                      html.push('<span class="badge badge-sevenChrNote">7th</span>');
+                    }
+                    if ($codeFirst_sub3.length > 0) {
+                      html.push('<div class="codeFirst">Code first<ul>');
+                      $codeFirst_sub.each(function() {
+                        html.push('<li>'+$(this).text()+'</li>');
+                      });
+                      html.push('</ul></div>');
                     }
                     if ($addCode_sub3.length > 0) {
                       html.push('<div class="addCode">Use additionnal code<ul>');
@@ -314,12 +440,26 @@ function get_diag(search_str) {
                       });
                       html.push('</ul></div>'); // div exclusions2_sub3
                     }
-                    if ($inclusion_sub.length > 0) {
+                    if ($inclusion_sub3.length > 0) {
                       html.push('<div class="inclusion"><ul>');
                       $inclusion_sub.each(function() {
                         html.push('<li>'+$(this).text()+'</span></li>');
                       });
                       html.push('</ul></div>'); // div inclusion_sub3
+                    }
+                    if ($sevenChrNote_sub3.length > 0) {
+                      html.push('<div class="sevenChrNote">Use 7th char<ul>');
+                      $sevenChrNote_sub3.each(function() {
+                        html.push('<li>'+$(this).text()+'</li>');
+                      });
+                      html.push('</ul></div>');
+                    }
+                    if ($sevenChrDef_sub3.length > 0) {
+                      html.push('<div class="sevenChrDef"><ul>');
+                      $sevenChrDef_sub3.each(function() {
+                        html.push('<li><span class="code" code7="'+$(this).attr('char')+'">'+$(this).attr('char')+'</span> :<strong>'+$(this).text()+'</strong></li>');
+                      });
+                      html.push('</ul></div>');
                     }
                     html.push('</li>'); // li specify2
                   });
@@ -341,22 +481,30 @@ function get_diag(search_str) {
       $('div.subdiag > ul > li > div.exclusions1').hide();
       $('div.subdiag > ul > li > div.exclusions2').hide();
       $('div.subdiag > ul > li > div.inclusion').hide();
+      $('div.subdiag > ul > li > div.sevenChrNote').hide();
+      $('div.subdiag > ul > li > div.sevenChrDef').hide();
       $('div.subdiag > ul > li').click(function(e){
         $(this).children('div.subdiag > ul > li > div.specify').toggle();
         $(this).children('div.subdiag > ul > li > div.exclusions1').toggle();
         $(this).children('div.subdiag > ul > li > div.exclusions2').toggle();
         $(this).children('div.subdiag > ul > li > div.inclusion').toggle();
+        $(this).children('div.subdiag > ul > li > div.sevenChrNote').toggle();
+        $(this).children('div.subdiag > ul > li > div.sevenChrDef').toggle();
          return false;
       });
       $('div.specify2').hide();
       $('div.specify > ul > li > div.exclusions1').hide();
       $('div.specify > ul > li > div.exclusions2').hide();
       $('div.specify > ul > li > div.inclusion').hide();
+      $('div.specify > ul > li > div.sevenChrNote').hide();
+      $('div.specify > ul > li > div.sevenChrDef').hide();
       $('div.specify > ul > li').click(function(e){
         $(this).children('div.specify > ul > li > div.specify2').toggle();
         $(this).children('div.specify2 > ul > li > div.exclusions1').toggle();
         $(this).children('div.specify2 > ul > li > div.exclusions2').toggle();
         $(this).children('div.specify2 > ul > li > div.inclusion').toggle();
+        $(this).children('div.specify2 > ul > li > div.sevenChrNote').toggle();
+        $(this).children('div.specify2 > ul > li > div.sevenChrDef').toggle();
          return false;
       });
       $('div.main_diag_content').hide();
