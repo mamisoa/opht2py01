@@ -21,7 +21,7 @@
 
   .badge-addCode {
     background-color: Blue;
-    color: Grey;
+    color: White;
   }
 
   .codeFirst {
@@ -497,6 +497,8 @@ function get_diag(search_str) {
       html.push('</ol>');
       $('div#tabular').html(html.join(''));
       $('div.specify').hide();
+      $('div.subdiag > ul > li > div.addCode').hide();
+      $('div.subdiag > ul > li > div.codeFirst').hide();
       $('div.subdiag > ul > li > div.exclusions1').hide();
       $('div.subdiag > ul > li > div.exclusions2').hide();
       $('div.subdiag > ul > li > div.inclusion').hide();
@@ -504,6 +506,8 @@ function get_diag(search_str) {
       $('div.subdiag > ul > li > div.sevenChrDef').hide();
       $('div.subdiag > ul > li').click(function(e){
         $(this).children('div.subdiag > ul > li > div.specify').toggle();
+        $(this).children('div.subdiag > ul > li > div.addCode').toggle();
+        $(this).children('div.subdiag > ul > li > div.codeFirst').toggle();
         $(this).children('div.subdiag > ul > li > div.exclusions1').toggle();
         $(this).children('div.subdiag > ul > li > div.exclusions2').toggle();
         $(this).children('div.subdiag > ul > li > div.inclusion').toggle();
@@ -512,6 +516,8 @@ function get_diag(search_str) {
          return false;
       });
       $('div.specify2').hide();
+      $('div.specify > ul > li > div.addCode').hide();
+      $('div.specify > ul > li > div.codeFirst').hide();
       $('div.specify > ul > li > div.exclusions1').hide();
       $('div.specify > ul > li > div.exclusions2').hide();
       $('div.specify > ul > li > div.inclusion').hide();
@@ -519,6 +525,8 @@ function get_diag(search_str) {
       $('div.specify > ul > li > div.sevenChrDef').hide();
       $('div.specify > ul > li').click(function(e){
         $(this).children('div.specify > ul > li > div.specify2').toggle();
+        $(this).children('div.specify > ul > li > div.addCode').toggle();
+        $(this).children('div.specify > ul > li > div.codeFirst').toggle();
         $(this).children('div.specify > ul > li > div.exclusions1').toggle();
         $(this).children('div.specify > ul > li > div.exclusions2').toggle();
         $(this).children('div.specify > ul > li > div.inclusion').toggle();
