@@ -82,15 +82,27 @@
   ol {
     list-style-type: decimal;
   }
+
+  .results {
+    margin-top: 5px;
+  }
 </style>
 {{end}}
 
 <div class="row">
-  <div class="container">
-    <div class="col-md-6">
-      <form id="diag" class="" action="index.html" onsubmit="return false;">
+  <div class="container-fluid">
+    <div class="col-md-4">
+      <form id="index">
         <div class="input-group">
-          <input type="text" class="form-control desc" placeholder="icd-10 description"></input>
+          <input type="text" class="form-control desc" placeholder="icd-10 index search"></input>
+          <span class="input-group-btn"><button class="btn btn-primary submit" type="button">search</button></span>
+        </div>
+      </form>
+    </div>
+    <div class="col-md-8">
+      <form id="icd10">
+        <div class="input-group">
+          <input type="text" class="form-control desc" placeholder="icd-10 tab search"></input>
           <span class="input-group-btn"><button class="btn btn-primary submit" type="button">search</button></span>
         </div>
       </form>
@@ -98,14 +110,21 @@
   </div>
 </div>
 
-<div class="row">
-  <div class="container">
-    <div class="col-md-6">
-      <div class="test">
+<div class="row results">
+  <div class="container-fluid">
+    <div class="col-md-4">
+      <div id="icd10index" class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">ICD-10 Index</h3>
+        </div>
+        <div id="index" class="panel-body">
+        </div>
+        <div class="panel-footer">
+        </div>
       </div>
     </div>
-    <div class="col-md-6">
-      <div class="panel panel-default">
+    <div class="col-md-8">
+      <div id="icd10tab" class="panel panel-default">
         <div class="panel-heading">
           <h3 class="panel-title">ICD-10 Codes</h3>
         </div>
@@ -122,9 +141,9 @@
 
 <script type="text/javascript">
 
-$('#diag .submit').click(function(e){
+$('#icd10 .submit').click(function(e){
   e.preventDefault();
-  search_str= $('#diag input.desc').val();
+  search_str= $('#icd10 input.desc').val();
   console.log(search_str);
   get_diag(search_str);
 })
@@ -442,7 +461,7 @@ function get_diag(search_str) {
                     }
                     if ($inclusion_sub3.length > 0) {
                       html.push('<div class="inclusion"><ul>');
-                      $inclusion_sub.each(function() {
+                      $inclusion_sub3.each(function() {
                         html.push('<li>'+$(this).text()+'</span></li>');
                       });
                       html.push('</ul></div>'); // div inclusion_sub3
@@ -500,11 +519,11 @@ function get_diag(search_str) {
       $('div.specify > ul > li > div.sevenChrDef').hide();
       $('div.specify > ul > li').click(function(e){
         $(this).children('div.specify > ul > li > div.specify2').toggle();
-        $(this).children('div.specify2 > ul > li > div.exclusions1').toggle();
-        $(this).children('div.specify2 > ul > li > div.exclusions2').toggle();
-        $(this).children('div.specify2 > ul > li > div.inclusion').toggle();
-        $(this).children('div.specify2 > ul > li > div.sevenChrNote').toggle();
-        $(this).children('div.specify2 > ul > li > div.sevenChrDef').toggle();
+        $(this).children('div.specify > ul > li > div.exclusions1').toggle();
+        $(this).children('div.specify > ul > li > div.exclusions2').toggle();
+        $(this).children('div.specify > ul > li > div.inclusion').toggle();
+        $(this).children('div.specify > ul > li > div.sevenChrNote').toggle();
+        $(this).children('div.specify > ul > li > div.sevenChrDef').toggle();
          return false;
       });
       $('div.main_diag_content').hide();
