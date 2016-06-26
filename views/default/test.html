@@ -495,7 +495,10 @@ function get_diag(search_str) {
         html.push('</li></div>'); // div main_diag_content
       });
       html.push('</ol>');
-      $('div#tabular').html(html.join(''));
+      var final_result = html.join('');
+      var regex = /[A-Z]\d\d\.?[0-9X]?[0-9X]?[0-9X]?[A-Z]?/g;
+      final_result = final_result.replace(regex,'<icd10>$&</icd10>');
+      $('div#tabular').html(final_result);
       $('div.specify').hide();
       $('div.subdiag > ul > li > div.addCode').hide();
       $('div.subdiag > ul > li > div.codeFirst').hide();
@@ -538,6 +541,13 @@ function get_diag(search_str) {
       $('div.main_diag').click(function(){
         $(this).parent().children('div.main_diag_content').toggle();
         return false;
+      });
+      $('icd10').click(function(e){
+        search_str= $(this).text();
+        console.log(search_str);
+        $('#icd10 input.desc').val(search_str);
+        get_diag(search_str);
+        e.stopPropagation();
       });
     },
     error: function () {

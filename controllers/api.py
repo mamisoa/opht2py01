@@ -496,9 +496,10 @@ def icd10():
         xpath_req1 = '/ICD10CM.tabular/chapter/section/diag[contains(.,"'+search_str+'") or contains(.,"'+search_str.capitalize()+'")]'
         diags1 = icd10_xml.xpathEval(xpath_req1)
         concat = ['<?xml version="1.0" encoding="utf-8"?>\n<main>\n']
+        filter_code = '[A-Z]\d\d\.?[0-9X]?[0-9X]?[0-9X]?[A-Z]?'
         for diag1 in diags1:
-            diag1_str = str(XML(diag1))
-            concat.append(diag1_str + '\n')
+             diag1_str = str(XML(diag1))
+             concat.append(diag1_str + 'toto\n')
         concat.append('</main>')
         return ''.join(concat)
     return locals()
