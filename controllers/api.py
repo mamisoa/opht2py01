@@ -492,14 +492,38 @@ def icd10():
     response.view = 'generic.xml'
     def GET(**vars):
         search_str = request.vars.search
-        search_str_cap = search_str.capitalize()
         xpath_req1 = '/ICD10CM.tabular/chapter/section/diag[contains(.,"'+search_str+'") or contains(.,"'+search_str.capitalize()+'")]'
+        diags1 = icd10_xml.xpathEval(xpath_req1)
+        concat = ['<?xml version="1.0" encoding="utf-8"?>\n<main>\n']
+        # regex = '[A-Z]\d\d\.?[0-9X]?[0-9X]?[0-9X]?[A-Z]?'
+        for diag1 in diags1:
+             diag1_str = str(XML(diag1))
+             concat.append(diag1_str + '\n')
+        concat.append('</main>')
+        return ''.join(concat)
+    return locals()
+
+@request.restful()
+def icd10_index():
+    import libxml2
+    icd10_xml = libxml2.parseDoc(open('/home/www-data/web2py/applications'+URL('static','icd10/icd10cm/Index.xml'),'r').read())
+    response.view = 'generic.xml'
+    def GET(**vars):
+        search_str = request.vars.search
+        search_str = search_str.split(' ')
+        xpath_req1 = ['/ICD10CM.index/letter/mainTerm/title[contains(.,"'+search_str[0].capitalize()+'")]/../term']
+        for str,val in enumerate(search_str):
+            if str == 1: xpath_req1.append('[contains(@level ,\"1\")]/title[contains(.,\"' + search_str[1] + '\")')
+            elif str > 1: xpath_req1.append(' or contains(.,\"' + search_str[str] + '\")' )
+        if len(search_str) >= 2:
+                xpath_req1.append(']/..')
+        xpath_req1 = ''.join(xpath_req1)
         diags1 = icd10_xml.xpathEval(xpath_req1)
         concat = ['<?xml version="1.0" encoding="utf-8"?>\n<main>\n']
         filter_code = '[A-Z]\d\d\.?[0-9X]?[0-9X]?[0-9X]?[A-Z]?'
         for diag1 in diags1:
              diag1_str = str(XML(diag1))
-             concat.append(diag1_str + 'toto\n')
+             concat.append(diag1_str + '\n')
         concat.append('</main>')
         return ''.join(concat)
     return locals()
