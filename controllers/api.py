@@ -497,7 +497,7 @@ def icd10():
         concat = ['<?xml version="1.0" encoding="utf-8"?>\n<main>\n']
         # regex = '[A-Z]\d\d\.?[0-9X]?[0-9X]?[0-9X]?[A-Z]?'
         for diag1 in diags1:
-             diag1_str = str(XML(diag1))
+             diag1_str = XML(diag1)
              concat.append(diag1_str + '\n')
         concat.append('</main>')
         return ''.join(concat)
@@ -513,7 +513,7 @@ def icd10_index():
         search_str = search_str.split(' ')
         xpath_req1 = ['/ICD10CM.index/letter/mainTerm/title[contains(.,"'+search_str[0].capitalize()+'")]/../term']
         for str,val in enumerate(search_str):
-            if str == 1: xpath_req1.append('[contains(@level ,\"1\")]/title[contains(.,\"' + search_str[1] + '\")')
+            if str == 1: xpath_req1.append('[@level=\"1\"]/title[contains(.,\"' + search_str[1] + '\")')
             elif str > 1: xpath_req1.append(' or contains(.,\"' + search_str[str] + '\")' )
         if len(search_str) >= 2:
                 xpath_req1.append(']/..')
@@ -522,8 +522,8 @@ def icd10_index():
         concat = ['<?xml version="1.0" encoding="utf-8"?>\n<main>\n']
         filter_code = '[A-Z]\d\d\.?[0-9X]?[0-9X]?[0-9X]?[A-Z]?'
         for diag1 in diags1:
-             diag1_str = str(XML(diag1))
-             concat.append(diag1_str + '\n')
+            diag1_str = XML(diag1)
+            concat.append(diag1_str + '\n')
         concat.append('</main>')
         return ''.join(concat)
     return locals()
