@@ -233,7 +233,6 @@ function get_diag(search_str) {
         $(this).children('div.subdiag > ul > li > div.inclusions').toggle();
         $(this).children('div.subdiag > ul > li > div.sevenChrNote').toggle();
         $(this).children('div.subdiag > ul > li > div.sevenChrDef').toggle();
-         return false;
       });
       $('div.specify2').hide();
       $('div.specify > ul > li > div.addCode').hide();
@@ -252,12 +251,11 @@ function get_diag(search_str) {
         $(this).children('div.specify > ul > li > div.inclusions').toggle();
         $(this).children('div.specify > ul > li > div.sevenChrNote').toggle();
         $(this).children('div.specify > ul > li > div.sevenChrDef').toggle();
-         return false;
+        e.stopPropagation();
       });
       $('div.main_diag_content').hide();
       $('div.main_diag').click(function(){
         $(this).parent().children('div.main_diag_content').toggle();
-        return false;
       });
       $('icd10').click(function(e){
         search_str= $(this).text();
@@ -317,13 +315,12 @@ function loop_items(level, $loc) {
 function toggle_items(level,uplevel) {
   $('div.'+level).hide();
   $.each(items_list.item, function(index,el){
-    console.log(el.span_class)
-    $('div.'+uplevel+' > ul > li > div.'+el.span_class).hide();
+    $('div.'+uplevel+' > ul > li > div.'+el.item).hide();
   });
   $('div.'+uplevel+' > ul > li').click(function(event) {
     $(this).children('div.'+uplevel+' > ul > li > div.'+level).toggle();
     $.each(items_list.item, function(index, el) {
-      $(this).children('div.'+uplevel+' > ul > li > div.'+el.span_class).toggle();
+      $(this).children('div.'+uplevel+' > ul > li > div.'+el.item).toggle();
     });
   });
 }
