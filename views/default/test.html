@@ -216,43 +216,8 @@ function get_diag(search_str) {
       var regex = /[A-Z]\d\d\.?[0-9X]?[0-9X]?[0-9X]?[A-Z]?/g;
       final_result = final_result.replace(regex,'<icd10>$&</icd10>');
       $('div#tabular').html(final_result);
-      $('div.specify').hide();
-      $('div.subdiag > ul > li > div.addCode').hide();
-      $('div.subdiag > ul > li > div.codeFirst').hide();
-      $('div.subdiag > ul > li > div.exclusions1').hide();
-      $('div.subdiag > ul > li > div.exclusions2').hide();
-      $('div.subdiag > ul > li > div.inclusions').hide();
-      $('div.subdiag > ul > li > div.sevenChrNote').hide();
-      $('div.subdiag > ul > li > div.sevenChrDef').hide();
-      $('div.subdiag > ul > li').click(function(e){
-        $(this).children('div.subdiag > ul > li > div.specify').toggle();
-        $(this).children('div.subdiag > ul > li > div.addCode').toggle();
-        $(this).children('div.subdiag > ul > li > div.codeFirst').toggle();
-        $(this).children('div.subdiag > ul > li > div.exclusions1').toggle();
-        $(this).children('div.subdiag > ul > li > div.exclusions2').toggle();
-        $(this).children('div.subdiag > ul > li > div.inclusions').toggle();
-        $(this).children('div.subdiag > ul > li > div.sevenChrNote').toggle();
-        $(this).children('div.subdiag > ul > li > div.sevenChrDef').toggle();
-      });
-      $('div.specify2').hide();
-      $('div.specify > ul > li > div.addCode').hide();
-      $('div.specify > ul > li > div.codeFirst').hide();
-      $('div.specify > ul > li > div.exclusions1').hide();
-      $('div.specify > ul > li > div.exclusions2').hide();
-      $('div.specify > ul > li > div.inclusions').hide();
-      $('div.specify > ul > li > div.sevenChrNote').hide();
-      $('div.specify > ul > li > div.sevenChrDef').hide();
-      $('div.specify > ul > li').click(function(e){
-        $(this).children('div.specify > ul > li > div.specify2').toggle();
-        $(this).children('div.specify > ul > li > div.addCode').toggle();
-        $(this).children('div.specify > ul > li > div.codeFirst').toggle();
-        $(this).children('div.specify > ul > li > div.exclusions1').toggle();
-        $(this).children('div.specify > ul > li > div.exclusions2').toggle();
-        $(this).children('div.specify > ul > li > div.inclusions').toggle();
-        $(this).children('div.specify > ul > li > div.sevenChrNote').toggle();
-        $(this).children('div.specify > ul > li > div.sevenChrDef').toggle();
-        e.stopPropagation();
-      });
+      toggle_items('specify','subdiag');
+      toggle_items('specify2','specify');
       $('div.main_diag_content').hide();
       $('div.main_diag').click(function(){
         $(this).parent().children('div.main_diag_content').toggle();
@@ -314,14 +279,15 @@ function loop_items(level, $loc) {
 
 function toggle_items(level,uplevel) {
   $('div.'+level).hide();
-  $.each(items_list.item, function(index,el){
+  $.each(items_list.items, function(index,el){
     $('div.'+uplevel+' > ul > li > div.'+el.item).hide();
   });
   $('div.'+uplevel+' > ul > li').click(function(event) {
     $(this).children('div.'+uplevel+' > ul > li > div.'+level).toggle();
-    $.each(items_list.item, function(index, el) {
+    $.each(items_list.items, function(index, el) {
       $(this).children('div.'+uplevel+' > ul > li > div.'+el.item).toggle();
     });
+    event.stopPropagation();
   });
 }
 </script>
