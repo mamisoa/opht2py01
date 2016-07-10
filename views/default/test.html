@@ -151,12 +151,8 @@ items_list = { 'items': [
   {'item': 'sevenChrDef', 'children1':'sevenChrDef', 'children2':'extension','span_class': 'sevenChrNote', 'txt':'7th', 'txt_long':''}
 ]};
 
-$('#icd10 .submit').click(function(e){
-  e.preventDefault();
-  search_str= $('#icd10 input.desc').val();
-  console.log(search_str);
-  get_diag(search_str);
-})
+inputSubmit('#icd10');
+inputSubmit('#index');
 
 function get_diag(search_str) {
   var API_URL = '{{=URL('api','icd10.xml', scheme=True, host=True)}}?search='+search_str;
@@ -228,10 +224,11 @@ function get_diag(search_str) {
       console.log('error getting exams');
       }
   });
-  }
+}
 
 $(function() {
     $("body").tooltip({ selector: '[data-toggle=tooltip]' });
+
 }); // document ready
 
 function loop_items(level, $loc) {
@@ -280,7 +277,6 @@ function toggle_items(level,uplevel) {
     $(this).children('div.'+uplevel+' > ul > li > div.'+level).toggle();
     $loc = $(this);
     $.each(items_list.items, function(index, el) {
-      console.log('$loc.children(\'div.'+uplevel+' > ul > li > div.'+el.item+'\').toggle();');
       $loc.children('div.'+uplevel+' > ul > li > div.'+el.item).toggle();
     });
     event.stopPropagation();
@@ -311,4 +307,24 @@ function code_click(tagName) {
           e.preventDefault();  //cancel system double-click event
       });
 }
+
+function inputSubmit(tagName){
+  $(tagName+' .submit').click(function(e){
+    e.preventDefault();
+    search_str= $(tagName+' input.desc').val();
+    console.log(search_str);
+    get_diag(search_str);
+  })
+
+  $(tagName+' input.desc').keydown(function(e) {
+    if (e.keyCode == 13) {
+    e.preventDefault();
+    search_str= $(tagName+' input.desc').val();
+    console.log(search_str);
+    get_diag(search_str);
+    return false;
+    }
+  });
+}
+
 </script>
