@@ -284,8 +284,10 @@ function toggle_items(level,uplevel) {
   });
   $('div.'+uplevel+' > ul > li').click(function(event) {
     $(this).children('div.'+uplevel+' > ul > li > div.'+level).toggle();
+    $loc = $(this);
     $.each(items_list.items, function(index, el) {
-      $(this).children('div.'+uplevel+' > ul > li > div.'+el.item).toggle();
+      console.log('$loc.children(\'div.'+uplevel+' > ul > li > div.'+el.item+'\').toggle();');
+      $loc.children('div.'+uplevel+' > ul > li > div.'+el.item).toggle();
     });
     event.stopPropagation();
   });
