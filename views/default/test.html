@@ -86,6 +86,18 @@
   .results {
     margin-top: 5px;
   }
+
+  .mainTerm {
+    border-style: dashed;
+    border-width: 1px;
+    margin-bottom: 2px;
+  }
+  .see , .seeAlso {
+    font-style: italic;
+  }
+  .mainTitle {
+    font-weight: bold;
+  }
 </style>
 {{end}}
 
@@ -227,7 +239,23 @@ function get_diag(search_str) {
 }
 
 function get_index(search_str) {
-  var API_URL = '{{=URL('api','icd10_index.xml', scheme=True, host=True)}}?search='+search_str;
+  var API_URL = '{{=URL('api','icd10_index.xml', scheme=True, host=True)}}?search='+search_str,
+    search_lst = search_str.split(' '),
+    searchTerms = 'term[level="1"]';
+  if (search_lst.length > 0) {
+    $.each(search_lst, function(index, el) {
+      if ( index == 0) {
+        // do nothing
+      } else if (index == 1) {
+        searchTerms = ':contains("'+el+'")';
+      }
+       else {
+        searchTerms += ', term[level="1"]:contains("'+el+'")';
+      }
+    });
+  };
+  console.log(search_lst);
+  console.log('searchTerms: '+searchTerms);
   $.ajax({
     url: API_URL,
     type: 'GET',
@@ -235,25 +263,45 @@ function get_index(search_str) {
   })
   .done(function(data) {
     console.log("success");
-    title = $(data).children('main').children('mainterm').children('title').contents().get(0).nodeValue;
-    html = ['<div class="main_diag"><strong>'+title+'</strong><ol>'];
-    $(data).children('main').children('mainterm').children('term[level="1"]').each(function(index, el) {
-      $mainterm = $(this).parent().children('title');
-      $title = $(this).children('title');
-      $see = $(this).children('see');
-      $code = $(this).children('code');
-      html.push('<li><ul>')
-      html.push('<li class="'+'title'+'"><strong>'+'</strong> '+$title.text()+'</li>'); // +$mainterm.contents().get(0).nodeValue
-      if ($see.length > 0) {
-        html.push('<li class="'+'see'+'">'+$see.text()+'</li>');
+    var html = [];
+    $(data).children('main').children('mainterm').each(function(index, el) {
+      $mainTerm = $(this).children('title');
+      $term1 = $(this).children(searchTerms);
+      html.push('<div class="mainTerm" data-toggle="tooltip" title="'+$mainTerm.children('nemod').text()+'"><h3>'+$mainTerm.contents().get(0).nodeValue+'</h3>');
+      html.push('<ul class="list-inline">');
+      if ($(this).children('see').length > 0) {
+        html.push('<li class="list-inline-item"><span class="see">See: '+$(this).children('see').text()+'</span></li>');
       }
-      if ($code.length > 0) {
-        html.push('<li><span class="'+'code'+'"'+$code.text()+'</span></li>');
+      if ($(this).children('seeAlso').length > 0) {
+        html.push('<li class="list-inline-item"><span class="seeAlso">See also: '+$(this).children('seeAlso').text()+'</span></li>');
+      }
+      if ($(this).children('code').length > 0) {
+        html.push('<li class="list-inline-item"><span class="code">'+$(this).children('code').text()+'</span></li>');
       }
       html.push('</ul>');
-      html.push('</li>'); // close li term level1
+      if ($term1.length > 0) {
+        html.push('<ol>')
+        $term1.each(function(index, el) {
+          $see = $(this).children('see');
+          $seeAlso = $(this).children('seeAlso');
+          $code = $(this).children('code');
+          html.push('<li><ul class="list-unstyled">');
+          html.push('<li><span class="mainTitle">'+$(this).children('title').text()+'</span></li>');
+          if ($see.length > 0) {
+            html.push('<li><span class="see">See: '+$(this).children('see').text()+'</span></li>');
+          }
+          if ($seeAlso.length > 0) {
+            html.push('<li><span class="seeAlso">See also: '+$(this).children('seeAlso').text()+'</span></li>');
+          }
+          if ($code.length > 0) {
+            html.push('<li><span class="code">'+$(this).children('code').text()+'</span></li>');
+          }
+          html.push('</ul></li>');
+        });
+        html.push('</ol>');
+      }
+      html.push('</div>');
     });
-    html.push('</ol></div>'); // close ol and div main_diag
     var final_result = html.join('');
     var regex = /[A-Z]\d\d\.?[0-9X]?[0-9X]?[0-9X]?[A-Z]?/g;
     final_result = final_result.replace(regex,'<icd10>$&</icd10>');
@@ -264,12 +312,11 @@ function get_index(search_str) {
   })
   .always(function() {
     console.log("complete");
-  });
+  })
 }
 
 $(function() {
     $("body").tooltip({ selector: '[data-toggle=tooltip]' });
-
 }); // document ready
 
 function loop_items(level, $loc) {
@@ -375,5 +422,34 @@ function inputSubmit(tagName, xml_file){
     }
   });
 }
+
+jQuery.expr[':'].contains = function(a, i, m) {
+    var rExps=[
+        {re: /[\xC0-\xC6]/g, ch: "A"},
+        {re: /[\xE0-\xE6]/g, ch: "a"},
+        {re: /[\xC8-\xCB]/g, ch: "E"},
+        {re: /[\xE8-\xEB]/g, ch: "e"},
+        {re: /[\xCC-\xCF]/g, ch: "I"},
+        {re: /[\xEC-\xEF]/g, ch: "i"},
+        {re: /[\xD2-\xD6]/g, ch: "O"},
+        {re: /[\xF2-\xF6]/g, ch: "o"},
+        {re: /[\xD9-\xDC]/g, ch: "U"},
+        {re: /[\xF9-\xFC]/g, ch: "u"},
+        {re: /[\xC7-\xE7]/g, ch: "c"},
+        {re: /[\xD1]/g, ch: "N"},
+        {re: /[\xF1]/g, ch: "n"}
+    ];
+
+    var element = $(a).text();
+    var search = m[3];
+
+    $.each(rExps, function() {
+        element = element.replace(this.re, this.ch);
+        search = search.replace(this.re, this.ch);
+    });
+
+    return element.toUpperCase()
+    .indexOf(search.toUpperCase()) >= 0;
+};
 
 </script>

@@ -517,21 +517,26 @@ def icd10_index():
             if str == 1: xpath_req1.append('/../term[@level=\"1\"]/title[contains(.,\"' + search_str[1] + '\")')
             elif str > 1: xpath_req1.append(' or contains(.,\"' + search_str[str] + '\")' )
         if len(search_str) >= 2:
-            xpath_req1.append(']') # /../..')
+            xpath_req1.append(']/../..')
         else :
-            xpath_req1.append('')
+            xpath_req1.append('/..')
         xpath_req0 = ''.join(xpath_req0)
+        # xpath_req1 = ['/ICD10CM.index/letter/mainTerm/title[contains(text(),"Fracture")][count(. | /ICD10CM.index/letter/mainTerm/term[@level="1"]/title[contains(text(),"ulna")]) = count(../../term[@level="1"]/title[contains(text(),"ulna")])]'] #
+        # xpath_req1 = ['/ICD10CM.index/letter/mainTerm/title[contains(.,"Fracture")][following-sibling::term[@level="1"]/title[contains(.,"ulna")]]']
+        # xpath_req1 = ['/ICD10CM.index/letter/mainTerm/title[contains(.,"Fracture")]/following-sibling::term[@level="1"]/title[contains(.,"ulna")]/../..']
         xpath_req1 = ''.join(xpath_req1)
         diags0 = icd10_xml.xpathEval(xpath_req0)
         diags1 = icd10_xml.xpathEval(xpath_req1)
         concat = ['<?xml version="1.0" encoding="utf-8"?>\n<main>\n']
-        concat.append('<mainTerm>')
-        for diag0 in diags0:
-            diag0_str = XML(diag0)
-            concat.append(diag0_str + '\n')
+        # concat.append('<mainTerm>')
+        #for diag0 in diags0:
+        #    diag0_str = XML(diag0)
+        #    concat.append(diag0_str + '\n')
         for diag1 in diags1:
             diag1_str = XML(diag1)
             concat.append(diag1_str + '\n')
-        concat.append('</mainTerm></main>')
+        # concat.append('</mainTerm>')
+        concat.append('</main>')
+        # return xpath_req1
         return ''.join(concat)
     return locals()
