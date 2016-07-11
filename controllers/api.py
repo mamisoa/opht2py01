@@ -511,12 +511,14 @@ def icd10_index():
     def GET(**vars):
         search_str = request.vars.search
         search_str = search_str.split(' ')
-        xpath_req1 = ['/ICD10CM.index/letter/mainTerm/title[contains(.,"'+search_str[0].capitalize()+'")]/../term']
+        xpath_req1 = ['/ICD10CM.index/letter/mainTerm/title[contains(.,"'+search_str[0].capitalize()+'")]']
         for str,val in enumerate(search_str):
-            if str == 1: xpath_req1.append('[@level=\"1\"]/title[contains(.,\"' + search_str[1] + '\")')
+            if str == 1: xpath_req1.append('/../term[@level=\"1\"]/title[contains(.,\"' + search_str[1] + '\")')
             elif str > 1: xpath_req1.append(' or contains(.,\"' + search_str[str] + '\")' )
         if len(search_str) >= 2:
-                xpath_req1.append(']/..')
+            xpath_req1.append(']/../..')
+        else :
+            xpath_req1.append('/..')
         xpath_req1 = ''.join(xpath_req1)
         diags1 = icd10_xml.xpathEval(xpath_req1)
         concat = ['<?xml version="1.0" encoding="utf-8"?>\n<main>\n']

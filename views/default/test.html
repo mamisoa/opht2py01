@@ -92,7 +92,7 @@
 <div class="row">
   <div class="container-fluid">
     <div class="col-md-4">
-      <form id="index">
+      <form id="indexFrm">
         <div class="input-group">
           <input type="text" class="form-control desc" placeholder="icd-10 index search"></input>
           <span class="input-group-btn"><button class="btn btn-primary submit" type="button">search</button></span>
@@ -113,7 +113,7 @@
 <div class="row results">
   <div class="container-fluid">
     <div class="col-md-4">
-      <div id="icd10index" class="panel panel-default">
+      <div id="indexRes" class="panel panel-default">
         <div class="panel-heading">
           <h3 class="panel-title">ICD-10 Index</h3>
         </div>
@@ -151,8 +151,8 @@ items_list = { 'items': [
   {'item': 'sevenChrDef', 'children1':'sevenChrDef', 'children2':'extension','span_class': 'sevenChrNote', 'txt':'7th', 'txt_long':''}
 ]};
 
-inputSubmit('#icd10');
-inputSubmit('#index');
+inputSubmit('#icd10', 'tab');
+inputSubmit('#indexFrm', 'index');
 
 function get_diag(search_str) {
   var API_URL = '{{=URL('api','icd10.xml', scheme=True, host=True)}}?search='+search_str;
@@ -223,6 +223,47 @@ function get_diag(search_str) {
     error: function () {
       console.log('error getting exams');
       }
+  });
+}
+
+function get_index(search_str) {
+  var API_URL = '{{=URL('api','icd10_index.xml', scheme=True, host=True)}}?search='+search_str;
+  $.ajax({
+    url: API_URL,
+    type: 'GET',
+    dataType: 'xml',
+  })
+  .done(function(data) {
+    console.log("success");
+    title = $(data).children('main').children('mainterm').children('title').contents().get(0).nodeValue;
+    html = ['<div class="main_diag"><strong>'+title+'</strong><ol>'];
+    $(data).children('main').children('mainterm').children('term[level="1"]').each(function(index, el) {
+      $mainterm = $(this).parent().children('title');
+      $title = $(this).children('title');
+      $see = $(this).children('see');
+      $code = $(this).children('code');
+      html.push('<li><ul>')
+      html.push('<li class="'+'title'+'"><strong>'+'</strong> '+$title.text()+'</li>'); // +$mainterm.contents().get(0).nodeValue
+      if ($see.length > 0) {
+        html.push('<li class="'+'see'+'">'+$see.text()+'</li>');
+      }
+      if ($code.length > 0) {
+        html.push('<li><span class="'+'code'+'"'+$code.text()+'</span></li>');
+      }
+      html.push('</ul>');
+      html.push('</li>'); // close li term level1
+    });
+    html.push('</ol></div>'); // close ol and div main_diag
+    var final_result = html.join('');
+    var regex = /[A-Z]\d\d\.?[0-9X]?[0-9X]?[0-9X]?[A-Z]?/g;
+    final_result = final_result.replace(regex,'<icd10>$&</icd10>');
+    $('div#index').html(final_result);
+  })
+  .fail(function() {
+    console.log("error");
+  })
+  .always(function() {
+    console.log("complete");
   });
 }
 
@@ -308,12 +349,16 @@ function code_click(tagName) {
       });
 }
 
-function inputSubmit(tagName){
+function inputSubmit(tagName, xml_file){
   $(tagName+' .submit').click(function(e){
     e.preventDefault();
     search_str= $(tagName+' input.desc').val();
     console.log(search_str);
-    get_diag(search_str);
+    if (xml_file == 'tab') {
+      get_diag(search_str);
+    } else if (xml_file == 'index') {
+      get_index(search_str);
+    } else {};
   })
 
   $(tagName+' input.desc').keydown(function(e) {
@@ -321,7 +366,11 @@ function inputSubmit(tagName){
     e.preventDefault();
     search_str= $(tagName+' input.desc').val();
     console.log(search_str);
-    get_diag(search_str);
+    if (xml_file == 'tab') {
+      get_diag(search_str);
+    } else if (xml_file == 'index') {
+      get_index(search_str);
+    } else {};
     return false;
     }
   });
