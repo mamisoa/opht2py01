@@ -306,6 +306,7 @@ function get_index(search_str) {
     var regex = /[A-Z]\d\d\.?[0-9X]?[0-9X]?[0-9X]?[A-Z]?/g;
     final_result = final_result.replace(regex,'<icd10>$&</icd10>');
     $('div#index').html(final_result);
+    code_click('icd10');
   })
   .fail(function() {
     console.log("error");
