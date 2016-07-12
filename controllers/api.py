@@ -512,9 +512,10 @@ def icd10_index():
         search_str = request.vars.search
         search_str = search_str.split(' ')
         xpath_req0 = ['/ICD10CM.index/letter/mainTerm/title[contains(.,"'+search_str[0].capitalize()+'")]']
-        xpath_req1 = ['/ICD10CM.index/letter/mainTerm/title[contains(.,"'+search_str[0].capitalize()+'")]']
+        xpath_req1 = ['/ICD10CM.index/letter/mainTerm/title[contains(.,"'+search_str[0].capitalize()+'") or contains(.,\"' +search_str[0]+ '\")]']
         for str,val in enumerate(search_str):
-            if str == 1: xpath_req1.append('/../term[@level=\"1\"]/title[contains(.,\"' + search_str[1] + '\")')
+            # if str == 1: xpath_req1.append('/../term[@level=\"1\"]/title[contains(.,\"' + search_str[1] + '\")')
+            if str == 1: xpath_req1.append('/../term/title[contains(.,\"' + search_str[1] + '\")')
             elif str > 1: xpath_req1.append(' or contains(.,\"' + search_str[str] + '\")' )
         if len(search_str) >= 2:
             xpath_req1.append(']/../..')
