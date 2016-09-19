@@ -92,9 +92,3 @@ db.define_table('post_biom',
     auth.signature)
 
 db.post_biom.laterality.requires = IS_IN_SET(('right','left'))
-
-db.define_table('phistory',
-    Field('id_auth_user', 'reference auth_user', required=True),
-    Field('id_worklist', 'reference worklist'),
-    Field('phistory','string'),
-    auth.signature)
