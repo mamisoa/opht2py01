@@ -103,7 +103,7 @@
 
 <div class="row">
   <div class="container-fluid">
-    <div class="col-md-4">
+    <div class="col-md-6">
       <form id="indexFrm">
         <div class="input-group">
           <input type="text" class="form-control desc" placeholder="icd-10 index search"></input>
@@ -111,7 +111,7 @@
         </div>
       </form>
     </div>
-    <div class="col-md-8">
+    <div class="col-md-6">
       <form id="icd10">
         <div class="input-group">
           <input type="text" class="form-control desc" placeholder="icd-10 tab search"></input>
@@ -124,7 +124,7 @@
 
 <div class="row results">
   <div class="container-fluid">
-    <div class="col-md-4">
+    <div class="col-md-6">
       <div id="indexRes" class="panel panel-default">
         <div class="panel-heading">
           <h3 class="panel-title">ICD-10 Index</h3>
@@ -135,7 +135,7 @@
         </div>
       </div>
     </div>
-    <div class="col-md-8">
+    <div class="col-md-6">
       <div id="icd10tab" class="panel panel-default">
         <div class="panel-heading">
           <h3 class="panel-title">ICD-10 Codes</h3>
@@ -161,6 +161,12 @@ items_list = { 'items': [
   {'item': 'exclusions2', 'children1':'excludes2', 'children2':'note','span_class': 'exclusions2', 'txt':'X2', 'txt_long':'Exclusions 2'},
   {'item': 'sevenChrNote', 'children1':'sevenChrNote', 'children2':'note','span_class': '', 'txt':'', 'txt_long':'Use 7th char'},
   {'item': 'sevenChrDef', 'children1':'sevenChrDef', 'children2':'extension','span_class': 'sevenChrNote', 'txt':'7th', 'txt_long':''}
+]};
+
+items_idx_list = { 'items': [
+  {'item': 'see', 'children': 'see', 'span_class':'see', 'span_txt':'See: '},
+  {'item': 'seeAlso', 'children': 'seeAlso', 'span_class':'seeAlso', 'span_txt':'See also: '},
+  {'item': 'code', 'children': 'code', 'span_class':'code', 'span_txt':''}
 ]};
 
 inputSubmit('#icd10', 'tab');
@@ -240,22 +246,14 @@ function get_diag(search_str) {
 
 function get_index(search_str) {
   var API_URL = '{{=URL('api','icd10_index.xml', scheme=True, host=True)}}?search='+search_str,
-    search_lst = search_str.split(' '),
-    searchTerms = 'term[level="1"]';
-  if (search_lst.length > 0) {
-    $.each(search_lst, function(index, el) {
-      if ( index == 0) {
-        // do nothing
-      } else if (index == 1) {
-        searchTerms = ':contains("'+el+'")';
-      }
-       else {
-        searchTerms += ', term[level="1"]:contains("'+el+'")';
-      }
-    });
+    search_lst = search_str.split(' ');
+  searchTerms = ['dummy0'];
+  for (i=1; i <=6; i++) {
+    searchTerms.push(searchTerm(i,search_lst));
   };
-  console.log(search_lst);
-  console.log('searchTerms: '+searchTerms);
+  // var searchTerms = searchTerm('1',search_lst);
+  // var searchTerms2 = searchTerm('2',search_lst);
+  console.log(searchTerms);
   $.ajax({
     url: API_URL,
     type: 'GET',
@@ -266,41 +264,33 @@ function get_index(search_str) {
     var html = [];
     $(data).children('main').children('mainterm').each(function(index, el) {
       $mainTerm = $(this).children('title');
-      $term1 = $(this).children(searchTerms);
+      $term1 = $(this).children(searchTerms[1]);
       html.push('<div class="mainTerm" data-toggle="tooltip" title="'+$mainTerm.children('nemod').text()+'"><h3>'+$mainTerm.contents().get(0).nodeValue+'</h3>');
       html.push('<ul class="list-inline">');
-      if ($(this).children('see').length > 0) {
-        html.push('<li class="list-inline-item"><span class="see">See: '+$(this).children('see').text()+'</span></li>');
-      }
-      if ($(this).children('seeAlso').length > 0) {
-        html.push('<li class="list-inline-item"><span class="seeAlso">See also: '+$(this).children('seeAlso').text()+'</span></li>');
-      }
-      if ($(this).children('code').length > 0) {
-        html.push('<li class="list-inline-item"><span class="code">'+$(this).children('code').text()+'</span></li>');
-      }
+      html.push(loop_items_idx('list-inline-item',$(this)));
       html.push('</ul>');
       if ($term1.length > 0) {
         html.push('<ol>')
         $term1.each(function(index, el) {
-          $see = $(this).children('see');
-          $seeAlso = $(this).children('seeAlso');
-          $code = $(this).children('code');
-          html.push('<li><ul class="list-unstyled">');
+          html.push('<li><ul class="list-unstyled term1">');
           html.push('<li><span class="mainTitle">'+$(this).children('title').text()+'</span></li>');
-          if ($see.length > 0) {
-            html.push('<li><span class="see">See: '+$(this).children('see').text()+'</span></li>');
-          }
-          if ($seeAlso.length > 0) {
-            html.push('<li><span class="seeAlso">See also: '+$(this).children('seeAlso').text()+'</span></li>');
-          }
-          if ($code.length > 0) {
-            html.push('<li><span class="code">'+$(this).children('code').text()+'</span></li>');
-          }
-          html.push('</ul></li>');
-        });
-        html.push('</ol>');
+          html.push(loop_items_idx(' ',$(this)));
+          $term2 = $(this).children('term[level="2"]');
+          html.push('<li><ul class="list-unstyled term2">');
+          if ($term2.length >0) {
+            $term2.each(function(index, el) {
+              html.push('<li>'+$(this).children('title').contents().get(0).nodeValue+'</li>')
+              html.push('<ul class="list-inline">');
+              html.push(loop_items_idx('list-inline-item',$(this)));
+              html.push('</ul>');
+            }); // each term2
+          };
+          html.push('</ul></li>'); // closing term2 li in term1
+          html.push('</ul></li>'); // closing each term1 li
+        }); // each term1
+        html.push('</ol>'); // closing ol term1
       }
-      html.push('</div>');
+      html.push('</div>'); // closing div mainTerm
     });
     var final_result = html.join('');
     var regex = /[A-Z]\d\d\.?[0-9X]?[0-9X]?[0-9X]?[A-Z]?/g;
@@ -355,6 +345,16 @@ function loop_items(level, $loc) {
       };
     };
   });
+}
+
+function loop_items_idx(classList, $loc) {
+  var htmlloop = [];
+  $.each(items_idx_list.items, function(index, el) {
+    if ($loc.children(el.children).length > 0) {
+      htmlloop.push('<li class="'+classList+'"><span class="'+el.span_class+'">'+el.span_txt+$loc.children(el.children).text()+'</span></li>')
+    };
+  });
+  return htmlloop;
 }
 
 function toggle_items(level,uplevel) {
@@ -422,6 +422,23 @@ function inputSubmit(tagName, xml_file){
     return false;
     }
   });
+}
+
+function searchTerm(level,list) {
+  search = 'term[level="'+level+'"]';
+  if (list.length > 0) {
+    $.each(list, function(index, el) {
+      if ( index == 0) {
+        // do nothing
+      } else if (index == 1) {
+        search += ':contains("'+el+'")';
+      }
+       else {
+        search += ', term[level="'+level+'"]:contains("'+el+'")';
+      }
+    });
+  };
+  return search;
 }
 
 jQuery.expr[':'].contains = function(a, i, m) {
