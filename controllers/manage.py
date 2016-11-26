@@ -14,6 +14,6 @@ def modality():
     grid = SQLFORM.smartgrid(db.modality)
     return locals()
 
-def faciity():
+def facility():
     grid = SQLFORM.smartgrid(db.facility)
     return locals()

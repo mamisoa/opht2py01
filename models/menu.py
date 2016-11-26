@@ -31,7 +31,7 @@ response.menu = [
         [
             (T('Doctors'), False, URL('default', 'home/3'), []),
             (T('Nurses'), False, URL('default', 'home/4'), []),
-            (T('Assistants'), False, URL('default', 'home/7'), []),
+            (T('Assistants'), False, URL('default', 'home/5'), []),
             (T('AutoRx'), False, URL('default', 'autorx'), []),
             (T('DICOM'), False, URL('default', 'dicom'), [])
         ]),
