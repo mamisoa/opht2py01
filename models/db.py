@@ -66,6 +66,8 @@ db.define_table('ethny',
     Field('ethny','string'))
 db.define_table('marital',
     Field('marital_status'))
+db.define_table('photo_id',
+    Field('imagefile', 'upload'))
 
 auth.settings.extra_fields['auth_user']= [  Field('maiden_name_pid6','string', label='Maiden name'),
                                             Field('dob_pid7','date', label='Date of birth'),
@@ -77,6 +79,15 @@ auth.settings.extra_fields['auth_user']= [  Field('maiden_name_pid6','string', l
                                             Field('idc_num', 'string', label='ID card number'),
                                             Field('ssn_pid19', 'string', label='SSN'),
                                             Field('user_notes', 'string', label ='User notes'),
+                                            Field('photo_id', 'reference photo_id'),
+                                            Field('chipnumber', 'string', label ='Chipnumber'),
+                                            Field('validfrom', 'date', label ='ID valid from'),
+                                            Field('validtill', 'date', label ='ID valid til'),
+                                            Field('initials', 'string', label ='ID initials'),
+                                            Field('nationality', 'string', label ='nationality'),
+                                            Field('noblecondition', 'string', label ='ID noble condition'),
+                                            Field('documenttype', 'integer', label ='ID doctype'),
+                                            Field('specialstatus', 'integer', label ='ID specialstatus'),
                                             auth.signature]
 
 def represent_auth(auth_ref, row):

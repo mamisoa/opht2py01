@@ -446,12 +446,11 @@ TEST
       }
     });
 
-    $modal_wl.find('.submit').click(function (e) {
+    $modal_wl.find('.submit').click(function (e) { // create or edit a worklist item
       if ( $('#form_wl .submit').hasClass('disabled'))
         {
           e.preventDefault();
           $('.alert_lat').text('Class disabled error');
-
           return true;
         }
         else {
@@ -512,7 +511,7 @@ TEST
         });
     }
 
-    function check_duplicate(first,last,dob,row) {
+    function check_duplicate(first,last,dob,row) { // check duplicate with first_name last_name dob
       var API_URL = '{{=URL('api','users/user', scheme=True, host=True)}}/'+encodeURIComponent(first)+ '/' +encodeURIComponent(last)+ '/' +dob;
       $.ajax({
         url: API_URL,
@@ -541,7 +540,7 @@ TEST
       });
     }
 
-    function post_wl_form(row,req) {
+    function post_wl_form(row,req) { // create or edit a wl item in db
       var API_URL = (req == 'POST' ? '{{=URL('api','wl/worklist', scheme=True, host=True)}}/' : '{{=URL('api','wl/worklist', scheme=True, host=True)}}/'+ row.id);
       var mode = (req == 'POST' ? 'add':'edit');
       $.ajax({
@@ -614,7 +613,7 @@ TEST
     }
 
     window.actionEvents_wl = {
-      'click .update': function (e,value,row) {
+      'click .update': function (e,value,row) { // set values of wl item to pass to an edit modal form
         resetForm($('#form_wl'));
         setSelect('#form_wl select.exam2do_OBR4', exams, 'exam_description');
         setSelect('#form_wl select.sending_facility_MSH4', facilities, 'facility_name');
@@ -640,7 +639,7 @@ TEST
         $('.selectpicker').selectpicker('refresh');
         $('#modal_wl').modal('show');
       },
-      'click .done': function (e,value,row) {
+      'click .done': function (e,value,row) { // set task to done
         simple_row = {id: row.id, status_flag: 'done'};
         $.ajax({
           url:  '{{=URL('api','wl/worklist', scheme=True, host=True)}}/'+ row.id,
@@ -661,7 +660,7 @@ TEST
             }
           });
       },
-      'click .processing': function (e,value,row) {
+      'click .processing': function (e,value,row) { // set task to processing
         simple_row = {id: row.id};
         flag = 'in process';
         if (row.counter >= 1) {
@@ -692,7 +691,7 @@ TEST
             }
           });
       },
-      'click .remove': function (e, value, row) {
+      'click .remove': function (e, value, row) { // delete a wl item in db
           if (confirm('Are you sure to delete this item?')) {
               $.ajax({
                   url: '{{=URL('api','wl/worklist', scheme=True, host=True)}}/'+ row.id,
@@ -710,7 +709,7 @@ TEST
     }
 
 
-  function showAlert(title, type, div) {
+  function showAlert(title, type, div) { // show alert function
     $('.'+div).attr('class', div+' alert alert-' + type || 'success')
           .html('<i class="glyphicon glyphicon-check"></i> ' + title).show();
     setTimeout(function () {
@@ -718,7 +717,7 @@ TEST
       }, 5000);
   }
 
-  function add_membership(user_id,membership) {
+  function add_membership(user_id,membership) { // set membership to user_id
     var row = {'user_id': user_id, 'group_id': {{=membership}}};
     $.ajax({
       url: '{{=URL('api','users/auth_membership', scheme=True, host=True)}}/',
@@ -733,6 +732,8 @@ TEST
       }
     });
   }
+
+// for data in tables
 
   function responseHandler(res) {
     list = res.content;
@@ -847,7 +848,7 @@ TEST
       return {};
   }
 
-  function rowAttributes(row,index) {
+  function rowAttributes(row,index) { // set tooltip values
     row.created_by == '' ? createdby = 'created by unknown' : createdby = 'created by '+row.created_by;
     row.created_on == '' ? createdon = ' on unknown date' : createdon = ' on '+row.created_on;
     row.modified_by == '' ? modifiedby = ' modified by unknown' : modifiedby = ' modified by '+row.modified_by;
@@ -891,7 +892,6 @@ TEST
     });
     timer_id = [];
   }
-
 
   function titleCase(string) {
     return string.charAt(0).toUpperCase() + string.slice(1); }
