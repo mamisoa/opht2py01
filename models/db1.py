@@ -62,7 +62,7 @@ db.define_table('worklist',
     Field('sending_facility_MSH4','reference facility', default = '1'),
     Field('receving_app_MSH5','string', default = 'Receving App'),
     Field('receving_facility_MSH6','reference facility', default = '1'),
-    Field('message_unique_id_MSH10','string', default=(str(request.now)).translate(None,'- :.'), required=True),
+    Field('message_unique_id_MSH10','string', default=(str(request.now)).translate(str.maketrans('','','- :.')), required=True),
     Field('exam2do_OBR4', 'reference exam2do_OBR4', required=True),
     Field('provider_OBR16', 'reference auth_user', required=True),
     Field('requested_time_OBR6', 'datetime', required=True),
@@ -73,13 +73,9 @@ db.define_table('worklist',
     Field('warning', 'string'),
     auth.signature)
 
-db.worklist.laterality.requires=IS_IN_SET(('both', 'right', 'left', 'none'))
+db.worklist.laterality.requires=IS_IN_SET(['both', 'right', 'left', 'none'])
 
-
-query_sessions = (
-(db.auth_user.id == db.auth_membership.user_id)&
-(db.auth_membership.group_id == 3)
-)
+query_sessions = ((db.auth_user.id == db.auth_membership.user_id)&(db.auth_membership.group_id == 3))
 
 db.worklist.id_auth_user.requires=IS_IN_DB(db,'auth_user.id','%(first_name)s'+' '+'%(last_name)s')
 db.worklist.provider_OBR16.requires=IS_IN_DB(db(query_sessions), 'auth_user.id', '%(first_name)s'+' '+'%(last_name)s' )
