@@ -40,8 +40,8 @@ def wl():
             date_after = datetime.date.today().strftime('%Y-%m-%d')
             date_before = (datetime.datetime.strptime(date_after,'%Y-%m-%d').date() + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
         else:
-            date_after = (request.vars.date_after).translate(None,'"')
-            date_before = (request.vars.date_before).translate(None,'"')
+            date_after = (request.vars.date_after).translate(str.maketrans('','','"'))
+            date_before = (request.vars.date_before).translate(str.maketrans('','','"'))
         query=((db.worklist.created_on>date_after)&(db.worklist.created_on<date_before))
         db.worklist.created_by.readable = db.worklist.modified_by.readable = db.worklist.created_on.readable = db.worklist.modified_on.readable = db.worklist.id_auth_user.readable = True
         rows =  db(query).select(provider.id, provider.first_name, provider.last_name,
